@@ -2,20 +2,20 @@ from pymodbus.datastore import ModbusSequentialDataBlock
 from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.server import StartTcpServer
-from coil_register import CoilRegister
+from registers import CoilRegister
 
 
 def run_server():
     # Create data block with initial values based on the provided documentation
     coils = [0] * (max(coil.value for coil in CoilRegister) + 1)
-    coils[CoilRegister.CL_BoostSWITCH_CTRL.value] = 1
-    coils[CoilRegister.CL_FplcSWITCH_CTRL.value] = 1
-    coils[CoilRegister.CL_RESET_FILTER_TIMER.value] = 1
-    coils[CoilRegister.CL_RESET_ALARM.value] = 1
-    coils[CoilRegister.CL_RESTORE_FACTORY.value] = 1
-    coils[CoilRegister.CL_MinSuAirOutTEMP_CTRL.value] = 1
-    coils[CoilRegister.CL_WaterPRESS_CTRL.value] = 1
-    coils[CoilRegister.CL_WaterHeaterAutoRestart.value] = 1
+    # coils[CoilRegister.CL_BoostSWITCH_CTRL.value] = 1
+    # coils[CoilRegister.CL_FplcSWITCH_CTRL.value] = 1
+    # coils[CoilRegister.CL_RESET_FILTER_TIMER.value] = 1
+    # coils[CoilRegister.CL_RESET_ALARM.value] = 1
+    # coils[CoilRegister.CL_RESTORE_FACTORY.value] = 1
+    # coils[CoilRegister.CL_MinSuAirOutTEMP_CTRL.value] = 1
+    # coils[CoilRegister.CL_WaterPRESS_CTRL.value] = 1
+    # coils[CoilRegister.CL_WaterHeaterAutoRestart.value] = 1
 
     store = ModbusSlaveContext(
         co=ModbusSequentialDataBlock(0, coils),
