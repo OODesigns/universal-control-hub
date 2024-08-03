@@ -1,8 +1,5 @@
 from behave import *
 
-use_step_matcher("re")
-
-
 @given("the ventilation is off")
 def step_impl(context):
     """
