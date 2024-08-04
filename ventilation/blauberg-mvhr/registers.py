@@ -102,3 +102,161 @@ class DiscreteInputs(Enum):
     DI_ALARM_CODE_50 = 69  # Alarm indicator with code No. 50
     DI_ALARM_CODE_51 = 70  # Alarm indicator with code No. 51
     DI_ALARM_CODE_52 = 71  # Alarm indicator with code No. 52
+
+
+class InputRegisters(Enum):
+    # Current temperature of the selected sensor, which controls the air temperature
+    # Value 250 = 25.0 °C. -32768 - no sensor, +32767 - short circuit
+    IR_CUR_SEL_TEMP = 0
+
+    # Current temperature of the main outdoor air sensor before preheating
+    # Value 250 = 25.0 °C. -32768 - no sensor, +32767 - short circuit
+    IR_CURTEMP_SUAIR_IN = 1
+
+    # Current temperature of the main supply air temperature sensor at the unit outlet downstream of the reheater
+    # Value 250 = 25.0 °C. -32768 - no sensor, +32767 - short circuit
+    IR_CURTEMP_SUAIR_OUT = 2
+
+    # Current extract air temperature at the unit inlet
+    # Value 250 = 25.0 °C. -32768 - no sensor, +32767 - short circuit
+    IR_CURTEMP_EXAIR_IN = 3
+
+    # Current exhaust air temperature at the unit outlet
+    # Value 250 = 25.0 °C. -32768 - no sensor, +32767 - short circuit
+    IR_CURTEMP_EXAIR_OUT = 4
+
+    # Current temperature of the outdoor air temperature sensor (in the control panel, ...)
+    # Value 250 = 25.0 °C. -32768 - no sensor, +32767 - short circuit
+    IR_CURTEMP_EXT = 5
+
+    # Return heat medium temperature
+    # Value 250 = 25.0 °C. -32768 - no sensor, +32767 - short circuit
+    IR_CURTEMP_WATER = 8
+
+    # Current battery voltage for RTC
+    IR_CURVBAT = 9
+
+    # Current humidity of the main sensor. 0 – no sensor
+    IR_CURRH_INT = 10
+
+    # Current humidity of the outdoor sensor. 0 – no sensor
+    IR_CURRH_EXT = 11
+
+    # Current CO2 level of the main sensor. 0 – no sensor
+    IR_CURCO2_INT = 12
+
+    # Current CO2 level of the external sensor. 0 – no sensor
+    IR_CURCO2_EXT = 13
+
+    # Current PM2.5 level of the main sensor. 0 – no sensor
+    IR_CURPM2_5_INT = 14
+
+    # Current PM2.5 level of the external sensor. 0 – no sensor
+    IR_CURPM2_5_EXT = 15
+
+    # Current VOC level of the main sensor. 0 – no sensor
+    IR_CURVOC_INT = 16
+
+    # Current VOC level of the external sensor. 0 – no sensor
+    IR_CURVOC_EXT = 17
+
+    # Current value of the 0-10 V sensor
+    IR_CUR10V_SENSOR = 18
+
+    # Current supply air flow
+    IR_CURSU_AIRFLOW = 19
+
+    # Current exhaust air flow
+    IR_CUREX_AIRFLOW = 20
+
+    # Current pressure in the supply air duct
+    IR_CURSU_PRESS = 21
+
+    # Current pressure in the exhaust air duct
+    IR_CUREX_PRESS = 22
+
+    # Supply fan speed
+    IR_SURPM = 23
+
+    # Extract fan speed
+    IR_EXRPM = 24
+
+    # Current countdown time of the main timer
+    IR_CURTIMER_TIME = 25
+
+    # Countdown time of the filter replacement timer
+    IR_CURFILTER_TIMER = 27
+
+    # Motor hours
+    IR_TOTALWORKINGTIME = 29
+
+    # Filter condition:
+    # 0 - clean, 1 - the intake supply filter is clogged, 2 - the extract filter is clogged,
+    # 3 - both filters are clogged or the filter replacement timer has gone off (highest priority)
+    IR_STATE_FILTER = 31
+
+    # Current speed in Weekly schedule mode: 0 - Standby
+    # 1 - Speed 1
+    # 2 - Speed 2
+    # 3 - Speed 3
+    # 4 - Speed 4
+    # 5 - Speed 5
+    IR_CURWEEKSPEED = 32
+
+    # Current temperature setpoint in Weekly schedule mode:
+    # 0 - ventilation only, +15 ... + 30 °C
+    IR_CURWEEKSETTEMP = 33
+
+    # Firmware version
+    # Firmware creation date
+    IR_VERMAIN_FMW = 34
+
+    # Device type (controller): 1 – S21
+    IR_DEVICETYPE = 37
+
+    # Alarm/warning indicator: 0 – no
+    # 1 – alarm (highest priority)
+    # 2 – warning
+    IR_ALARM = 38
+
+    # Control signal from the PID humidity controller
+    IR_RH_U = 39
+
+    # Control signal from the PID CO2 level controller
+    IR_CO2_U = 40
+
+    # Control signal from the PID PM2.5 level controller
+    IR_PM2_5_U = 41
+
+    # Control signal from the PID VOC level controller
+    IR_VOC_U = 42
+
+    # Control signal from the PID preheating controller
+    IR_PREHEATER_U = 43
+
+    # Control signal from the PID reheating controller
+    IR_MAINHEATER_U = 44
+
+    # Control signal from the PID bypass/rotary heat exchanger controller
+    IR_BPS_ROTOR_U = 45
+
+    # Control signal from the PID condenser unit controller
+    IR_KKB_U = 46
+
+    # Control signal from the PID return heat medium controller
+    IR_RETURNWATER_U = 47
+
+    # Temperature setpoint in the supply air duct. Calculated automatically
+    # when the room sensor or the sensor in the exhaust air duct is selected.
+    # Value 250 = 25.0 °C
+    IR_SUAIR_OUTSETTEMP = 48
+
+    # Return heat medium temperature setpoint during winter in Standby mode.
+    # Calculated automatically depending on the outdoor temperature.
+    # Value 250 = 25.0 °C
+    IR_WATER_STANDBYSETTEMP = 49
+
+    # Return heat medium temperature setpoint in winter before the air handling unit start-up.
+    # Calculated automatically depending on the outdoor temperature.
+    # Value 350 = 35.0 °C
+    IR_WATER_STARTSETTEMP = 50
