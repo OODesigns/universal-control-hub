@@ -4,6 +4,12 @@ from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.server import StartTcpServer
 from registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
 
+MAX_BYTE_VALUE = 255
+
+ASCII_SYMBOL_1 = 49
+
+DIM_2 = 1
+
 SHIFT_BY_A_BYTE = 8
 
 MIN_YEAR = 0
@@ -48,43 +54,86 @@ def run_server():
     holding_register[HoldingRegister.HR_SUSPEED5.value] = 100
     holding_register[HoldingRegister.HR_EXSPEED5.value] = 100
     holding_register[HoldingRegister.HR_MANUALSPEED.value] = 50
-
-    #TODO HR_BlowingSPEED onwards
-
-
-    holding_register[HoldingRegister.HR_SETTEMP.value] = 15
-    holding_register[HoldingRegister.HR_SETRH.value] = 40
-    holding_register[HoldingRegister.HR_SETCO2.value] = 400
-    holding_register[HoldingRegister.HR_SETPM2_5.value] = 100
-    holding_register[HoldingRegister.HR_SETVOC.value] = 20
-    holding_register[HoldingRegister.HR_SETTEMP_WINTERSUMMER.value] = 5
-    holding_register[HoldingRegister.HR_MAXCO2_INT.value] = 500
-    holding_register[HoldingRegister.HR_MAXPM2_5_INT.value] = 500
-    holding_register[HoldingRegister.HR_SETMINSUAIR_OUTTEMP.value] = 5
-    holding_register[HoldingRegister.HR_MAINHEATERMODE.value] = 1
-    holding_register[HoldingRegister.HR_COOLERMODE.value] = 1
-    holding_register[HoldingRegister.HR_PREHEATERMODE.value] = 1
-    holding_register[HoldingRegister.HR_SETTIMEDETECTFANALARM.value] = 5
-    holding_register[HoldingRegister.HR_SETTIMEFANBLOWING.value] = 20
-    holding_register[HoldingRegister.HR_KKB_HYSTERESIS.value] = 1
+    holding_register[HoldingRegister.HR_BLOWINGSPEED.value] = 50
+    holding_register[HoldingRegister.HR_BOOST_SUSPEED.value] = 100
+    holding_register[HoldingRegister.HR_BOOST_EXSPEED.value] = 100
+    holding_register[HoldingRegister.HR_FPLC_SUSPEED.value] = 60
+    holding_register[HoldingRegister.HR_FPLC_EXSPEED.value] = 60
+    holding_register[HoldingRegister.HR_OPERATION_MODE.value] = 3
+    holding_register[HoldingRegister.HR_SETTEMP.value] = 23
+    holding_register[HoldingRegister.HR_SETRH.value] = 60
+    holding_register[HoldingRegister.HR_SETCO2.value] = 1200
+    holding_register[HoldingRegister.HR_SETPM2_5.value] = 400
+    holding_register[HoldingRegister.HR_SETVOC.value] = 40
+    holding_register[HoldingRegister.HR_TIMER_MODE.value] = 1
+    holding_register[HoldingRegister.HR_SETTIMER_TEMP.value] = 23
+    holding_register[HoldingRegister.HR_SETTIMER_TIME.value] = 30
+    holding_register[HoldingRegister.HR_SETTEMP_WINTERSUMMER.value] = 7
+    holding_register[HoldingRegister.HR_SELTEMP_SENSOR.value] = 2
+    holding_register[HoldingRegister.HR_SETFILTER_TIMER.value] = 90
+    holding_register[HoldingRegister.HR_MAXCO2_INT.value] = 2000
+    holding_register[HoldingRegister.HR_MAXPM2_5_INT.value] = 1000
+    holding_register[HoldingRegister.HR_SETMINSUAIR_OUTTEMP.value] = 10
+    holding_register[HoldingRegister.HR_MAINHEATERMODE.value] = 2
+    holding_register[HoldingRegister.HR_COOLERMODE.value] = 2
+    holding_register[HoldingRegister.HR_PREHEATERMODE.value] = 2
+    holding_register[HoldingRegister.HR_SETPREHEATERMANUAL.value] = 50
+    holding_register[HoldingRegister.HR_SETBPSROTOR_MANUAL.value] = 100
+    holding_register[HoldingRegister.HR_RH_KP.value] = 150
+    holding_register[HoldingRegister.HR_RH_KI.value] = 150
+    holding_register[HoldingRegister.HR_CO2_KP.value] = 150
+    holding_register[HoldingRegister.HR_CO2_KI.value] = 150
+    holding_register[HoldingRegister.HR_PM2_5_KP.value] = 150
+    holding_register[HoldingRegister.HR_PM2_5_KI.value] = 150
+    holding_register[HoldingRegister.HR_VOC_KP.value] = 150
+    holding_register[HoldingRegister.HR_VOC_KI.value] = 150
+    holding_register[HoldingRegister.HR_PREHEATER_KP.value] = 200
+    holding_register[HoldingRegister.HR_PREHEATER_KI.value] = 200
+    holding_register[HoldingRegister.HR_PREHEATER_KD.value] = 500
+    holding_register[HoldingRegister.HR_MAINHEATER_KP.value] = 400
+    holding_register[HoldingRegister.HR_MAINHEATER_KI.value] = 400
+    holding_register[HoldingRegister.HR_MAINHEATER_KP.value] = 600
+    holding_register[HoldingRegister.HR_BPS_ROTOR_KP.value] = 200
+    holding_register[HoldingRegister.HR_BPS_ROTOR_KI.value] = 200
+    holding_register[HoldingRegister.HR_BPS_ROTOR_KD.value] = 500
+    holding_register[HoldingRegister.HR_KKB_KP.value] = 200
+    holding_register[HoldingRegister.HR_KKB_KI.value] = 200
+    holding_register[HoldingRegister.HR_KKB_KD.value] = 500
+    holding_register[HoldingRegister.HR_RETURNWATER_KP.value] = 120
+    holding_register[HoldingRegister.HR_RETURNWATER_KI.value] = 120
+    holding_register[HoldingRegister.HR_RETURNWATER_KD.value] = 350
+    holding_register[HoldingRegister.HR_FAN_ALARM_CTRL.value] = 2
+    holding_register[HoldingRegister.HR_SETTIMEDETECTFANALARM.value] = 30
+    holding_register[HoldingRegister.HR_SETTIMEFANBLOWING.value] = 120
+    holding_register[HoldingRegister.HR_KKB_MINTIMEOFF.value] = 3
+    holding_register[HoldingRegister.HR_KKB_MINTIMEON.value] = 1
+    holding_register[HoldingRegister.HR_KKB_HYSTERESIS.value] = 2
     holding_register[HoldingRegister.HR_TIMEOPENBPS.value] = 2
-    holding_register[HoldingRegister.HR_CORRTEMP_SUAIRIN.value] = -500
-    holding_register[HoldingRegister.HR_CORRTEMP_SUAIR_OUT.value] = -500
-    holding_register[HoldingRegister.HR_CORRTEMP_EXAIRIN.value] = -500
-    holding_register[HoldingRegister.HR_CORRTEMP_EXAIR_OUT.value] = -500
-    holding_register[HoldingRegister.HR_CORRTEMP_WATER.value] = -500
-    holding_register[HoldingRegister.HR_CORRTEMP_EXT.value] = -500
-    holding_register[HoldingRegister.HR_WATER_MAX_START_TIME.value] = 2
+    holding_register[HoldingRegister.HR_CORRTEMP_SUAIRIN.value] = 0
+    holding_register[HoldingRegister.HR_CORRTEMP_SUAIR_OUT.value] = 0
+    holding_register[HoldingRegister.HR_CORRTEMP_EXAIRIN.value] = 0
+    holding_register[HoldingRegister.HR_CORRTEMP_EXAIR_OUT.value] = 0
+    holding_register[HoldingRegister.HR_CORRTEMP_WATER.value] = 0
+    holding_register[HoldingRegister.HR_CORRTEMP_EXT.value] = 0
+    holding_register[HoldingRegister.HR_WATER_MAX_START_TIME.value] = 5
     holding_register[HoldingRegister.HR_WATER_MIN_START_TEMP.value] = 30
     holding_register[HoldingRegister.HR_WATER_MAX_START_TEMP.value] = 30
-    holding_register[HoldingRegister.HR_WATER_MIN_ALARM_TEMP.value] = 10
-    holding_register[HoldingRegister.HR_WATER_MAX_ALARM_TEMP.value] = 10
+    holding_register[HoldingRegister.HR_WATER_MIN_ALARM_TEMP.value] = 12
+    holding_register[HoldingRegister.HR_WATER_MAX_ALARM_TEMP.value] = 20
+    # it means that the data is split into separate 8-bit (1-byte) values within
+    # a single 16-bit register or across multiple registers.
+    holding_register[HoldingRegister.HR_ENGINEER_PWD.value] = combine_bytes(ASCII_SYMBOL_1, ASCII_SYMBOL_1)
+    holding_register[HoldingRegister.HR_ENGINEER_PWD.value + DIM_2] = combine_bytes(ASCII_SYMBOL_1, ASCII_SYMBOL_1)
+
+    #TODo
+    holding_register[HoldingRegister.HR_SETWEEK_MO_1ST_PERIOD_SPEED_TEMP.value] = combine_bytes(1, 23)
+    holding_register[HoldingRegister.HR_SETWEEK_MO_1ST_PERIOD_END_HOURS_MINUTES.value] = combine_bytes(6, 0)
 
     # RTC_CALENDAR two dimensions where each dimension is a byte,
     # it means that the data is split into separate 8-bit (1-byte) values within
     # a single 16-bit register or across multiple registers.
     holding_register[HoldingRegister.HR_RTC_CALENDAR.value] = (MIN_DAY << SHIFT_BY_A_BYTE) | MIN_WEEK_DAY
-    holding_register[HoldingRegister.HR_RTC_CALENDAR.value + ENUM_OFFSET] = (MIN_MONTH << SHIFT_BY_A_BYTE) | MIN_YEAR
+    holding_register[HoldingRegister.HR_RTC_CALENDAR.value + DIM_2] = (MIN_MONTH << SHIFT_BY_A_BYTE) | MIN_YEAR
 
     discrete_inputs = [0] * (max(discrete_inputs.value for discrete_inputs in DiscreteInputs) + ENUM_OFFSET)
     inputs_registers = [0] * (max(inputs_registers.value for inputs_registers in InputRegisters) + ENUM_OFFSET)
@@ -110,6 +159,25 @@ def run_server():
     # Run the server
     #TODO How to set the context as it does not like it
     StartTcpServer(identity=identity, address=("localhost", 5020))
+
+
+def combine_bytes(high_byte: int, low_byte: int) -> int:
+    """
+    Combine two bytes into a 16-bit value.
+
+    Args:
+        high_byte (int): The high byte (8 bits).
+        low_byte (int): The low byte (8 bits).
+
+    Returns:
+        int: The combined 16-bit value.
+    """
+    if not (0 <= high_byte <= MAX_BYTE_VALUE):
+        raise ValueError("high_byte must be between 0 and 255")
+    if not (0 <= low_byte <= MAX_BYTE_VALUE):
+        raise ValueError("low_byte must be between 0 and 255")
+
+    return (high_byte << SHIFT_BY_A_BYTE) | low_byte
 
 
 if __name__ == "__main__":
