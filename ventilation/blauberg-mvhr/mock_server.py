@@ -125,9 +125,16 @@ def run_server():
     holding_register[HoldingRegister.HR_ENGINEER_PWD.value] = combine_bytes(ASCII_SYMBOL_1, ASCII_SYMBOL_1)
     holding_register[HoldingRegister.HR_ENGINEER_PWD.value + DIM_2] = combine_bytes(ASCII_SYMBOL_1, ASCII_SYMBOL_1)
 
-    #TODo
     holding_register[HoldingRegister.HR_SETWEEK_MO_1ST_PERIOD_SPEED_TEMP.value] = combine_bytes(1, 23)
     holding_register[HoldingRegister.HR_SETWEEK_MO_1ST_PERIOD_END_HOURS_MINUTES.value] = combine_bytes(6, 0)
+    holding_register[HoldingRegister.HR_SETWEEK_MO_2ND_PERIOD_SPEED_TEMP.value] = combine_bytes(1, 23)
+    holding_register[HoldingRegister.HR_SETWEEK_MO_2ND_PERIOD_END_HOURS_MINUTES.value] = combine_bytes(9, 0)
+    holding_register[HoldingRegister.HR_SETWEEK_MO_3RD_PERIOD_SPEED_TEMP.value] = combine_bytes(1, 23)
+    holding_register[HoldingRegister.HR_SETWEEK_MO_3RD_PERIOD_END_HOURS_MINUTES.value] = combine_bytes(19, 0)
+    holding_register[HoldingRegister.HR_SETWEEK_MO_4TH_PERIOD_SPEED_TEMP.value] = combine_bytes(1, 23)
+    holding_register[HoldingRegister.HR_SETWEEK_MO_4TH_PERIOD_END.value] = combine_bytes(23, 59)
+
+    # TODo other holding registers
 
     # RTC_CALENDAR two dimensions where each dimension is a byte,
     # it means that the data is split into separate 8-bit (1-byte) values within
