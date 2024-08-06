@@ -1,3 +1,5 @@
+import logging
+
 from pymodbus.datastore import ModbusSequentialDataBlock
 from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
 from pymodbus.device import ModbusDeviceIdentification
@@ -152,8 +154,6 @@ def run_server():
         ir=ModbusSequentialDataBlock(0, holding_register)  # Input Registers (16 bit registers)
     )
 
-    context = ModbusServerContext(slaves=store, single=True)
-
     # Initialize the server information
     identity = ModbusDeviceIdentification()
     identity.VendorName = 'Blauberg'
@@ -163,9 +163,12 @@ def run_server():
     identity.ModelName = 'MVHR 350'
     identity.MajorMinorRevision = '1.0'
 
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.info('Starting Modbus TCP Server...')
     # Run the server
-    #TODO How to set the context as it does not like it
-    StartTcpServer(identity=identity, address=("localhost", 5020))
+    StartTcpServer(context=ModbusServerContext(slaves=store, single=True),
+                   identity=identity,
+                   address=("localhost", 5020))
 
 
 def combine_bytes(high_byte: int, low_byte: int) -> int:
