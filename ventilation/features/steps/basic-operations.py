@@ -1,9 +1,8 @@
-from bisect import insort
-
 from behave import *
 
-from ventilation.temperature_sensor import AbstractTemperatureSensor
-from ventilation.ventilation import Ventilation, VentilationMode
+from ventilation.source.temperature_sensor import AbstractTemperatureSensor
+from ventilation.source.ventilation import Ventilation, VentilationMode
+from ventilation.source.temperature import Temperature
 
 
 class MockTemperatureSensor(AbstractTemperatureSensor):
@@ -24,11 +23,11 @@ def step_impl(context, mode):
 
 @given("the ventilation set-point is {setpoint:d}")
 def step_impl(context, setpoint):
-    context.ventilation.set_setpoint_temperature(setpoint)
+    context.ventilation.set_setpoint_temperature(Temperature(setpoint))
 
 @given("the outside temp is {temp:d}")
 def step_impl(context, temp):
-    context.outside_temp_sensor.temp = temp
+    context.outside_temp_sensor.current_temp = Temperature(temp)
 
 @when("I retrieve the temperature before and after the MVHR system")
 def step_impl(context):

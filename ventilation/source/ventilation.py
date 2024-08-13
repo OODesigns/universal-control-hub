@@ -1,21 +1,7 @@
 from enum import Enum
 
-from ventilation.abstract_value import AbstractValue
-from ventilation.temperature_sensor import AbstractTemperatureSensor
-
-
-class Temperature(AbstractValue):
-    def get_value(self):
-        pass
-
-    def __init__(self, value: int):
-        super().__init__()
-        if not (0 <= value <= 50):
-            raise ValueError("Temperature must be between 0 and 50°C.")
-        self.value = value
-
-    def __int__(self):
-        return self.value
+from ventilation.source.temperature import Temperature
+from ventilation.source.temperature_sensor import AbstractTemperatureSensor
 
 
 class VentilationMode(Enum):
@@ -36,3 +22,6 @@ class Ventilation:
 
     def get_mvhr_temp_after(self) -> Temperature:
         return Temperature(0)
+
+    def set_setpoint_temperature(self, temp: Temperature):
+        pass
