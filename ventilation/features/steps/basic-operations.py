@@ -1,5 +1,4 @@
 from behave import *
-
 from ventilation.source.temperature_sensor import AbstractTemperatureSensor
 from ventilation.source.ventilation import Ventilation, VentilationMode
 from ventilation.source.temperature import Temperature
@@ -7,6 +6,8 @@ from ventilation.source.temperature import Temperature
 
 class MockTemperatureSensor(AbstractTemperatureSensor):
     def get_temperature(self):
+        if self.current_temp is None:
+            raise ValueError("Current temperature is not set.")
         return self.current_temp
 
     def __init__(self):
@@ -18,15 +19,19 @@ def step_impl(context):
     context.ventilation = Ventilation(context.outside_temp_sensor)
 
 @given("the system is in {mode} mode")
-def step_impl(context, mode):
-    context.ventilation.set_mode(VentilationMode[mode.upper()])
+def step_impl(context, mode: str):
+    try:
+        ventilation_mode = VentilationMode[mode.upper()]
+    except KeyError:
+        raise ValueError(f"Invalid ventilation mode: {mode}")
+    context.ventilation.set_mode(ventilation_mode)
 
 @given("the ventilation set-point is {setpoint:d}")
-def step_impl(context, setpoint):
+def step_impl(context, setpoint: int):
     context.ventilation.set_setpoint_temperature(Temperature(setpoint))
 
 @given("the outside temp is {temp:d}")
-def step_impl(context, temp):
+def step_impl(context, temp: int):
     context.outside_temp_sensor.current_temp = Temperature(temp)
 
 @when("I retrieve the temperature before and after the MVHR system")
@@ -35,11 +40,14 @@ def step_impl(context):
     context.temp_after = context.ventilation.get_mvhr_temp_after()
 
 @then("the temperature before the MVHR system should be {temp:d}")
-def step_impl(context, temp):
-    assert context.temp_before == temp,f'{temp} is not {context.temp_before}'
-
+def step_impl(context, temp: int):
+    expected_temp = Temperature(temp)
+    assert context.temp_before == expected_temp, \
+        f"Expected temperature before MVHR to be {expected_temp.value}, but got {context.temp_before.value}"
 
 @then("the temperature after the MVHR should be between {low_temp:d} to {high_temp:d}")
-def step_impl(context, low_temp, high_temp):
-    assert context.temp_after in range(low_temp, high_temp), \
-        f'{context.temp_after} is not in range {low_temp} to {high_temp}'
+def step_impl(context, low_temp: int, high_temp: int):
+    low = Temperature(low_temp)
+    high = Temperature(high_temp)
+    assert low <= context.temp_after <= high, \
+        f"Expected temperature after MVHR to be between {low.value} and {high.value}, but got {context.temp_after.value}"
