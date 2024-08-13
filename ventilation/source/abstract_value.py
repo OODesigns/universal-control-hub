@@ -13,3 +13,14 @@ class AbstractValue(ABC):
         if type(self) is type(other):
             return self.value == other.value
         return False
+
+    def __lt__(self, other):
+        if type(self) is type(other):
+            return self.value < other.value
+        return False
+
+    def __le__(self, other):
+        if type(self) is type(other):
+            return self.value <= other.value
+        return False
+
