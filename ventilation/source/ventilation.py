@@ -1,7 +1,6 @@
 from enum import Enum
-
-from ventilation.source.temperature import Temperature
-from ventilation.source.temperature_sensor import AbstractTemperatureSensor
+from temperature import Temperature
+from temperature_sensor import AbstractTemperatureSensor
 
 
 class VentilationMode(Enum):
