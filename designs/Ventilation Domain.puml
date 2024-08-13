@@ -1,0 +1,13 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Ventilation {}
+
+class MVHR {}
+
+class TemperatureSensor{}
+
+Ventilation "1"-- "1" MVHR: has oversight of
+Ventilation "1"-- "0..n" TemperatureSensor: may reference
+
+@enduml
