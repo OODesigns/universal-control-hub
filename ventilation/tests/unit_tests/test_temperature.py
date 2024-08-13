@@ -9,7 +9,7 @@ class TestTemperature(TestCase):
         """Test creation of Temperature with valid values"""
         try:
             t = Temperature(25)
-            self.assertEqual(t._value, 25)
+            self.assertEqual(t.value, 25)
         except Exception as e:
             self.fail(f"Temperature(25) raised {type(e).__name__} unexpectedly!")
 
@@ -29,7 +29,7 @@ class TestTemperature(TestCase):
         """Test that temperature at the lower boundary (0°C) is valid"""
         try:
             t = Temperature(0)
-            self.assertEqual(t._value, 0)
+            self.assertEqual(t.value, 0)
         except Exception as e:
             self.fail(f"Temperature(0) raised {type(e).__name__} unexpectedly!")
 
@@ -37,7 +37,7 @@ class TestTemperature(TestCase):
         """Test that temperature at the upper boundary (50°C) is valid"""
         try:
             t = Temperature(50)
-            self.assertEqual(t._value, 50)
+            self.assertEqual(t.value, 50)
         except Exception as e:
             self.fail(f"Temperature(50) raised {type(e).__name__} unexpectedly!")
 
