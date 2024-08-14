@@ -10,8 +10,13 @@ class Ventilation(Device):
         self.mode = None
         self.outside_temp_sensor = outside_temp_sensor
 
-    def set_mode(self, mode: VentilationMode):
-        self.mode = mode
+    @property
+    def mode(self) -> VentilationMode:
+        return self._mode
+
+    @mode.setter
+    def mode(self, mode: VentilationMode):
+        self._mode = mode
 
     @property
     def mvhr_temp_before(self) -> Temperature:
@@ -21,5 +26,10 @@ class Ventilation(Device):
     def mvhr_temp_after(self) -> Temperature:
         return Temperature(0)
 
-    def set_setpoint_temperature(self, temp: Temperature):
+    @property
+    def setpoint_temperature(self) ->Temperature:
+        return Temperature(0)
+
+    @setpoint_temperature.setter
+    def setpoint_temperature(self, temp: Temperature):
         pass

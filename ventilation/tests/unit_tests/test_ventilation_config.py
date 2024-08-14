@@ -43,12 +43,12 @@ class TestVentilationConfiguration(unittest.TestCase):
     def test_get_setpoint_temperature(self):
         """Test that getting the setpoint temperature retrieves it correctly."""
         # Mock the return value of the store's get method
-        self.mock_store.get.return_value = 22
+        self.mock_store.get.return_value = Temperature(22)
 
         temperature = self.config.setpoint_temperature
 
         # Verify that the temperature is retrieved correctly
-        self.assertEqual(temperature.value, 22)
+        self.assertTrue(temperature == Temperature(22))
 
         # Verify that the store's get method was called with the correct key
         self.mock_store.get.assert_called_once_with('setpoint_temperature')
