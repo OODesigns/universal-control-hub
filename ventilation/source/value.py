@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class AbstractValue(ABC):
+class Value:
     def __init__(self):
         self._value = None
 

@@ -1,6 +1,7 @@
 from behave import *
 from ventilation.source.temperature_sensor import AbstractTemperatureSensor
-from ventilation.source.ventilation import Ventilation, VentilationMode
+from ventilation.source.ventilation import Ventilation
+from ventilation_mode import VentilationMode
 from ventilation.source.temperature import Temperature
 
 
@@ -11,6 +12,7 @@ class MockTemperatureSensor(AbstractTemperatureSensor):
         return self.current_temp
 
     def __init__(self):
+        super().__init__()
         self.current_temp = None
 
 @given("the MVHR system is operational")
@@ -36,8 +38,8 @@ def step_impl(context, temp: int):
 
 @when("I retrieve the temperature before and after the MVHR system")
 def step_impl(context):
-    context.temp_before = context.ventilation.get_mvhr_temp_before()
-    context.temp_after = context.ventilation.get_mvhr_temp_after()
+    context.temp_before = context.ventilation.mvhr_temp_before()
+    context.temp_after = context.ventilation.mvhr_temp_after()
 
 @then("the temperature before the MVHR system should be {temp:d}")
 def step_impl(context, temp: int):

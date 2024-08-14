@@ -1,5 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
+!theme spacelab
 
 class Ventilation {}
 
@@ -7,7 +8,14 @@ class MVHR {}
 
 class TemperatureSensor{}
 
+class Device{}
+
+class Store{}
+
 Ventilation "1"-- "1" MVHR: has oversight of
 Ventilation "1"-- "0..n" TemperatureSensor: may reference
+Ventilation "1"-- "1" Store
+Device <|-- MVHR
+Device <|-- TemperatureSensor
 
 @enduml

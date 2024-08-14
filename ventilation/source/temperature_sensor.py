@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
+from device import Device
 from ventilation.source.temperature import Temperature
 
 
-class AbstractTemperatureSensor(ABC):
+class AbstractTemperatureSensor(Device):
     @abstractmethod
     def get_temperature(self) -> Temperature:
         """

@@ -8,8 +8,8 @@ class TestTemperature(TestCase):
     def test_valid_temperature(self):
         """Test creation of Temperature with valid values"""
         try:
-            t = Temperature(25)
-            self.assertEqual(t.value, 25)
+            t = Temperature(25.5)
+            self.assertEqual(t.value, 25.5)
         except Exception as e:
             self.fail(f"Temperature(25) raised {type(e).__name__} unexpectedly!")
 
