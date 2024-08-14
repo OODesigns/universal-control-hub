@@ -1,5 +1,8 @@
+import importlib
+import sys
 from store import Store
 
+DEVICES = "devices"
 
 class DeviceFactory:
     _registry = {}
@@ -22,3 +25,10 @@ class DeviceFactory:
         device_class = DeviceFactory._registry[device_name]
         return device_class(self._store)
 
+    @classmethod
+    def _load_registered_devices(cls):
+        importlib.import_module(DEVICES) # pragma: no cover
+
+    @classmethod
+    def _registered_devices_loaded(cls):
+        return DEVICES in sys.modules # pragma: no cover
