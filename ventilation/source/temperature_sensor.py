@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
-from device import Device
+from devices.device import Device
 from ventilation.source.temperature import Temperature
 
 

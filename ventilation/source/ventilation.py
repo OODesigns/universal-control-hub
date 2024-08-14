@@ -1,4 +1,4 @@
-from device import Device
+from devices.device import Device
 from temperature import Temperature
 from temperature_sensor import AbstractTemperatureSensor
 from ventilation_mode import VentilationMode
