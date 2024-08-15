@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from value import Value
+from utils.value import Value
 
 
 class TestValue(TestCase):

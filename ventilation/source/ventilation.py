@@ -1,6 +1,6 @@
 from devices.device import Device
-from temperature import Temperature
-from temperature_sensor import AbstractTemperatureSensor
+from utils.temperature import Temperature
+from devices.temperature_sensor import AbstractTemperatureSensor
 from ventilation_mode import VentilationMode
 
 

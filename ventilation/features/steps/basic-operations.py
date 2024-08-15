@@ -1,8 +1,8 @@
 from behave import *
-from ventilation.source.temperature_sensor import AbstractTemperatureSensor
+from devices.temperature_sensor import AbstractTemperatureSensor
 from ventilation.source.ventilation import Ventilation
 from ventilation_mode import VentilationMode
-from ventilation.source.temperature import Temperature
+from utils.temperature import Temperature
 
 
 class MockTemperatureSensor(AbstractTemperatureSensor):

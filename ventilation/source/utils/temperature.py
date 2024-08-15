@@ -1,4 +1,4 @@
-from ventilation.source.value import Value
+from utils.value import Value
 
 
 class Temperature(Value):

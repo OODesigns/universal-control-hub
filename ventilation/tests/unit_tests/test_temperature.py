@@ -1,7 +1,7 @@
 import unittest
 from unittest import TestCase
 
-from temperature import Temperature
+from utils.temperature import Temperature
 
 
 class TestTemperature(TestCase):

@@ -1,10 +1,10 @@
-from store import Store
-from temperature import Temperature
+from config.config_store import ConfigStore
+from utils.temperature import Temperature
 from ventilation_mode import VentilationMode
 
 
 class VentilationConfiguration:
-    def __init__(self, store: Store):
+    def __init__(self, store: ConfigStore):
         self._store = store
 
     @property

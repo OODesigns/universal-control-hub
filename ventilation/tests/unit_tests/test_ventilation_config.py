@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from temperature import Temperature
+from utils.temperature import Temperature
 from ventilation_config import VentilationConfiguration
 from ventilation_mode import VentilationMode
 

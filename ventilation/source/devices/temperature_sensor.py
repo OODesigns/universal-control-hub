@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 from devices.device import Device
-from ventilation.source.temperature import Temperature
+from utils.temperature import Temperature
 
 
 class AbstractTemperatureSensor(Device):
