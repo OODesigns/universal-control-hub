@@ -10,14 +10,23 @@ class TemperatureSensor{}
 
 class Device{}
 
-class Store{}
+class ConfigStore{}
+
+class ConfigLoader{}
+note bottom
+ MVHR Modbus definition for Blauberg
+end note
 
 class VentilationConfig
+note left
+ MVHR IP-Address & Port
+end note
 
-VentilationConfig "1"-- "1" Store
+VentilationConfig "1"-- "1" ConfigStore
 Ventilation "1"--VentilationConfig
 Device <|-- MVHR
 Device <|-- TemperatureSensor
+Device "1" -- "1" ConfigLoader: uses it to define device
 Ventilation "1"--"1..n" Device
 
 @enduml

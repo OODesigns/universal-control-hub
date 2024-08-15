@@ -1,30 +1,52 @@
 import importlib
 import sys
 from config.config_factory import ConfigFactory
+from devices.device import Device
 
 DEVICES = "devices"
 
 class DeviceFactory:
     _registry = {}
+    _dependency = {}
+
     def __init__(self, config_factory: ConfigFactory):
         self._config_factory = config_factory
         if not self._registered_devices_loaded():
             self._load_registered_devices()
 
     @classmethod
-    def register_device(cls, device_name):
+    def register_device(cls, name):
         """Decorator to register a device class with the factory."""
         def decorator(device_class):
-            cls._registry[device_name] = device_class
+            cls._registry[name] = device_class
             return device_class
         return decorator
 
-    def create_device(self, device_name):
+    @classmethod
+    def register_dependency(cls, name):
+        """Decorator to register a dependencies class with the factory."""
+        def decorator(dependency_class):
+            cls._dependency[name] = dependency_class
+            return dependency_class
+        return decorator
+
+    def create_device(self, device_name) ->Device:
         """Factory method to create a device instance."""
         if device_name not in DeviceFactory._registry:
             raise ValueError(f"Device '{device_name}' is not registered.")
         device_class = DeviceFactory._registry[device_name]
-        return device_class(self._config_factory.create_loader(device_name))
+
+        # Prepare dependencies based on the device's required_dependencies
+        dependencies = {}
+        for dep_name in device_class.required_dependencies:
+            if dep_name in DeviceFactory._dependency:
+                dependencies[dep_name] = DeviceFactory._dependency[dep_name]()
+            else:
+                raise ValueError(f"Dependency '{dep_name}' is required by {device_name} but not provided.")
+
+        # Create the device with the injected dependencies
+        return device_class(self._config_factory.create_loader(device_name), **dependencies)
+
 
     @classmethod
     def _load_registered_devices(cls):

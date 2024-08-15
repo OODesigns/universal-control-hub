@@ -1,11 +1,11 @@
 from behave import *
-from devices.temperature_sensor import AbstractTemperatureSensor
+from devices.temperature_sensor import TemperatureSensorInterface
 from ventilation.source.ventilation import Ventilation
 from ventilation_mode import VentilationMode
 from utils.temperature import Temperature
 
 
-class MockTemperatureSensor(AbstractTemperatureSensor):
+class MockTemperatureSensorInterface(TemperatureSensorInterface):
     def get_temperature(self):
         if self.current_temp is None:
             raise ValueError("Current temperature is not set.")
@@ -17,7 +17,7 @@ class MockTemperatureSensor(AbstractTemperatureSensor):
 
 @given("the MVHR system is operational")
 def step_impl(context):
-    context.outside_temp_sensor = MockTemperatureSensor()
+    context.outside_temp_sensor = MockTemperatureSensorInterface()
     context.ventilation = Ventilation(context.outside_temp_sensor)
 
 @given("the system is in {mode} mode")

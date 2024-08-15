@@ -4,7 +4,7 @@ from devices.device import Device
 from utils.temperature import Temperature
 
 
-class AbstractTemperatureSensor(Device):
+class TemperatureSensorInterface(Device):
     @abstractmethod
     def get_temperature(self) -> Temperature:
         """

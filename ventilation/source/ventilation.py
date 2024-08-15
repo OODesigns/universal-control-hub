@@ -1,11 +1,11 @@
 from devices.device import Device
 from utils.temperature import Temperature
-from devices.temperature_sensor import AbstractTemperatureSensor
+from devices.temperature_sensor import TemperatureSensorInterface
 from ventilation_mode import VentilationMode
 
 
 class Ventilation(Device):
-    def __init__(self, outside_temp_sensor: AbstractTemperatureSensor):
+    def __init__(self, outside_temp_sensor: TemperatureSensorInterface):
         super().__init__()
         self.mode = None
         self.outside_temp_sensor = outside_temp_sensor
