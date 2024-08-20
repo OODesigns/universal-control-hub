@@ -9,7 +9,7 @@ class BaudRate(Value):
         self._value = self.validate(baud_rate)
 
     @classmethod
-    def validate(cls,baud_rate):
+    def validate(cls, baud_rate):
         if baud_rate not in BaudRate.VALID_RATES:
             raise ValueError(f"Invalid baud rate: {baud_rate}. Must be one of {BaudRate.VALID_RATES}")
         return baud_rate
