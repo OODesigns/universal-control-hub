@@ -2,6 +2,7 @@ from config.config_loader import ConfigLoader
 from devices.device import Device
 from devices.device_factory import DeviceFactory
 from devices.modbus import ModbusInterface
+from state.state_manager import StateManager
 from utils.temperaturecelsius import TemperatureInterface, TemperatureCelsius
 
 
@@ -9,8 +10,8 @@ from utils.temperaturecelsius import TemperatureInterface, TemperatureCelsius
 class MVHR(Device):
     required_dependencies = ['modbus']  # This device requires a Modbus instance
 
-    def __init__(self, config_loader: ConfigLoader, modus: ModbusInterface):
-        super().__init__(config_loader)
+    def __init__(self, config_loader: ConfigLoader, state_manager: StateManager, modus: ModbusInterface):
+        super().__init__(config_loader, state_manager)
         self.modus = modus
 
     @property
