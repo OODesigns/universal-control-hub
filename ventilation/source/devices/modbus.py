@@ -60,7 +60,6 @@ class ModbusTCP(ModbusTCPInterface):
         # Implement the write functionality for TCP
         pass
 
-@DeviceFactory.register_dependency('modbus_rtu')
 class ModbusRTU(ModbusRTUInterface):
     def __init__(self, baud_rate:BaudRate, parity:ParityType, stop_bits:StopBits,
                  coil_size:int, discrete_input_size:int, input_register_size:int, holding_register_size:int):
@@ -83,6 +82,7 @@ class ModbusRTU(ModbusRTUInterface):
         # Implement the write functionality for RTU
         pass
 
+@DeviceFactory.register_dependency('modbus')
 class ModbusFactory:
     @classmethod
     def create_modbus(cls, mode: ModbusMode, coil_size:int, discrete_input_size:int,
