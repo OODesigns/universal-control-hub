@@ -1,7 +1,10 @@
 import importlib
 import sys
+from logging import setLogRecordFactory
+
 from config.config_factory import ConfigFactory
 from devices.device import Device
+from state.state_manager import StateManager
 
 DEVICES = "devices"
 
@@ -9,7 +12,8 @@ class DeviceFactory:
     _registry = {}
     _dependency = {}
 
-    def __init__(self, config_factory: ConfigFactory):
+    def __init__(self, config_factory: ConfigFactory, state_manager:StateManager):
+        self._state_manager = state_manager
         self._config_factory = config_factory
         if not self._registered_devices_loaded():
             self._load_registered_devices()
@@ -45,7 +49,7 @@ class DeviceFactory:
                 raise ValueError(f"Dependency '{dep_name}' is required by {device_name} but not provided.")
 
         # Create the device with the injected dependencies
-        return device_class(self._config_factory.create_loader(device_name), **dependencies)
+        return device_class(self._config_factory.create_loader(device_name), self._state_manager, **dependencies)
 
 
     @classmethod

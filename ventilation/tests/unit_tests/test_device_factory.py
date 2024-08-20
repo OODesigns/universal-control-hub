@@ -1,15 +1,18 @@
 import unittest
 from unittest.mock import Mock, patch, MagicMock
 from config.config_factory import ConfigFactory
+from config.config_loader import ConfigLoader
 from devices.device_factory import DeviceFactory, DEVICES
 from devices.device import Device
+from state.state_manager import StateManager
 
 class TestDeviceFactory(unittest.TestCase):
 
     def setUp(self):
         """Set up a mock ConfigFactory object before each test."""
         self.mock_config_factory = Mock(spec=ConfigFactory)
-        self.factory = DeviceFactory(self.mock_config_factory)
+        self.mock_state_manager = Mock(spec=StateManager)
+        self.factory = DeviceFactory(self.mock_config_factory, self.mock_state_manager)
 
     def test_device_factory_registers_device(self):
         """Test that devices are correctly registered with the factory."""
@@ -29,11 +32,11 @@ class TestDeviceFactory(unittest.TestCase):
 
         @DeviceFactory.register_device("TestDependency")
         class TestClass(Device):
-            required_dependencies = ['the_dependency']
-
-            def __init__(self, config_loader, the_dependency=None):
-                super().__init__(config_loader)
+            def __init__(self, config_loader: ConfigLoader, state_manager: StateManager, the_dependency=None):
+                super().__init__(config_loader, state_manager)
                 self._dependency = the_dependency
+
+            required_dependencies = ['the_dependency']
 
         device = self.factory.create_device("TestDependency")
         self.assertIsInstance(device, TestClass)
@@ -59,14 +62,14 @@ class TestDeviceFactory(unittest.TestCase):
     @patch.dict('sys.modules', {}, clear=True)
     def test_constructor_loads_devices_when_not_loaded(self, mock_load_registered_devices):
         """Test that the constructor loads devices when they are not already loaded."""
-        DeviceFactory(self.mock_config_factory)
+        DeviceFactory(self.mock_config_factory, self.mock_state_manager)
         mock_load_registered_devices.assert_called_once()
 
     @patch('devices.device_factory.DeviceFactory._load_registered_devices')
     @patch.dict('sys.modules', {DEVICES: MagicMock()})
     def test_constructor_does_not_load_devices_when_already_loaded(self, mock_load_registered_devices):
         """Test that the constructor does not load devices if they are already loaded."""
-        DeviceFactory(self.mock_config_factory)
+        DeviceFactory(self.mock_config_factory, self.mock_state_manager)
         mock_load_registered_devices.assert_not_called()
 
     def test_device_factory_registers_dependency(self):

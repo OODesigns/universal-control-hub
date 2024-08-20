@@ -9,7 +9,7 @@ from state.system_state import SystemState
 class TestStateManager(unittest.TestCase):
 
     def setUp(self):
-        # Setup a temporary file path for testing
+        # A temporary file path for testing
         self.file_path = 'test_state_history.json'
         self.state_manager = StateManager(file_path=self.file_path)
 
