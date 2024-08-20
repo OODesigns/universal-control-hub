@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock
 
-from utils.temperature import Temperature
+from utils.temperaturecelsius import TemperatureCelsius
 from ventilation_config import VentilationConfiguration
 from ventilation_mode import VentilationMode
 
@@ -34,21 +34,21 @@ class TestVentilationConfiguration(unittest.TestCase):
 
     def test_set_setpoint_temperature(self):
         """Test that setting the setpoint temperature stores it correctly."""
-        temperature = Temperature(22.5)
+        temperature = TemperatureCelsius(22.5)
         self.config.setpoint_temperature = temperature
 
         # Verify that the store's set method was called with the correct arguments
-        self.mock_store.set_value.assert_called_once_with('setpoint_temperature', Temperature(22.5))
+        self.mock_store.set_value.assert_called_once_with('setpoint_temperature', TemperatureCelsius(22.5))
 
     def test_get_setpoint_temperature(self):
         """Test that getting the setpoint temperature retrieves it correctly."""
         # Mock the return value of the store's get method
-        self.mock_store.get_value.return_value = Temperature(22)
+        self.mock_store.get_value.return_value = TemperatureCelsius(22)
 
         temperature = self.config.setpoint_temperature
 
         # Verify that the temperature is retrieved correctly
-        self.assertTrue(temperature == Temperature(22))
+        self.assertTrue(temperature == TemperatureCelsius(22))
 
         # Verify that the store's get method was called with the correct key
         self.mock_store.get_value.assert_called_once_with('setpoint_temperature')

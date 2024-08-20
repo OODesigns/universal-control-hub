@@ -1,12 +1,12 @@
 from abc import abstractmethod
 
 from devices.device import Device
-from utils.temperature import Temperature
+from utils.temperaturecelsius import TemperatureInterface
 
 
 class TemperatureSensorInterface(Device):
     @abstractmethod
-    def get_temperature(self) -> Temperature:
+    def get_temperature(self) -> TemperatureInterface:
         """
         Gets the temperature. Must be overridden by child classes.
 

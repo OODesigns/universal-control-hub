@@ -1,8 +1,5 @@
 import unittest
 from unittest.mock import Mock, patch, MagicMock
-
-from six import print_
-
 from config.config_factory import ConfigFactory
 from devices.device_factory import DeviceFactory, DEVICES
 from devices.device import Device

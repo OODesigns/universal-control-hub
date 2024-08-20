@@ -1,5 +1,5 @@
 from devices.device import Device
-from utils.temperature import Temperature
+from utils.temperaturecelsius import TemperatureCelsius, TemperatureInterface
 from devices.temperature_sensor import TemperatureSensorInterface
 from ventilation_mode import VentilationMode
 
@@ -19,17 +19,17 @@ class Ventilation(Device):
         self._mode = mode
 
     @property
-    def mvhr_temp_before(self) -> Temperature:
-        return Temperature(0)
+    def mvhr_temp_supply_in(self) -> TemperatureInterface:
+        return TemperatureCelsius(0)
 
     @property
-    def mvhr_temp_after(self) -> Temperature:
-        return Temperature(0)
+    def mvhr_temp_supply_out(self) -> TemperatureInterface:
+        return TemperatureCelsius(0)
 
     @property
-    def setpoint_temperature(self) ->Temperature:
-        return Temperature(0)
+    def setpoint_temperature(self) ->TemperatureInterface:
+        return TemperatureCelsius(0)
 
     @setpoint_temperature.setter
-    def setpoint_temperature(self, temp: Temperature):
+    def setpoint_temperature(self, temp: TemperatureInterface):
         pass

@@ -1,7 +1,9 @@
 from utils.value import Value
 
+class TemperatureInterface(Value):
+    pass
 
-class Temperature(Value):
+class TemperatureCelsius(TemperatureInterface):
     def __init__(self, value: float):
         super().__init__()
         if not (0 <= value <= 50):
