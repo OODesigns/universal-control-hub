@@ -52,6 +52,8 @@ class CoilRegister(Enum):
     CL_WATER_FLOW_CTRL = 23
     # R/W Heat medium water flow sensor activation
     CL_WATER_HEATER_AUTO_RESTART = 24
+    # COIL_SIZE
+    CL_SIZE = 25
 
 
 class DiscreteInputs(Enum):
@@ -199,6 +201,8 @@ class DiscreteInputs(Enum):
     DI_ALARM_CODE_51 = 70
     # Alarm indicator with code No. 52
     DI_ALARM_CODE_52 = 71
+    # DI Size
+    DI_SIZE = 72
 
 
 class InputRegisters(Enum):
@@ -357,6 +361,9 @@ class InputRegisters(Enum):
     # Calculated automatically depending on the outdoor temperature.
     # Value 350 = 35.0 °C
     IR_WATER_STARTSETTEMP = 50
+
+    #Size
+    IR_SIZE = 51
 
 
 class HoldingRegister(Enum):
@@ -1027,3 +1034,6 @@ class HoldingRegister(Enum):
     # 181 R
     # Reserved. The end of the 4th period is always at 23:59
     HR_RESERVED_SU = 181
+
+    # SIZE
+    HR_SIZE = 182

@@ -9,10 +9,12 @@ class ModbusMode(Enum):
     TCP = 1
     RTU = 2
 
+
 class ParityType(Enum):
     NONE = 0
     EVEN = 1
     ODD = 2
+
 
 class ModbusInterface(ABC):
     def __init__(self, coil_size: int, discrete_input_size: int, input_register_size: int, holding_register_size: int):
@@ -23,34 +25,28 @@ class ModbusInterface(ABC):
         self._holding_register_size = self.validate_size(holding_register_size, "holding_register_size")
 
     @classmethod
-    def validate_size(cls,value: int, name: str) -> int:
+    def validate_size(cls, value: int, name: str) -> int:
         if not isinstance(value, int) or value < 0:
             raise ValueError(f"{name} must be a non-negative integer, got {value}")
         return value
 
-class ModbusTCPInterface(ModbusInterface):
     @abstractmethod
-    def connect_tcp(self, ip_address: IPAddress, port: Port, timeout: Timeout):
-        pass
-
-class ModbusRTUInterface(ModbusInterface):
-    @abstractmethod
-    def connect_rtu(self, baud_rate: BaudRate, parity: ParityType, stop_bits: StopBits):
+    def connect(self):
         pass
 
 @DeviceFactory.register_dependency('modbus_tcp')
-class ModbusTCP(ModbusTCPInterface):
-    def __init__(self, ip_address, port:Port, timeout:Timeout, coil_size:int, discrete_input_size:int,
-                 input_register_size:int, holding_register_size:int):
+class ModbusTCP(ModbusInterface):
+    def __init__(self, ip_address:IPAddress, port: Port, timeout: Timeout, coil_size: int, discrete_input_size: int,
+                 input_register_size: int, holding_register_size: int):
         super().__init__(coil_size, discrete_input_size, input_register_size, holding_register_size)
         self._ip_address = ip_address
         self._port = port
         self._timeout = timeout
-        self.connect_tcp(self._ip_address, self._port, self._timeout)
 
-    def connect_tcp(self, ip_address: IPAddress, port: Port, timeout: Timeout):
+    def connect(self):
         # Logic to initialize a Modbus TCP connection
-        print(f"Connecting via Modbus TCP to {ip_address.value}:{port.value} with timeout {timeout.value}s")
+        print(f"Connecting via Modbus TCP to {self._ip_address.value}:{self._port.value} with timeout "
+              f"{self._timeout.value}s")
 
     def read(self, address, count):
         # Implement the read functionality for TCP
@@ -60,19 +56,19 @@ class ModbusTCP(ModbusTCPInterface):
         # Implement the write functionality for TCP
         pass
 
-class ModbusRTU(ModbusRTUInterface):
-    def __init__(self, baud_rate:BaudRate, parity:ParityType, stop_bits:StopBits,
-                 coil_size:int, discrete_input_size:int, input_register_size:int, holding_register_size:int):
+
+class ModbusRTU(ModbusInterface):
+    def __init__(self, baud_rate: BaudRate, parity: ParityType, stop_bits: StopBits,
+                 coil_size: int, discrete_input_size: int, input_register_size: int, holding_register_size: int):
         super().__init__(coil_size, discrete_input_size, input_register_size, holding_register_size)
         self._baud_rate = baud_rate
         self._parity = parity
         self._stop_bits = stop_bits
-        self.connect_rtu(self._baud_rate, self._parity, self._stop_bits)
 
-    def connect_rtu(self, baud_rate: BaudRate, parity: ParityType, stop_bits: StopBits):
+    def connect(self):
         # Logic to initialize a Modbus RTU connection
-        print(f"Connecting via Modbus RTU with baud rate {baud_rate.value}, parity {parity.name}, "
-              f"stop bits {stop_bits.value}")
+        print(f"Connecting via Modbus RTU with baud rate {self._baud_rate.value}, parity {self._parity.name}, "
+              f"stop bits {self._stop_bits.value}")
 
     def read(self, address, count):
         # Implement the read functionality for RTU
@@ -82,11 +78,12 @@ class ModbusRTU(ModbusRTUInterface):
         # Implement the write functionality for RTU
         pass
 
+
 @DeviceFactory.register_dependency('modbus')
 class ModbusFactory:
     @classmethod
-    def create_modbus(cls, mode: ModbusMode, coil_size:int, discrete_input_size:int,
-                      input_register_size:int, holding_register_size:int, **kwargs):
+    def create_modbus(cls, mode: ModbusMode, coil_size: int, discrete_input_size: int,
+                      input_register_size: int, holding_register_size: int, **kwargs):
         """
         Factory method to create either a ModbusTCP or ModbusRTU instance.
 
