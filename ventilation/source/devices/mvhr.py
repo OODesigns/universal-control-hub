@@ -41,7 +41,7 @@ class MVHR(Device):
         """
         Start the MVHR device connection process, retrying if necessary.
         """
-        success = self.connect_with_retries()
+        success = await self.connect_with_retries()
         if success:
             print("Successfully connected to the MVHR device.")
         else:

@@ -46,6 +46,7 @@ class TestModbusClasses(unittest.TestCase):
             )
 
         with self.assertRaises(ValueError):
+            # noinspection PyTypeChecker
             ModbusTCP(
                 ip_address=ip_address,
                 port=port,
@@ -95,6 +96,7 @@ class TestModbusClasses(unittest.TestCase):
             )
 
         with self.assertRaises(ValueError):
+            # noinspection PyTypeChecker
             ModbusRTU(
                 baud_rate=baud_rate,
                 parity=ParityType.NONE,
@@ -145,6 +147,7 @@ class TestModbusClasses(unittest.TestCase):
 
     def test_modbus_factory_invalid_mode(self):
         with self.assertRaises(ValueError):
+            # noinspection PyTypeChecker
             ModbusFactory.create_modbus(
                 mode="InvalidMode",  # Invalid mode
                 coil_size=25,

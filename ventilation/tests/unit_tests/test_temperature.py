@@ -16,14 +16,14 @@ class TestTemperature(TestCase):
     def test_temperature_below_range(self):
         """Test that temperature below 0 raises a ValueError"""
         with self.assertRaises(ValueError) as context:
-            TemperatureCelsius(-5)
-        self.assertEqual(str(context.exception), "Temperature must be between 0 and 50°C.")
+            TemperatureCelsius(-25)
+        self.assertEqual(str(context.exception), "Temperature must be between -20 and 50°C.")
 
     def test_temperature_above_range(self):
         """Test that temperature above 50 raises a ValueError"""
         with self.assertRaises(ValueError) as context:
             TemperatureCelsius(55)
-        self.assertEqual(str(context.exception), "Temperature must be between 0 and 50°C.")
+        self.assertEqual(str(context.exception), "Temperature must be between -20 and 50°C.")
 
     def test_temperature_at_lower_boundary(self):
         """Test that temperature at the lower boundary (0°C) is valid"""
