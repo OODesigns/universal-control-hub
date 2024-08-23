@@ -1,6 +1,6 @@
 import unittest
 
-from utils.tcp_values import IPAddress, Port, Timeout
+from utils.tcp_values import IPAddress, Port
 
 
 class TestTCPValues(unittest.TestCase):
@@ -53,20 +53,6 @@ class TestTCPValues(unittest.TestCase):
         with self.assertRaises(ValueError):
             Port(70000)
 
-    # Test for Timeout class
-    def test_timeout_valid(self):
-        timeout = Timeout(30)
-        self.assertEqual(timeout.value, 30)
-        timeout = Timeout(0)
-        self.assertEqual(timeout.value, 0)
-        timeout = Timeout(60)
-        self.assertEqual(timeout.value, 60)
-
-    def test_timeout_invalid(self):
-        with self.assertRaises(ValueError):
-            Timeout(-1)
-        with self.assertRaises(ValueError):
-            Timeout(61)
 
 if __name__ == '__main__':
     unittest.main()

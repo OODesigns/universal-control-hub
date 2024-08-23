@@ -31,13 +31,3 @@ class Port(Value):
             raise ValueError(f"Port number must be between 0 and 65535, got {port}")
         return port
 
-class Timeout(Value):
-    def __init__(self, timeout):
-        super().__init__()
-        self._value = self.validate(timeout)
-
-    @classmethod
-    def validate(cls, timeout):
-        if not (0 <= timeout <= 60):
-            raise ValueError(f"Timeout must be between 0 and 60, got {timeout}")
-        return timeout

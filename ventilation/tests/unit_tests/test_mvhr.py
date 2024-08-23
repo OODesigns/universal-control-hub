@@ -1,12 +1,15 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, AsyncMock
 from config.config_loader import ConfigLoader
-from devices.modbus import ModbusFactory, ModbusInterface
-from devices.mvhr import MVHR, MVHR_CONNECTED, MVHR_CONNECTION_FAILURE, MAX_RETRIES_REACHED
+from devices.modbus import ModbusInterface, ModbusMode
+from devices.modbus_builder import ModbusBuilder
+from devices.modbus_factory import ModbusFactory
+from devices.mvhr import MVHR_CONNECTED, MVHR_CONNECTION_FAILURE, MVHR
 from state.state_manager import StateManager
+from utils.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax, CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
+from utils.tcp_values import IPAddress, Port
 
-
-class TestMVHRRetriesAsync(unittest.IsolatedAsyncioTestCase):
+class TestMVHRAsync(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
         # Mock the ConfigLoader to avoid needing a real config file
@@ -19,105 +22,60 @@ class TestMVHRRetriesAsync(unittest.IsolatedAsyncioTestCase):
 
         # Set up the state manager and mock modbus
         self.state_manager = MagicMock(spec=StateManager)
-        self.mock_modbus_interface = MagicMock(spec=ModbusInterface)
+        self.mock_modbus_interface = AsyncMock(spec=ModbusInterface)
         self.modbus_factory = MagicMock(spec=ModbusFactory)
-        self.mock_modbus_interface = MagicMock(spec=ModbusInterface)
+
+        # Create a ModbusBuilder with specific size objects
+        self.modbus_builder = ModbusBuilder()
+        self.modbus_builder.set_coil_size(CoilSize(10))
+        self.modbus_builder.set_discrete_input_size(DiscreteInputSize(5))
+        self.modbus_builder.set_input_register_size(InputRegisterSize(5))
+        self.modbus_builder.set_holding_register_size(HoldingRegisterSize(5))
+        self.modbus_builder.set_timeout(Timeout(3.0))
+        self.modbus_builder.set_retries(Retries(3))
+        self.modbus_builder.set_reconnect_delay(ReconnectDelay(0.1))
+        self.modbus_builder.set_reconnect_delay_max(ReconnectDelayMax(300.0))
+
+        # Mock the factory to return the mock modbus interface
+        self.modbus_factory.create_modbus.return_value = self.mock_modbus_interface
 
         # Create a concrete subclass of MVHR for testing
         class TestMVHR(MVHR):
-            def __init__(self, config_loader: ConfigLoader, state_manager: StateManager, modbus_factory: ModbusFactory):
+            def __init__(self, config_loader: ConfigLoader, state_manager: StateManager, modbus_factory: ModbusFactory, builder: ModbusBuilder):
                 super().__init__(config_loader, state_manager, modbus_factory)
-                self.mock_modbus_interface = MagicMock(spec=ModbusInterface)
+                self.mock_modbus_interface = modbus_factory.create_modbus(
+                    mode=ModbusMode.TCP,
+                    builder=builder,
+                    ip_address=IPAddress("192.168.0.100"),
+                    port=Port(502)
+                )
 
             @property
-            def get_modbus(self) -> ModbusInterface:
+            def modbus(self) -> ModbusInterface:
                 return self.mock_modbus_interface
 
-        self.mvhr = TestMVHR(self.config_loader, self.state_manager, self.modbus_factory)
+        self.mvhr = TestMVHR(self.config_loader, self.state_manager, self.modbus_factory, self.modbus_builder)
 
-    @patch('asyncio.sleep', return_value=None)  # Patch asyncio sleep to skip delays during testing
-    async def test_connect_successful_first_attempt(self, mock_sleep):
-        """Test that the connection succeeds on the first attempt without retries."""
-        self.mvhr.mock_modbus_interface.connect.return_value = None  # Simulate successful connection
-        success = await self.mvhr.connect_with_retries()
-
-        self.assertTrue(success)
-        self.mvhr.mock_modbus_interface.connect.assert_called_once()  # Should only call connect once
-        self.state_manager.update_state.assert_called_with(
-            operational_states={MVHR_CONNECTED: True}
-        )
-        mock_sleep.assert_not_called()  # No sleep calls should be made
-
-    @patch('asyncio.sleep', return_value=None)
-    async def test_connect_successful_after_retries(self, mock_sleep):
-        """Test that the connection succeeds after a few retries."""
-        # Simulate failure on first two attempts, success on the third
-        self.mvhr.mock_modbus_interface.connect.side_effect = [Exception("Connection failed"),
-                                                               Exception("Connection failed"), None]
-
-        success = await self.mvhr.connect_with_retries()
-
-        self.assertTrue(success)
-        self.assertEqual(self.mvhr.mock_modbus_interface.connect.call_count, 3)  # Should try connecting 3 times
-        self.state_manager.update_state.assert_any_call(
-            operational_states={MVHR_CONNECTED: False},
-            triggered_rules={MVHR_CONNECTION_FAILURE: 'Connection failed'}
-        )
-        self.state_manager.update_state.assert_called_with(
-            operational_states={MVHR_CONNECTED: True}
-        )
-        self.assertEqual(mock_sleep.call_count, 2)  # Sleep should be called twice
-
-    @patch('asyncio.sleep', return_value=None)
-    async def test_connect_fails_after_max_retries(self, mock_not_used_directly):
-        """Test that the connection fails after the maximum number of retries."""
-        self.mvhr.mock_modbus_interface.connect.side_effect = Exception("Connection failed")  # Always fail
-
-        success = await self.mvhr.connect_with_retries()
-
-        self.assertFalse(success)
-        self.assertEqual(self.mvhr.mock_modbus_interface.connect.call_count,
-                         self.mvhr.max_retries)  # Should try max_retries times
-        self.state_manager.update_state.assert_any_call(
-            operational_states={MVHR_CONNECTED: False},
-            triggered_rules={MVHR_CONNECTION_FAILURE: 'Connection failed'}
-        )
-        self.state_manager.update_state.assert_called_with(
-            operational_states={MVHR_CONNECTED: False},
-            triggered_rules={MVHR_CONNECTION_FAILURE: MAX_RETRIES_REACHED}
-        )
-
-    @patch('asyncio.sleep', return_value=None)
-    async def test_exponential_backoff(self, mock_sleep):
-        """Test that the delays between retries follow an exponential backoff pattern."""
-        # Simulate failure on all but the last attempt
-        self.mvhr.mock_modbus_interface.connect.side_effect = [Exception("Connection failed")] * (
-                self.mvhr.max_retries - 1) + [None]
-
-        await self.mvhr.connect_with_retries()
-
-        expected_delays = [self.mvhr.base_delay * (2 ** i) for i in range(self.mvhr.max_retries - 1)]
-        for i, expected_delay in enumerate(expected_delays):
-            # Check that sleep was called with the correct delay
-            self.assertEqual(mock_sleep.call_args_list[i][0][0], min(expected_delay, self.mvhr.max_delay))
-
-    @patch('asyncio.sleep', return_value=None)
-    async def test_start_method(self, mock_not_used_directly):
-        """Test the start method for non-blocking execution and successful connection."""
-        # Simulate failure on first attempt, success on the second
-        self.mvhr.mock_modbus_interface.connect.side_effect = [Exception("Connection failed"), None]
-
+    async def test_connect_successful(self):
+        """Test that the connection succeeds."""
+        self.mvhr.modbus.connect.return_value = None  # Simulate successful connection
         await self.mvhr.start()
 
-        self.assertEqual(self.mvhr.mock_modbus_interface.connect.call_count, 2)
-        self.state_manager.update_state.assert_any_call(
-            operational_states={MVHR_CONNECTED: False},
-            triggered_rules={MVHR_CONNECTION_FAILURE: 'Connection failed'}
-        )
+        self.mvhr.modbus.connect.assert_called_once()  # Should only call connect once
         self.state_manager.update_state.assert_called_with(
             operational_states={MVHR_CONNECTED: True}
         )
 
+    async def test_connect_failure(self):
+        """Test that the connection fails and the correct state is updated."""
+        self.mvhr.modbus.connect.side_effect = Exception("Connection failed")
+        await self.mvhr.start()
+
+        self.mvhr.modbus.connect.assert_called_once()  # Should only call connect once
+        self.state_manager.update_state.assert_called_with(
+            operational_states={MVHR_CONNECTED: False},
+            triggered_rules={MVHR_CONNECTION_FAILURE: "Connection failed"}
+        )
 
 if __name__ == '__main__':
     unittest.main()

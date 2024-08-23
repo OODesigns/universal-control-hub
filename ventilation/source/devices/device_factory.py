@@ -1,7 +1,5 @@
 import importlib
 import sys
-from logging import setLogRecordFactory
-
 from config.config_factory import ConfigFactory
 from devices.device import Device
 from state.state_manager import StateManager
