@@ -1,7 +1,7 @@
 from enum import Enum
 from pymodbus.client import AsyncModbusSerialClient
-from devices.modbus import ModbusInterface
 from devices.device_factory import DeviceFactory
+from modbus.modbus import ModbusInterface
 
 class ParityType(Enum):
     NONE = 'N'
@@ -12,7 +12,7 @@ class ParityType(Enum):
 class ModbusRTU(ModbusInterface):
     def __init__(self, builder):
         # Delay the import here to avoid circular import at module level
-        from devices.modus_rtu_builder import ModbusRTUBuilder
+        from modbus.modus_rtu_builder import ModbusRTUBuilder
 
         if not isinstance(builder, ModbusRTUBuilder):
             raise ValueError("builder must be an instance of ModbusRTUBuilder")

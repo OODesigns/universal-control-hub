@@ -1,9 +1,10 @@
 import unittest
 from unittest.mock import patch, AsyncMock
+
+from modbus.modbus_rtu import ParityType
+from modbus.modus_rtu_builder import ModbusRTUBuilder
 from utils.rtu_values import BaudRate, StopBits, SerialPort
 from utils.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax
-from devices.modbus_rtu import ParityType
-from devices.modus_rtu_builder import ModbusRTUBuilder
 
 class TestModbusRTU(unittest.IsolatedAsyncioTestCase):
 

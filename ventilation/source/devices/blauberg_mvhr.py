@@ -1,10 +1,10 @@
 from config.config_loader import ConfigLoader
 from devices.device_factory import DeviceFactory
-from devices.modbus import ModbusMode, ModbusInterface, MODBUS
-from devices.modbus_builder import ModbusBuilder
-from devices.modbus_factory import ModbusFactory
 from devices.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
 from devices.mvhr import MVHR
+from modbus.modbus import MODBUS, ModbusInterface, ModbusMode
+from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_factory import ModbusFactory
 from state.state_manager import StateManager
 from utils.tcp_values import IPAddress, Port
 from utils.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax, CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
@@ -18,6 +18,9 @@ MVHR_RECONNECT_DELAY_MAX = 'mvhr-reconnect-delay-max'
 
 @DeviceFactory.register_device('blauberg_mvhr')
 class BlaubergMVHR(MVHR):
+    async def read_data(self):
+        pass
+
     required_dependencies = [MODBUS]
 
     def __init__(self, config_loader: ConfigLoader, state_manager: StateManager, modbus_factory: ModbusFactory):

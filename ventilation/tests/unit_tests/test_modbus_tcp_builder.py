@@ -1,8 +1,8 @@
 import unittest
 
-from devices.modbus_tcp_builder import ModbusTCPBuilder
+from modbus.modbus_tcp import ModbusTCP
+from modbus.modbus_tcp_builder import ModbusTCPBuilder
 from utils.tcp_values import IPAddress, Port
-from devices.modbus_tcp import ModbusTCP
 
 class TestModbusTCPBuilder(unittest.TestCase):
 

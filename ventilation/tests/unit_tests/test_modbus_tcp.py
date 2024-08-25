@@ -1,8 +1,9 @@
 import unittest
 from unittest.mock import patch, AsyncMock
+
+from modbus.modbus_tcp_builder import ModbusTCPBuilder
 from utils.tcp_values import IPAddress, Port
 from utils.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax
-from devices.modbus_tcp_builder import ModbusTCPBuilder
 
 class TestModbusTCP(unittest.IsolatedAsyncioTestCase):
 

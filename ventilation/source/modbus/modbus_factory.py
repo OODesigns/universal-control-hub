@@ -1,8 +1,9 @@
 from devices.device_factory import DeviceFactory
-from devices.modbus import ModbusMode
-from devices.modbus_builder import ModbusBuilder
-from devices.modbus_tcp_builder import ModbusTCPBuilder
-from devices.modus_rtu_builder import ModbusRTUBuilder
+from modbus.modbus import ModbusMode
+from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_tcp_builder import ModbusTCPBuilder
+from modbus.modus_rtu_builder import ModbusRTUBuilder
+
 
 @DeviceFactory.register_dependency('modbus')
 class ModbusFactory:

@@ -1,12 +1,12 @@
 import unittest
 from unittest.mock import MagicMock, AsyncMock
 from config.config_loader import ConfigLoader
-from devices.modbus import ModbusInterface, ModbusMode
-from devices.modbus_builder import ModbusBuilder
-from devices.modbus_factory import ModbusFactory
-from devices.mvhr import MVHR_CONNECTED, MVHR_CONNECTION_FAILURE, MVHR
+from devices.mvhr import MVHR, MVHR_RUNNING, MVHR_START_FAILURE
+from modbus.modbus import ModbusInterface, ModbusMode
+from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_factory import ModbusFactory
 from state.state_manager import StateManager
-from utils.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax, CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
+import utils.modbus_values
 from utils.tcp_values import IPAddress, Port
 
 class TestMVHRAsync(unittest.IsolatedAsyncioTestCase):
@@ -27,20 +27,23 @@ class TestMVHRAsync(unittest.IsolatedAsyncioTestCase):
 
         # Create a ModbusBuilder with specific size objects
         self.modbus_builder = ModbusBuilder()
-        self.modbus_builder.set_coil_size(CoilSize(10))
-        self.modbus_builder.set_discrete_input_size(DiscreteInputSize(5))
-        self.modbus_builder.set_input_register_size(InputRegisterSize(5))
-        self.modbus_builder.set_holding_register_size(HoldingRegisterSize(5))
-        self.modbus_builder.set_timeout(Timeout(3.0))
-        self.modbus_builder.set_retries(Retries(3))
-        self.modbus_builder.set_reconnect_delay(ReconnectDelay(0.1))
-        self.modbus_builder.set_reconnect_delay_max(ReconnectDelayMax(300.0))
+        self.modbus_builder.set_coil_size(utils.modbus_values.CoilSize(10))
+        self.modbus_builder.set_discrete_input_size(utils.modbus_values.DiscreteInputSize(5))
+        self.modbus_builder.set_input_register_size(utils.modbus_values.InputRegisterSize(5))
+        self.modbus_builder.set_holding_register_size(utils.modbus_values.HoldingRegisterSize(5))
+        self.modbus_builder.set_timeout(utils.modbus_values.Timeout(3.0))
+        self.modbus_builder.set_retries(utils.modbus_values.Retries(3))
+        self.modbus_builder.set_reconnect_delay(utils.modbus_values.ReconnectDelay(0.1))
+        self.modbus_builder.set_reconnect_delay_max(utils.modbus_values.ReconnectDelayMax(300.0))
 
         # Mock the factory to return the mock modbus interface
         self.modbus_factory.create_modbus.return_value = self.mock_modbus_interface
 
         # Create a concrete subclass of MVHR for testing
         class TestMVHR(MVHR):
+            async def read_data(self):
+                pass
+
             def __init__(self, config_loader: ConfigLoader, state_manager: StateManager, modbus_factory: ModbusFactory, builder: ModbusBuilder):
                 super().__init__(config_loader, state_manager, modbus_factory)
                 self.mock_modbus_interface = modbus_factory.create_modbus(
@@ -61,9 +64,9 @@ class TestMVHRAsync(unittest.IsolatedAsyncioTestCase):
         self.mvhr.modbus.connect.return_value = None  # Simulate successful connection
         await self.mvhr.start()
 
-        self.mvhr.modbus.connect.assert_called_once()  # Should only call connect once
+        MagicMock(self.mvhr.modbus.connect).assert_called_once()  # Should only call connect once
         self.state_manager.update_state.assert_called_with(
-            operational_states={MVHR_CONNECTED: True}
+            operational_states={MVHR_RUNNING: True}
         )
 
     async def test_connect_failure(self):
@@ -71,10 +74,10 @@ class TestMVHRAsync(unittest.IsolatedAsyncioTestCase):
         self.mvhr.modbus.connect.side_effect = Exception("Connection failed")
         await self.mvhr.start()
 
-        self.mvhr.modbus.connect.assert_called_once()  # Should only call connect once
+        MagicMock(self.mvhr.modbus.connect).assert_called_once()  # Should only call connect once
         self.state_manager.update_state.assert_called_with(
-            operational_states={MVHR_CONNECTED: False},
-            triggered_rules={MVHR_CONNECTION_FAILURE: "Connection failed"}
+            operational_states={MVHR_RUNNING: False},
+            triggered_rules={MVHR_START_FAILURE: "Connection failed"}
         )
 
 if __name__ == '__main__':

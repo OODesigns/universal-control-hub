@@ -3,8 +3,7 @@ from utils.value import Value
 
 class Retries(Value):
     def __init__(self, retries):
-        super().__init__()
-        self._value = self.validate(retries)
+        super().__init__(self.validate(retries))
 
     @classmethod
     def validate(cls, retries):
@@ -15,8 +14,7 @@ class Retries(Value):
 
 class ReconnectDelay(Value):
     def __init__(self, delay):
-        super().__init__()
-        self._value = self.validate(delay)
+        super().__init__(self.validate(delay))
 
     @classmethod
     def validate(cls, delay):
@@ -27,8 +25,7 @@ class ReconnectDelay(Value):
 
 class ReconnectDelayMax(Value):
     def __init__(self, delay_max):
-        super().__init__()
-        self._value = self.validate(delay_max)
+        super().__init__(self.validate(delay_max))
 
     @classmethod
     def validate(cls, delay_max):
@@ -40,8 +37,7 @@ class ReconnectDelayMax(Value):
 
 class Timeout(Value):
     def __init__(self, timeout):
-        super().__init__()
-        self._value = self.validate(timeout)
+        super().__init__(self.validate(timeout))
 
     @classmethod
     def validate(cls, timeout):
@@ -49,9 +45,10 @@ class Timeout(Value):
             raise ValueError(f"Timeout must be a float or integer between 0.1 and 60 seconds, got {timeout}")
         return timeout
 
+
 class ModbusSize(Value):
     def __init__(self, size):
-        super().__init__()
+        super().__init__(self.validate(size))
         self._value = self.validate(size)
 
     @classmethod
@@ -60,14 +57,18 @@ class ModbusSize(Value):
             raise ValueError(f"{cls.__name__} must be an integer between 0 and 65535, got {size}")
         return size
 
+
 class CoilSize(ModbusSize):
     pass
+
 
 class DiscreteInputSize(ModbusSize):
     pass
 
+
 class InputRegisterSize(ModbusSize):
     pass
+
 
 class HoldingRegisterSize(ModbusSize):
     pass

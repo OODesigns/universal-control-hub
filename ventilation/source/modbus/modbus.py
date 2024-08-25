@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
-from devices.modbus_builder import ModbusBuilder
+
+from modbus.modbus_builder import ModbusBuilder
 
 MODBUS = 'modbus'
 
@@ -26,4 +27,12 @@ class ModbusInterface(ABC):
 
     @abstractmethod
     async def connect(self):
+        pass
+
+    @abstractmethod
+    async def disconnect(self):
+        pass
+
+    @abstractmethod
+    async def read(self):
         pass

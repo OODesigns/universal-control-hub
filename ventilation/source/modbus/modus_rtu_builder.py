@@ -1,5 +1,5 @@
-from devices.modbus_builder import ModbusBuilder
-from devices.modbus_rtu import ModbusRTU, ParityType
+from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_rtu import ParityType, ModbusRTU
 from utils.rtu_values import BaudRate, StopBits, SerialPort
 
 class ModbusRTUBuilder(ModbusBuilder):

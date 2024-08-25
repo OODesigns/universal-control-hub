@@ -1,6 +1,6 @@
-from devices.modbus_builder import ModbusBuilder
+from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_tcp import ModbusTCP
 from utils.tcp_values import IPAddress, Port
-from devices.modbus_tcp import ModbusTCP
 
 class ModbusTCPBuilder(ModbusBuilder):
     def __init__(self, builder: ModbusBuilder = None):

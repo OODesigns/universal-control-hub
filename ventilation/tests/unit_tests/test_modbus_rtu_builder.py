@@ -1,8 +1,8 @@
 import unittest
-from devices.modus_rtu_builder import ModbusRTUBuilder
-from utils.rtu_values import BaudRate, StopBits, SerialPort
-from devices.modbus_rtu import ModbusRTU, ParityType
 
+from modbus.modbus_rtu import ParityType, ModbusRTU
+from modbus.modus_rtu_builder import ModbusRTUBuilder
+from utils.rtu_values import BaudRate, StopBits, SerialPort
 class TestModbusRTUBuilder(unittest.TestCase):
 
     def test_set_baud_rate(self):

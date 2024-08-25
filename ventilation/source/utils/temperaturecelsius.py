@@ -1,13 +1,20 @@
-from utils.value import Value
+from abc import ABC
 
-class TemperatureInterface(Value):
+from utils.value import ValidatedValue, ValueStatus, ValidatedResult, StrictValidatedValue
+
+
+class TemperatureInterface(ValidatedValue, ABC):
     pass
 
 class TemperatureCelsius(TemperatureInterface):
-    def __init__(self, value: float):
-        super().__init__()
-        if not (-20 <= value <= 50):
-            raise ValueError("Temperature must be between -20 and 50°C.")
-        self._value = value
+    @classmethod
+    def validate(cls, validated_value: float):
+        if not (-20 <= validated_value <= 50):
+            return ValidatedResult(status=ValueStatus.EXCEPTION,
+                                   details="Temperature must be between -20 and 50°C.",
+                                   value=validated_value)
 
+        return ValidatedResult(status=ValueStatus.OK, details="", value=validated_value)
 
+class StrictTemperatureCelsius(StrictValidatedValue, TemperatureCelsius):
+    pass
