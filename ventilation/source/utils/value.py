@@ -125,3 +125,27 @@ class StrictValidatedValue(ValidatedValue, ABC):
         super().__init__(validated_value)
         if self.status == ValueStatus.EXCEPTION:
             raise ValueError(f"Validation failed for value '{validated_value}': {self.details}")
+
+class RangeValidatedValue(ValidatedValue):
+    """
+    A base class that provides range validation for numeric values.
+    Subclasses should define `valid_types`, `low_value`, and `high_value`.
+
+    """
+    high_value = None
+    low_value = None
+    valid_types = None
+
+    @classmethod
+    def validate(cls, value) -> ValidatedResult:
+        if not (type(value) in cls.valid_types) or not (cls.low_value <= value <= cls.high_value):
+            return ValidatedResult(
+                status=ValueStatus.EXCEPTION,
+                details=f"{cls.__name__} must be a {cls.valid_types} between {cls.low_value} and {cls.high_value}, got {value}",
+                value=None
+            )
+        return ValidatedResult(
+            status=ValueStatus.OK,
+            details="",
+            value=value
+        )

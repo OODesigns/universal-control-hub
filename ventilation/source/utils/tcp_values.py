@@ -1,14 +1,11 @@
 from re import compile
 
-from utils.value import Value
+from utils.value import Value, ValidatedValue, ValidatedResult, ValueStatus, StrictValidatedValue, RangeValidatedValue
 
 
-class IPAddress(Value):
-    def __init__(self, ip_address):
-        super().__init__(self.validate(ip_address))
-
+class IPAddress(ValidatedValue):
     @classmethod
-    def validate(cls, ip_address):
+    def validate(cls, ip_address: str) -> ValidatedResult:
         # Improved regex for IP address validation, including edge cases
         pattern = compile(
             r"^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\."
@@ -17,16 +14,24 @@ class IPAddress(Value):
             r"(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$"
         )
         if not pattern.match(ip_address):
-            raise ValueError(f"Invalid IP address: {ip_address}")
-        return ip_address
+            return ValidatedResult(
+                status=ValueStatus.EXCEPTION,
+                details=f"Invalid IP address: {ip_address}",
+                value=None
+            )
+        return ValidatedResult(
+            status=ValueStatus.OK,
+            details="",
+            value=ip_address
+        )
 
+class StrictIPAddress(StrictValidatedValue, IPAddress):
+    pass
 
-class Port(Value):
-    def __init__(self, port):
-        super().__init__(self.validate(port))
+class Port(RangeValidatedValue):
+    valid_types = (int,)
+    low_value = 0
+    high_value = 65535
 
-    @classmethod
-    def validate(cls, port):
-        if not (0 <= port <= 65535):
-            raise ValueError(f"Port number must be between 0 and 65535, got {port}")
-        return port
+class StrictPort(StrictValidatedValue, Port):
+    pass

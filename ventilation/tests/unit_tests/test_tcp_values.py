@@ -1,6 +1,6 @@
 import unittest
-
-from utils.tcp_values import IPAddress, Port
+from utils.tcp_values import IPAddress, Port, StrictIPAddress, StrictPort
+from utils.value import ValueStatus
 
 
 class TestTCPValues(unittest.TestCase):
@@ -17,7 +17,10 @@ class TestTCPValues(unittest.TestCase):
         ]
         for ip in valid_ips:
             with self.subTest(ip=ip):
-                self.assertEqual(IPAddress(ip).value, ip)
+                ip_address = IPAddress(ip)
+                self.assertEqual(ip_address.value, ip)
+                self.assertEqual(ip_address.status, ValueStatus.OK)
+                self.assertEqual(ip_address.details, "")
 
     def test_ip_address_invalid(self):
         invalid_ips = [
@@ -35,23 +38,57 @@ class TestTCPValues(unittest.TestCase):
         ]
         for ip in invalid_ips:
             with self.subTest(ip=ip):
+                ip_address = IPAddress(ip)
+                self.assertEqual(ip_address.status, ValueStatus.EXCEPTION)
+                self.assertTrue("Invalid IP address" in ip_address.details)
                 with self.assertRaises(ValueError):
-                    IPAddress(ip)
+                    _ = ip_address.value  # Accessing the value should raise ValueError
 
-    # Test for Port class
+    def test_strict_ip_address_invalid(self):
+        invalid_ips = [
+            "999.999.999.999",
+            "256.256.256.256",
+            "192.168.1.256",
+            "192.168.1.-1",
+            "192.168.1",
+            "192.168.1.1.1",
+            "abc.def.ghi.jkl",
+            "192.168.01.1",
+            "192.168.1.1. ",
+            "192.168.1.1.",
+            "1234.123.123.123"
+        ]
+        for ip in invalid_ips:
+            with self.subTest(ip=ip):
+                with self.assertRaises(ValueError):
+                    StrictIPAddress(ip)
+
+class TestPort(unittest.TestCase):
+
     def test_port_valid(self):
-        port = Port(502)
-        self.assertEqual(port.value, 502)
-        port = Port(0)
-        self.assertEqual(port.value, 0)
-        port = Port(65535)
-        self.assertEqual(port.value, 65535)
+        valid_ports = [0, 80, 8080, 65535]
+        for port_num in valid_ports:
+            with self.subTest(port=port_num):
+                port = Port(port_num)
+                self.assertEqual(port.value, port_num)
+                self.assertEqual(port.status, ValueStatus.OK)
 
     def test_port_invalid(self):
-        with self.assertRaises(ValueError):
-            Port(-1)
-        with self.assertRaises(ValueError):
-            Port(70000)
+        invalid_ports = [-1, 70000]
+        for port_num in invalid_ports:
+            with self.subTest(port=port_num):
+                port = Port(port_num)
+                self.assertEqual(port.status, ValueStatus.EXCEPTION)
+                with self.assertRaises(ValueError):
+                    _ = port.value
+
+    def test_strict_port_invalid(self):
+        invalid_ports = [-1, 70000]
+        for port_num in invalid_ports:
+            with self.subTest(port=port_num):
+                with self.assertRaises(ValueError):
+                    StrictPort(port_num)
+
 
 
 if __name__ == '__main__':

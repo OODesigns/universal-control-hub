@@ -1,127 +1,133 @@
 import unittest
-import utils.modbus_values
-
+from utils.modbus_values import (
+    Retries, ReconnectDelay, ReconnectDelayMax, Timeout, CoilSize, DiscreteInputSize,
+    InputRegisterSize, HoldingRegisterSize, StrictRetries, StrictReconnectDelay,
+    StrictReconnectDelayMax, StrictTimeout, StrictCoilSize, StrictDiscreteInputSize,
+    StrictInputRegisterSize, StrictHoldingRegisterSize
+)
+from utils.value import ValueStatus
 
 class TestModbusValues(unittest.TestCase):
 
     def test_retries_valid(self):
-        retries = utils.modbus_values.Retries(3)
+        retries = Retries(3)
         self.assertEqual(retries.value, 3)
+        self.assertEqual(retries.status, ValueStatus.OK)
 
     def test_retries_invalid(self):
+        retries = Retries(-1)
+        self.assertEqual(retries.status, ValueStatus.EXCEPTION)
         with self.assertRaises(ValueError):
-            utils.modbus_values.Retries(-1)
+            _ = retries.value
+
+    def test_strict_retries_invalid(self):
         with self.assertRaises(ValueError):
-            utils.modbus_values.Retries(11)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.Retries(3.5)
+            StrictRetries(-1)
 
     def test_reconnect_delay_valid(self):
-        delay = utils.modbus_values.ReconnectDelay(0.1)
+        delay = ReconnectDelay(0.1)
         self.assertEqual(delay.value, 0.1)
-
-        delay = utils.modbus_values.ReconnectDelay(300.0)
-        self.assertEqual(delay.value, 300.0)
+        self.assertEqual(delay.status, ValueStatus.OK)
 
     def test_reconnect_delay_invalid(self):
+        delay = ReconnectDelay(-0.1)
+        self.assertEqual(delay.status, ValueStatus.EXCEPTION)
         with self.assertRaises(ValueError):
-            utils.modbus_values.ReconnectDelay(-0.1)
+            _ = delay.value
+
+    def test_strict_reconnect_delay_invalid(self):
         with self.assertRaises(ValueError):
-            utils.modbus_values.ReconnectDelay(301)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.ReconnectDelay("invalid")
+            StrictReconnectDelay(-0.1)
 
     def test_reconnect_delay_max_valid(self):
-        delay_max = utils.modbus_values.ReconnectDelayMax(0.1)
+        delay_max = ReconnectDelayMax(0.1)
         self.assertEqual(delay_max.value, 0.1)
-
-        delay_max = utils.modbus_values.ReconnectDelayMax(300.0)
-        self.assertEqual(delay_max.value, 300.0)
+        self.assertEqual(delay_max.status, ValueStatus.OK)
 
     def test_reconnect_delay_max_invalid(self):
+        delay_max = ReconnectDelayMax(301)
+        self.assertEqual(delay_max.status, ValueStatus.EXCEPTION)
         with self.assertRaises(ValueError):
-            utils.modbus_values.ReconnectDelayMax(-0.1)
+            _ = delay_max.value
+
+    def test_strict_reconnect_delay_max_invalid(self):
         with self.assertRaises(ValueError):
-            utils.modbus_values.ReconnectDelayMax(301)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.ReconnectDelayMax("invalid")
+            StrictReconnectDelayMax(301)
 
     def test_timeout_valid(self):
-        timeout = utils.modbus_values.Timeout(1.0)
+        timeout = Timeout(1.0)
         self.assertEqual(timeout.value, 1.0)
-
-        timeout = utils.modbus_values.Timeout(60.0)
-        self.assertEqual(timeout.value, 60.0)
+        self.assertEqual(timeout.status, ValueStatus.OK)
 
     def test_timeout_invalid(self):
+        timeout = Timeout(-0.1)
+        self.assertEqual(timeout.status, ValueStatus.EXCEPTION)
         with self.assertRaises(ValueError):
-            utils.modbus_values.Timeout(-0.1)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.Timeout(61)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.Timeout("invalid")
+            _ = timeout.value
 
-    # New tests for Modbus sizes
+    def test_strict_timeout_invalid(self):
+        with self.assertRaises(ValueError):
+            StrictTimeout(-0.1)
 
     def test_coil_size_valid(self):
-        coil_size = utils.modbus_values.CoilSize(1000)
+        coil_size = CoilSize(1000)
         self.assertEqual(coil_size.value, 1000)
-
-        coil_size = utils.modbus_values.CoilSize(65535)
-        self.assertEqual(coil_size.value, 65535)
+        self.assertEqual(coil_size.status, ValueStatus.OK)
 
     def test_coil_size_invalid(self):
+        coil_size = CoilSize(-1)
+        self.assertEqual(coil_size.status, ValueStatus.EXCEPTION)
         with self.assertRaises(ValueError):
-            utils.modbus_values.CoilSize(-1)
+            _ = coil_size.value
+
+    def test_strict_coil_size_invalid(self):
         with self.assertRaises(ValueError):
-            utils.modbus_values.CoilSize(65536)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.CoilSize("invalid")
+            StrictCoilSize(-1)
 
     def test_discrete_input_size_valid(self):
-        discrete_input_size = utils.modbus_values.DiscreteInputSize(1000)
+        discrete_input_size = DiscreteInputSize(1000)
         self.assertEqual(discrete_input_size.value, 1000)
-
-        discrete_input_size = utils.modbus_values.DiscreteInputSize(65535)
-        self.assertEqual(discrete_input_size.value, 65535)
+        self.assertEqual(discrete_input_size.status, ValueStatus.OK)
 
     def test_discrete_input_size_invalid(self):
+        discrete_input_size = DiscreteInputSize(-1)
+        self.assertEqual(discrete_input_size.status, ValueStatus.EXCEPTION)
         with self.assertRaises(ValueError):
-            utils.modbus_values.DiscreteInputSize(-1)
+            _ = discrete_input_size.value
+
+    def test_strict_discrete_input_size_invalid(self):
         with self.assertRaises(ValueError):
-            utils.modbus_values.DiscreteInputSize(65536)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.DiscreteInputSize("invalid")
+            StrictDiscreteInputSize(-1)
 
     def test_input_register_size_valid(self):
-        input_register_size = utils.modbus_values.InputRegisterSize(1000)
+        input_register_size = InputRegisterSize(1000)
         self.assertEqual(input_register_size.value, 1000)
-
-        input_register_size = utils.modbus_values.InputRegisterSize(65535)
-        self.assertEqual(input_register_size.value, 65535)
+        self.assertEqual(input_register_size.status, ValueStatus.OK)
 
     def test_input_register_size_invalid(self):
+        input_register_size = InputRegisterSize(-1)
+        self.assertEqual(input_register_size.status, ValueStatus.EXCEPTION)
         with self.assertRaises(ValueError):
-            utils.modbus_values.InputRegisterSize(-1)
+            _ = input_register_size.value
+
+    def test_strict_input_register_size_invalid(self):
         with self.assertRaises(ValueError):
-            utils.modbus_values.InputRegisterSize(65536)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.InputRegisterSize("invalid")
+            StrictInputRegisterSize(-1)
 
     def test_holding_register_size_valid(self):
-        holding_register_size = utils.modbus_values.HoldingRegisterSize(1000)
+        holding_register_size = HoldingRegisterSize(1000)
         self.assertEqual(holding_register_size.value, 1000)
-
-        holding_register_size = utils.modbus_values.HoldingRegisterSize(65535)
-        self.assertEqual(holding_register_size.value, 65535)
+        self.assertEqual(holding_register_size.status, ValueStatus.OK)
 
     def test_holding_register_size_invalid(self):
+        holding_register_size = HoldingRegisterSize(-1)
+        self.assertEqual(holding_register_size.status, ValueStatus.EXCEPTION)
         with self.assertRaises(ValueError):
-            utils.modbus_values.HoldingRegisterSize(-1)
+            _ = holding_register_size.value
+
+    def test_strict_holding_register_size_invalid(self):
         with self.assertRaises(ValueError):
-            utils.modbus_values.HoldingRegisterSize(65536)
-        with self.assertRaises(ValueError):
-            utils.modbus_values.HoldingRegisterSize("invalid")
+            StrictHoldingRegisterSize(-1)
 
 if __name__ == '__main__':
     unittest.main()

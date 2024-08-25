@@ -1,56 +1,84 @@
 import platform
 import re
+from utils.value import ValidatedValue, StrictValidatedValue, ValidatedResult, ValueStatus
 
-from utils.value import Value
-
-
-class SerialPort(Value):
-    def __init__(self, port_name):
-        super().__init__(self.validate(port_name))
-
+class SerialPort(ValidatedValue):
     @classmethod
-    def validate(cls, port_name):
+    def validate(cls, port_name: str) -> ValidatedResult:
         system = platform.system()
 
         if system == "Windows":
             pattern = r"^COM[1-9][0-9]*$"
             if not re.fullmatch(pattern, port_name):
-                raise ValueError(f"Invalid serial port: {port_name}. Valid ports are COM1, COM2, ..., COMn")
+                return ValidatedResult(
+                    status=ValueStatus.EXCEPTION,
+                    details=f"Invalid serial port: {port_name}. Valid ports are COM1, COM2, ..., COMn",
+                    value=None
+                )
 
         elif system in ["Linux", "Darwin"]:
             pattern = r"^/dev/tty(S|USB)[1-9][0-9]*$|^/dev/tty(S|USB)0$"
             if not re.fullmatch(pattern, port_name):
-                raise ValueError(
-                    f"Invalid serial port: {port_name}. Valid ports are /dev/ttyS0, /dev/ttyUSB0, ..., /dev/ttySn"
+                return ValidatedResult(
+                    status=ValueStatus.EXCEPTION,
+                    details=f"Invalid serial port: {port_name}. Valid ports are /dev/ttyS0, /dev/ttyUSB0, ..., /dev/ttySn",
+                    value=None
                 )
 
         else:
-            raise ValueError(f"Unsupported operating system: {system}")
+            return ValidatedResult(
+                status=ValueStatus.EXCEPTION,
+                details=f"Unsupported operating system: {system}",
+                value=None
+            )
 
-        return port_name
+        return ValidatedResult(
+            status=ValueStatus.OK,
+            details="",
+            value=port_name
+        )
+
+class StrictSerialPort(StrictValidatedValue, SerialPort):
+    pass
 
 
-class BaudRate(Value):
+class BaudRate(ValidatedValue):
     VALID_RATES = [9600, 14400, 19200, 38400, 57600, 115200]
 
-    def __init__(self, baud_rate):
-        super().__init__(self.validate(baud_rate))
-
     @classmethod
-    def validate(cls, baud_rate):
+    def validate(cls, baud_rate: int) -> ValidatedResult:
         if baud_rate not in BaudRate.VALID_RATES:
-            raise ValueError(f"Invalid baud rate: {baud_rate}. Must be one of {BaudRate.VALID_RATES}")
-        return baud_rate
+            return ValidatedResult(
+                status=ValueStatus.EXCEPTION,
+                details=f"Invalid baud rate: {baud_rate}. Must be one of {BaudRate.VALID_RATES}",
+                value=None
+            )
+        return ValidatedResult(
+            status=ValueStatus.OK,
+            details="",
+            value=baud_rate
+        )
+
+class StrictBaudRate(StrictValidatedValue, BaudRate):
+    pass
 
 
-class StopBits(Value):
+class StopBits(ValidatedValue):
     VALID_BITS = [1, 1.5, 2]
 
-    def __init__(self, stop_bits):
-        super().__init__(self.validate(stop_bits))
-
     @classmethod
-    def validate(cls, stop_bits):
+    def validate(cls, stop_bits: float) -> ValidatedResult:
         if stop_bits not in StopBits.VALID_BITS:
-            raise ValueError(f"Invalid stop bits: {stop_bits}. Must be one of {StopBits.VALID_BITS}")
-        return stop_bits
+            return ValidatedResult(
+                status=ValueStatus.EXCEPTION,
+                details=f"Invalid stop bits: {stop_bits}. Must be one of {StopBits.VALID_BITS}",
+                value=None
+            )
+        return ValidatedResult(
+            status=ValueStatus.OK,
+            details="",
+            value=stop_bits
+        )
+
+class StrictStopBits(StrictValidatedValue, StopBits):
+    pass
