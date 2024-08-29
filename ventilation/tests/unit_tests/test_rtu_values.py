@@ -6,6 +6,16 @@ from utils.value import ValueStatus
 
 class TestRTUValues(unittest.TestCase):
 
+    def test_serial_port_unknown_os(self):
+        """Test SerialPort validation with an unknown operating system."""
+        with patch('platform.system', return_value='UnknownOS'):
+            serial_port = SerialPort("COM1")
+            self.assertEqual(serial_port.status, ValueStatus.EXCEPTION)
+            self.assertTrue("Unsupported operating system: UnknownOS" in serial_port.details)
+            with self.assertRaises(ValueError):
+                _ = serial_port.value
+
+
     # BaudRate Tests
     def test_baud_rate_valid(self):
         valid_baud_rates = [9600, 14400, 19200, 38400, 57600, 115200]

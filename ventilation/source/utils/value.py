@@ -72,7 +72,7 @@ class ValidatedValue(Value, ABC):
 
     @classmethod
     @abstractmethod
-    def validate(cls, validated_value) -> ValidatedResponse:
+    def validate(cls, validated_value) -> ValidatedResponse:  # pragma: no cover
         """
         Abstract method to validate the value. Subclasses must implement this to return a ValidatedResult.
 
