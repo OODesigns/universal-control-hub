@@ -3,10 +3,7 @@ from utils.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, 
 class ModbusBuilder:
     def __init__(self, builder=None):
         if builder:
-            # Ensure the builder is an instance of ModbusBuilder or its subclass
-            if not isinstance(builder, ModbusBuilder):
-                raise TypeError("Expected builder to be an instance of ModbusBuilder")
-
+            assert isinstance(builder, ModbusBuilder), "Expected builder to be an instance of ModbusBuilder"
             # Use setter methods to copy values from the provided builder
             self.set_coil_size(builder.coil_size)
             self.set_discrete_input_size(builder.discrete_input_size)
@@ -62,49 +59,41 @@ class ModbusBuilder:
 
     # Setter methods with validation
     def set_coil_size(self, coil_size: CoilSize):
-        if not isinstance(coil_size, CoilSize):
-            raise ValueError("Invalid coil size value")
+        assert isinstance(coil_size, CoilSize), "Invalid coil size value"
         self._coil_size = coil_size
         return self
 
     def set_discrete_input_size(self, discrete_input_size: DiscreteInputSize):
-        if not isinstance(discrete_input_size, DiscreteInputSize):
-            raise ValueError("Invalid discrete input size value")
+        assert isinstance(discrete_input_size, DiscreteInputSize), "Invalid discrete input size value"
         self._discrete_input_size = discrete_input_size
         return self
 
     def set_input_register_size(self, input_register_size: InputRegisterSize):
-        if not isinstance(input_register_size, InputRegisterSize):
-            raise ValueError("Invalid input register size value")
+        assert isinstance(input_register_size, InputRegisterSize), "Invalid input register size value"
         self._input_register_size = input_register_size
         return self
 
     def set_holding_register_size(self, holding_register_size: HoldingRegisterSize):
-        if not isinstance(holding_register_size, HoldingRegisterSize):
-            raise ValueError("Invalid holding register size value")
+        assert isinstance(holding_register_size, HoldingRegisterSize), "Invalid holding register size value"
         self._holding_register_size = holding_register_size
         return self
 
     def set_timeout(self, timeout: Timeout):
-        if not isinstance(timeout, Timeout):
-            raise ValueError("Invalid timeout value")
+        assert isinstance(timeout, Timeout), "Invalid timeout value"
         self._timeout = timeout
         return self
 
     def set_retries(self, retries: Retries):
-        if not isinstance(retries, Retries):
-            raise ValueError("Invalid retries value")
+        assert isinstance(retries, Retries), "Invalid retries value"
         self._retries = retries
         return self
 
     def set_reconnect_delay(self, reconnect_delay: ReconnectDelay):
-        if not isinstance(reconnect_delay, ReconnectDelay):
-            raise ValueError("Invalid reconnect delay value")
+        assert isinstance(reconnect_delay, ReconnectDelay), "Invalid reconnect delay value"
         self._reconnect_delay = reconnect_delay
         return self
 
     def set_reconnect_delay_max(self, reconnect_delay_max: ReconnectDelayMax):
-        if not isinstance(reconnect_delay_max, ReconnectDelayMax):
-            raise ValueError("Invalid reconnect delay max value")
+        assert isinstance(reconnect_delay_max, ReconnectDelayMax), "Invalid reconnect delay max value"
         self._reconnect_delay_max = reconnect_delay_max
         return self

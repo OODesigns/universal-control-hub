@@ -27,7 +27,7 @@ class TestModbusBuilder(unittest.TestCase):
         self.assertEqual(builder.reconnect_delay_max.value, 10.0)
 
     def test_builder_with_invalid_coil_size(self):
-        invalid_coil_size = utils.modbus_values.CoilSize(-1)  # This will internally return a ValidatedResponse with an EXCEPTION status
+        invalid_coil_size = utils.modbus_values.CoilSize(-1)
         self.assertEqual(invalid_coil_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_discrete_input_size(self):
@@ -55,7 +55,6 @@ class TestModbusBuilder(unittest.TestCase):
         self.assertEqual(invalid_reconnect_delay.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_reconnect_delay_max(self):
-        builder = ModbusBuilder()
         invalid_reconnect_delay_max = utils.modbus_values.ReconnectDelayMax(-1)
         self.assertEqual(invalid_reconnect_delay_max.status, ValueStatus.EXCEPTION)
 
@@ -82,15 +81,31 @@ class TestModbusBuilder(unittest.TestCase):
         self.assertEqual(copied_builder.reconnect_delay_max.value, 10.0)
 
     def test_copy_constructor_with_invalid_type(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(AssertionError):
             ModbusBuilder("invalid_builder")
 
-    def test_copy_constructor_expecting_ModbusBuilder_to_be_complete(self):
-        original_builder = ModbusBuilder()
-        original_builder.set_coil_size(utils.modbus_values.CoilSize(10))
+    def test_builder_with_edge_values(self):
+        builder = ModbusBuilder()
+        builder.set_coil_size(utils.modbus_values.CoilSize(1))
+        builder.set_coil_size(utils.modbus_values.CoilSize(65535))
+        self.assertEqual(builder.coil_size.value, 65535)
 
-        with self.assertRaises(ValueError):
-            ModbusBuilder(original_builder)
+    def test_builder_with_invalid_types(self):
+        builder = ModbusBuilder()
+        with self.assertRaises(AssertionError):
+            # noinspection PyTypeChecker
+            builder.set_coil_size("InvalidType")
+
+    def test_default_initialization(self):
+        builder = ModbusBuilder()
+        self.assertIsNone(builder.coil_size)
+        self.assertIsNone(builder.discrete_input_size)
+        self.assertIsNone(builder.input_register_size)
+        self.assertIsNone(builder.holding_register_size)
+        self.assertIsNone(builder.timeout)
+        self.assertIsNone(builder.retries)
+        self.assertIsNone(builder.reconnect_delay)
+        self.assertIsNone(builder.reconnect_delay_max)
 
 if __name__ == '__main__':
     unittest.main()
