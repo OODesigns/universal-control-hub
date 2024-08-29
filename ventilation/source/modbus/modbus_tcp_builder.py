@@ -1,5 +1,5 @@
 from modbus.modbus_builder import ModbusBuilder
-from modbus.modbus_tcp import ModbusTCP
+from modbus.pymodbus.modbus_tcp import ModbusTCP
 from utils.tcp_values import IPAddress, Port
 
 class ModbusTCPBuilder(ModbusBuilder):

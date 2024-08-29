@@ -1,3 +1,4 @@
+
 import unittest
 import utils.value
 
@@ -26,31 +27,34 @@ class TestValue(unittest.TestCase):
         v1 = utils.value.Value(10)
         self.assertFalse(v1 == 10)
 
-class TestValidatedResult(unittest.TestCase):
 
-    def test_validated_result_initialization(self):
-        result = utils.value.ValidatedResult(status=utils.value.ValueStatus.OK, details="All good", value=100)
+class TestValidatedResponse(unittest.TestCase):
+
+    def test_validated_response_initialization(self):
+        result = utils.value.ValidatedResponse(status=utils.value.ValueStatus.OK, details="All good", value=100)
         self.assertEqual(result.status, utils.value.ValueStatus.OK)
         self.assertEqual(result.details, "All good")
         self.assertEqual(result.value, 100)
 
+
 class MockValidatedValue(utils.value.ValidatedValue):
 
     @classmethod
-    def validate(cls, validated_value) -> utils.value.ValidatedResult:
+    def validate(cls, validated_value) -> utils.value.ValidatedResponse:
         if validated_value is None:
-            return utils.value.ValidatedResult(status=utils.value.ValueStatus.EXCEPTION, details="Invalid value", value=None)
-        return utils.value.ValidatedResult(status=utils.value.ValueStatus.OK, details="Valid value", value=validated_value)
+            return utils.value.ValidatedResponse(status=utils.value.ValueStatus.EXCEPTION, details="Invalid value", value=None)
+        return utils.value.ValidatedResponse(status=utils.value.ValueStatus.OK, details="Valid value", value=validated_value)
+
 
 class TestValidatedValue(unittest.TestCase):
 
-    def test_validated_value_success(self):
+    def test_validated_value_initialization_success(self):
         v = MockValidatedValue(100)
         self.assertEqual(v.value, 100)
         self.assertEqual(v.status, utils.value.ValueStatus.OK)
         self.assertEqual(v.details, "Valid value")
 
-    def test_validated_value_failure(self):
+    def test_validated_value_initialization_failure(self):
         v = MockValidatedValue(None)
         self.assertEqual(v.status, utils.value.ValueStatus.EXCEPTION)
         self.assertEqual(v.details, "Invalid value")
@@ -70,12 +74,15 @@ class TestValidatedValue(unittest.TestCase):
         self.assertFalse(v1 > v3)
         self.assertFalse(v4 == v1)  # Can't compare invalid with valid
 
+
 class MockStrictValidatedValue(utils.value.StrictValidatedValue):
+
     @classmethod
-    def validate(cls, validated_value) -> utils.value.ValidatedResult:
+    def validate(cls, validated_value) -> utils.value.ValidatedResponse:
         if validated_value is None:
-            return utils.value.ValidatedResult(status=utils.value.ValueStatus.EXCEPTION, details="Invalid value", value=None)
-        return utils.value.ValidatedResult(status=utils.value.ValueStatus.OK, details="Valid value", value=validated_value)
+            return utils.value.ValidatedResponse(status=utils.value.ValueStatus.EXCEPTION, details="Invalid value", value=None)
+        return utils.value.ValidatedResponse(status=utils.value.ValueStatus.OK, details="Valid value", value=validated_value)
+
 
 class TestStrictValidatedValue(unittest.TestCase):
 
@@ -89,14 +96,16 @@ class TestStrictValidatedValue(unittest.TestCase):
         with self.assertRaises(ValueError):
             MockStrictValidatedValue(None)  # Should raise ValueError immediately
 
+
 class MockRangeValidatedValue(utils.value.RangeValidatedValue):
     valid_types = (int,)
     low_value = 0
     high_value = 100
 
+
 class TestRangeValidatedValue(unittest.TestCase):
 
-    def test_range_validated_value_success(self):
+    def test_range_validated_value_within_range(self):
         v = MockRangeValidatedValue(50)
         self.assertEqual(v.value, 50)
         self.assertEqual(v.status, utils.value.ValueStatus.OK)

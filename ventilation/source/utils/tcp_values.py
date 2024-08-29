@@ -1,11 +1,11 @@
 from re import compile
 
-from utils.value import Value, ValidatedValue, ValidatedResult, ValueStatus, StrictValidatedValue, RangeValidatedValue
+from utils.value import Value, ValidatedValue, ValidatedResponse, ValueStatus, StrictValidatedValue, RangeValidatedValue
 
 
 class IPAddress(ValidatedValue):
     @classmethod
-    def validate(cls, ip_address: str) -> ValidatedResult:
+    def validate(cls, ip_address: str) -> ValidatedResponse:
         # Improved regex for IP address validation, including edge cases
         pattern = compile(
             r"^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\."
@@ -14,12 +14,12 @@ class IPAddress(ValidatedValue):
             r"(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$"
         )
         if not pattern.match(ip_address):
-            return ValidatedResult(
+            return ValidatedResponse(
                 status=ValueStatus.EXCEPTION,
                 details=f"Invalid IP address: {ip_address}",
                 value=None
             )
-        return ValidatedResult(
+        return ValidatedResponse(
             status=ValueStatus.OK,
             details="",
             value=ip_address

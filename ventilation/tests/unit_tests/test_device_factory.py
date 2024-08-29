@@ -12,7 +12,7 @@ class TestDeviceFactory(unittest.TestCase):
         """Set up a mock ConfigFactory object before each test."""
         self.mock_config_factory = Mock(spec=ConfigFactory)
         self.mock_state_manager = Mock(spec=StateManager)
-        self.factory = DeviceFactory(self.mock_config_factory, self.mock_state_manager)
+        self.factory = DeviceFactory(self.mock_config_factory)
 
     def test_device_factory_registers_device(self):
         """Test that devices are correctly registered with the factory."""
@@ -32,8 +32,8 @@ class TestDeviceFactory(unittest.TestCase):
 
         @DeviceFactory.register_device("TestDependency")
         class TestClass(Device):
-            def __init__(self, config_loader: ConfigLoader, state_manager: StateManager, the_dependency=None):
-                super().__init__(config_loader, state_manager)
+            def __init__(self, config_loader: ConfigLoader, the_dependency=None):
+                super().__init__(config_loader)
                 self._dependency = the_dependency
 
             required_dependencies = ['the_dependency']
@@ -62,14 +62,14 @@ class TestDeviceFactory(unittest.TestCase):
     @patch.dict('sys.modules', {}, clear=True)
     def test_constructor_loads_devices_when_not_loaded(self, mock_load_registered_devices):
         """Test that the constructor loads devices when they are not already loaded."""
-        DeviceFactory(self.mock_config_factory, self.mock_state_manager)
+        DeviceFactory(self.mock_config_factory)
         mock_load_registered_devices.assert_called_once()
 
     @patch('devices.device_factory.DeviceFactory._load_registered_devices')
     @patch.dict('sys.modules', {DEVICES: MagicMock()})
     def test_constructor_does_not_load_devices_when_already_loaded(self, mock_load_registered_devices):
         """Test that the constructor does not load devices if they are already loaded."""
-        DeviceFactory(self.mock_config_factory, self.mock_state_manager)
+        DeviceFactory(self.mock_config_factory)
         mock_load_registered_devices.assert_not_called()
 
     def test_device_factory_registers_dependency(self):

@@ -1,9 +1,7 @@
-from abc import ABC
-
 from utils.value import StrictValidatedValue, RangeValidatedValue
 
 
-class TemperatureInterface(RangeValidatedValue, ABC):
+class TemperatureInterface(RangeValidatedValue):
     pass
 
 class TemperatureCelsius(TemperatureInterface):

@@ -1,7 +1,8 @@
 import unittest
-
 from modbus.modbus_builder import ModbusBuilder
 import utils.modbus_values
+from utils.value import ValueStatus
+
 
 class TestModbusBuilder(unittest.TestCase):
 
@@ -26,44 +27,37 @@ class TestModbusBuilder(unittest.TestCase):
         self.assertEqual(builder.reconnect_delay_max.value, 10.0)
 
     def test_builder_with_invalid_coil_size(self):
-        builder = ModbusBuilder()
-        with self.assertRaises(ValueError):
-            builder.set_coil_size(utils.modbus_values.CoilSize(-1))  # Invalid negative coil size
+        invalid_coil_size = utils.modbus_values.CoilSize(-1)  # This will internally return a ValidatedResponse with an EXCEPTION status
+        self.assertEqual(invalid_coil_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_discrete_input_size(self):
-        builder = ModbusBuilder()
-        with self.assertRaises(ValueError):
-            builder.set_discrete_input_size(utils.modbus_values.DiscreteInputSize(-1))  # Invalid negative discrete input size
+        invalid_discrete_input_size = utils.modbus_values.DiscreteInputSize(-1)
+        self.assertEqual(invalid_discrete_input_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_input_register_size(self):
-        builder = ModbusBuilder()
-        with self.assertRaises(ValueError):
-            builder.set_input_register_size(utils.modbus_values.InputRegisterSize(-1))  # Invalid negative input register size
+        invalid_input_register_size = utils.modbus_values.InputRegisterSize(-1)
+        self.assertEqual(invalid_input_register_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_holding_register_size(self):
-        builder = ModbusBuilder()
-        with self.assertRaises(ValueError):
-            builder.set_holding_register_size(utils.modbus_values.HoldingRegisterSize(-1))  # Invalid negative holding register size
+        invalid_holding_register_size = utils.modbus_values.HoldingRegisterSize(-1)
+        self.assertEqual(invalid_holding_register_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_timeout(self):
-        builder = ModbusBuilder()
-        with self.assertRaises(ValueError):
-            builder.set_timeout(utils.modbus_values.Timeout(-1))  # Invalid negative timeout
+        invalid_timeout = utils.modbus_values.Timeout(-1)
+        self.assertEqual(invalid_timeout.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_retries(self):
-        builder = ModbusBuilder()
-        with self.assertRaises(ValueError):
-            builder.set_retries(utils.modbus_values.Retries(-1))  # Invalid negative retries
+        invalid_retries = utils.modbus_values.Retries(-1)
+        self.assertEqual(invalid_retries.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_reconnect_delay(self):
-        builder = ModbusBuilder()
-        with self.assertRaises(ValueError):
-            builder.set_reconnect_delay(utils.modbus_values.ReconnectDelay(-1))  # Invalid negative reconnect delay
+        invalid_reconnect_delay = utils.modbus_values.ReconnectDelay(-1)
+        self.assertEqual(invalid_reconnect_delay.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_reconnect_delay_max(self):
         builder = ModbusBuilder()
-        with self.assertRaises(ValueError):
-            builder.set_reconnect_delay_max(utils.modbus_values.ReconnectDelayMax(-1))  # Invalid negative reconnect delay max
+        invalid_reconnect_delay_max = utils.modbus_values.ReconnectDelayMax(-1)
+        self.assertEqual(invalid_reconnect_delay_max.status, ValueStatus.EXCEPTION)
 
     def test_copy_constructor_with_valid_builder(self):
         original_builder = ModbusBuilder()
@@ -76,10 +70,8 @@ class TestModbusBuilder(unittest.TestCase):
         original_builder.set_reconnect_delay(utils.modbus_values.ReconnectDelay(2.0))
         original_builder.set_reconnect_delay_max(utils.modbus_values.ReconnectDelayMax(10.0))
 
-        # Create a copy using the copy constructor
         copied_builder = ModbusBuilder(original_builder)
 
-        # Ensure that the copied builder has the same values as the original
         self.assertEqual(copied_builder.coil_size.value, 10)
         self.assertEqual(copied_builder.discrete_input_size.value, 20)
         self.assertEqual(copied_builder.input_register_size.value, 30)
@@ -91,7 +83,7 @@ class TestModbusBuilder(unittest.TestCase):
 
     def test_copy_constructor_with_invalid_type(self):
         with self.assertRaises(TypeError):
-            ModbusBuilder("invalid_builder")  # Pass an invalid type, should raise TypeError
+            ModbusBuilder("invalid_builder")
 
     def test_copy_constructor_expecting_ModbusBuilder_to_be_complete(self):
         original_builder = ModbusBuilder()
@@ -99,7 +91,6 @@ class TestModbusBuilder(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             ModbusBuilder(original_builder)
-
 
 if __name__ == '__main__':
     unittest.main()

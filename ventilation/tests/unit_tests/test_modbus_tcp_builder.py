@@ -1,7 +1,9 @@
 import unittest
+from unittest.mock import patch
 
-from modbus.modbus_tcp import ModbusTCP
+from modbus.pymodbus.modbus_tcp import ModbusTCP
 from modbus.modbus_tcp_builder import ModbusTCPBuilder
+from utils.modbus_values import Timeout, ReconnectDelay, ReconnectDelayMax, Retries
 from utils.tcp_values import IPAddress, Port
 
 class TestModbusTCPBuilder(unittest.TestCase):
@@ -20,9 +22,18 @@ class TestModbusTCPBuilder(unittest.TestCase):
 
     def test_build_valid(self):
         builder = ModbusTCPBuilder()
-        builder.set_ip_address(IPAddress('192.168.1.1')).set_port(Port(502))
-        modbus_tcp = builder.build()
-        self.assertIsInstance(modbus_tcp, ModbusTCP)
+        builder.set_ip_address(IPAddress('192.168.1.1')).set_port(Port(502)) \
+        .set_timeout(Timeout(10)) \
+        .set_reconnect_delay(ReconnectDelay(100)) \
+        .set_reconnect_delay_max(ReconnectDelayMax(300)) \
+        .set_retries(Retries(3))
+
+        # patch it where it's used, not where it's defined.
+        with patch('modbus.modbus_tcp_builder.ModbusTCP') as MockModbusTCP:
+            mock_instance = MockModbusTCP.return_value
+            modbus_tcp = builder.build()
+            self.assertIs(modbus_tcp, mock_instance)
+
 
     def test_build_without_ip_address(self):
         builder = ModbusTCPBuilder()

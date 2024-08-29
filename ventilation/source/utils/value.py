@@ -42,7 +42,7 @@ class ValueStatus(Enum):
     EXCEPTION = 1
 
 @dataclass
-class ValidatedResult:
+class ValidatedResponse:
     """
     Data class to encapsulate the result of a validation process.
 
@@ -72,7 +72,7 @@ class ValidatedValue(Value, ABC):
 
     @classmethod
     @abstractmethod
-    def validate(cls, validated_value) -> ValidatedResult:
+    def validate(cls, validated_value) -> ValidatedResponse:
         """
         Abstract method to validate the value. Subclasses must implement this to return a ValidatedResult.
 
@@ -137,14 +137,14 @@ class RangeValidatedValue(ValidatedValue):
     valid_types = None
 
     @classmethod
-    def validate(cls, value) -> ValidatedResult:
+    def validate(cls, value) -> ValidatedResponse:
         if not (type(value) in cls.valid_types) or not (cls.low_value <= value <= cls.high_value):
-            return ValidatedResult(
+            return ValidatedResponse(
                 status=ValueStatus.EXCEPTION,
                 details=f"{cls.__name__} must be a {cls.valid_types} between {cls.low_value} and {cls.high_value}, got {value}",
                 value=None
             )
-        return ValidatedResult(
+        return ValidatedResponse(
             status=ValueStatus.OK,
             details="",
             value=value

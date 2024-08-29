@@ -1,8 +1,10 @@
 import unittest
-
-from modbus.modbus_rtu import ParityType, ModbusRTU
+from unittest.mock import patch
 from modbus.modus_rtu_builder import ModbusRTUBuilder
-from utils.rtu_values import BaudRate, StopBits, SerialPort
+from utils.modbus_values import Timeout, ReconnectDelay, ReconnectDelayMax, Retries
+from utils.rtu_values import BaudRate, StopBits, SerialPort, ParityType
+
+
 class TestModbusRTUBuilder(unittest.TestCase):
 
     def test_set_baud_rate(self):
@@ -34,9 +36,17 @@ class TestModbusRTUBuilder(unittest.TestCase):
         builder.set_baud_rate(BaudRate(9600)) \
             .set_parity(ParityType.EVEN) \
             .set_stop_bits(StopBits(1)) \
-            .set_serial_port(SerialPort("COM1"))
-        modbus_rtu = builder.build()
-        self.assertIsInstance(modbus_rtu, ModbusRTU)
+            .set_serial_port(SerialPort("COM1")) \
+            .set_timeout(Timeout(10)) \
+            .set_reconnect_delay(ReconnectDelay(300)) \
+            .set_reconnect_delay_max(ReconnectDelayMax(300)) \
+            .set_retries(Retries(2))
+
+        # patch it where it's used, not where it's defined.
+        with patch('modbus.modus_rtu_builder.ModbusRTU') as MockModbusRTU:
+            mock_instance = MockModbusRTU.return_value
+            modbus_rtu = builder.build()
+            self.assertIs(modbus_rtu, mock_instance)
 
     def test_build_without_baud_rate(self):
         builder = ModbusRTUBuilder()

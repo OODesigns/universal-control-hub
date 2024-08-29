@@ -1,6 +1,7 @@
 from modbus.modbus_builder import ModbusBuilder
-from modbus.modbus_rtu import ParityType, ModbusRTU
-from utils.rtu_values import BaudRate, StopBits, SerialPort
+from modbus.pymodbus.modbus_rtu import ModbusRTU
+from utils.rtu_values import BaudRate, StopBits, SerialPort, ParityType
+
 
 class ModbusRTUBuilder(ModbusBuilder):
     def __init__(self, builder: ModbusBuilder = None):

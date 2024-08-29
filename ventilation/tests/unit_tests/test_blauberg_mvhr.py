@@ -2,12 +2,14 @@ import unittest
 from unittest.mock import MagicMock, AsyncMock
 from devices.blauberg_mvhr import BlaubergMVHR
 from config.config_loader import ConfigLoader
-from modbus.modbus import ModbusInterface, ModbusMode
+from modbus.modbus import ModbusInterface, ModbusMode, ModbusData
 from modbus.modbus_factory import ModbusFactory
-from state.state_manager import StateManager
 from utils.tcp_values import IPAddress, Port
 from utils.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
 from devices.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
+from devices.blauberg_mvhr_repository import BlaubergMVHRRepository
+from utils.value import ValidatedResponse, ValueStatus
+
 
 class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
 
@@ -24,7 +26,6 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         }.get(key, default)
 
         # Set up the state manager and mock modbus
-        self.state_manager = MagicMock(spec=StateManager)
         self.mock_modbus_interface = AsyncMock(spec=ModbusInterface)
         self.modbus_factory = MagicMock(spec=ModbusFactory)
 
@@ -32,7 +33,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         self.modbus_factory.create_modbus.return_value = self.mock_modbus_interface
 
         # Initialize the BlaubergMVHR instance
-        self.blauberg_mvhr = BlaubergMVHR(self.config_loader, self.state_manager, self.modbus_factory)
+        self.blauberg_mvhr = BlaubergMVHR(self.config_loader, self.modbus_factory)
 
     async def test_modbus_initialization(self):
         """Test that the Modbus interface is initialized with the correct parameters."""
@@ -66,21 +67,81 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         await self.blauberg_mvhr.start()
 
         self.mock_modbus_interface.connect.assert_called_once()
-        self.state_manager.update_state.assert_called_once_with(
-            operational_states={'mvhr_connected': True}
-        )
 
     async def test_modbus_startup_failure(self):
         """Test the failure handling during the startup sequence."""
         # Simulate a connection failure
         self.mock_modbus_interface.connect.side_effect = Exception("Connection failed")
-        await self.blauberg_mvhr.start()
+        with self.assertRaises(Exception):  # Expecting the startup to raise an exception
+            await self.blauberg_mvhr.start()
 
         self.mock_modbus_interface.connect.assert_called_once()
-        self.state_manager.update_state.assert_called_once_with(
-            operational_states={'mvhr_connected': False},
-            triggered_rules={'mvhr_connection_failure': 'Connection failed'}
-        )
+
+    async def test_read_data(self):
+        """Test that the read_data method returns a BlaubergMVHRRepository instance with correct data."""
+        # Simulate Modbus read data
+        mock_modbus_data = MagicMock()
+        self.mock_modbus_interface.read.return_value = mock_modbus_data
+
+        repository = await self.blauberg_mvhr.read_data()
+
+        self.mock_modbus_interface.read.assert_called_once()
+        self.assertIsInstance(repository, BlaubergMVHRRepository)
+        self.assertEqual(repository.data, mock_modbus_data)
+
+    async def test_read_data_with_temp_supply_in_out(self):
+        """Test the read_data method with focus on temp_supply_in and temp_supply_out properties."""
+
+        # Create a validated response that mimics successful Modbus data retrieval
+        validated_response = ValidatedResponse(status=ValueStatus.OK, value=[
+            0,    # IR_CUR_SEL_TEMP, not used in this test
+            250,  # IR_CURTEMP_SUAIR_IN -> 25.0°C
+            300   # IR_CURTEMP_SUAIR_OUT -> 30.0°C
+        ], details="")
+
+        # Create a mock ModbusData instance and set the validated response to input_register
+        mock_modbus_data = MagicMock(spec=ModbusData)
+        mock_modbus_data.input_register = validated_response.value
+
+        # Simulate the Modbus interface returning this mock data
+        self.mock_modbus_interface.read.return_value = mock_modbus_data
+
+        # Call the read_data method, which will process the mock Modbus data
+        repository = await self.blauberg_mvhr.read_data()
+
+        # Assert the temperatures are correctly interpreted
+        self.assertEqual(repository.temp_supply_in.value, 25.0)
+        self.assertEqual(repository.temp_supply_out.value, 30.0)
+
+    async def test_read_data_with_sensor_faults(self):
+        """Test the read_data method with sensor fault values (-32768 and 32767)."""
+
+        # Create a validated response that mimics Modbus data with faults
+        validated_response = ValidatedResponse(status=ValueStatus.EXCEPTION, value=[
+            0,       # IR_CUR_SEL_TEMP, not used in this test
+            -32768,  # IR_CURTEMP_SUAIR_IN -> No sensor detected
+            32767    # IR_CURTEMP_SUAIR_OUT -> Short circuit
+        ], details="")
+
+        # Create a mock ModbusData instance and set the validated response to input_register
+        mock_modbus_data = MagicMock(spec=ModbusData)
+        mock_modbus_data.input_register = validated_response.value
+
+        # Simulate the Modbus interface returning this mock data
+        self.mock_modbus_interface.read.return_value = mock_modbus_data
+
+        # Call the read_data method, which will process the mock Modbus data
+        repository = await self.blauberg_mvhr.read_data()
+
+        # Test that accessing the faulty temperature values raises a ValueError
+        with self.assertRaises(ValueError) as context_in:
+            _ = repository.temp_supply_in.value
+        self.assertEqual(str(context_in.exception), "Cannot access value: No sensor detected")
+
+        with self.assertRaises(ValueError) as context_out:
+            _ = repository.temp_supply_out.value
+        self.assertEqual(str(context_out.exception), "Cannot access value: Sensor short circuit")
+
 
 
 if __name__ == '__main__':

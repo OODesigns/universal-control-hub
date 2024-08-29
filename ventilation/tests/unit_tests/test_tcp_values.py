@@ -2,7 +2,6 @@ import unittest
 from utils.tcp_values import IPAddress, Port, StrictIPAddress, StrictPort
 from utils.value import ValueStatus
 
-
 class TestTCPValues(unittest.TestCase):
 
     # Test for IPAddress class
@@ -74,7 +73,7 @@ class TestPort(unittest.TestCase):
                 self.assertEqual(port.status, ValueStatus.OK)
 
     def test_port_invalid(self):
-        invalid_ports = [-1, 70000]
+        invalid_ports = [-1, 70000, "8080", 65536]
         for port_num in invalid_ports:
             with self.subTest(port=port_num):
                 port = Port(port_num)
@@ -83,13 +82,11 @@ class TestPort(unittest.TestCase):
                     _ = port.value
 
     def test_strict_port_invalid(self):
-        invalid_ports = [-1, 70000]
+        invalid_ports = [-1, 70000, "8080", 65536]
         for port_num in invalid_ports:
             with self.subTest(port=port_num):
                 with self.assertRaises(ValueError):
                     StrictPort(port_num)
-
-
 
 if __name__ == '__main__':
     unittest.main()

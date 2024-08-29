@@ -1,9 +1,7 @@
 import unittest
 from unittest.mock import patch, AsyncMock
-
-from modbus.modbus_rtu import ParityType
 from modbus.modus_rtu_builder import ModbusRTUBuilder
-from utils.rtu_values import BaudRate, StopBits, SerialPort
+from utils.rtu_values import BaudRate, StopBits, SerialPort, ParityType
 from utils.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax
 
 class TestModbusRTU(unittest.IsolatedAsyncioTestCase):
@@ -19,15 +17,29 @@ class TestModbusRTU(unittest.IsolatedAsyncioTestCase):
             .set_retries(Retries(3)) \
             .set_reconnect_delay(ReconnectDelay(0.1)) \
             .set_reconnect_delay_max(ReconnectDelayMax(10))
-        self.modbus_rtu = self.builder.build()
 
-    @patch('devices.modbus_rtu.AsyncModbusSerialClient')
-    async def test_connect(self, mock_client_cls):
+    @patch('modbus.pymodbus.modbus_rtu.AsyncModbusSerialClient')
+    @patch('modbus.pymodbus.modus_base.ModbusClientManager')
+    async def test_connect(self, mock_client_manager_cls, mock_client_cls):
         mock_client = AsyncMock()
         mock_client_cls.return_value = mock_client
 
-        await self.modbus_rtu.connect()
+        mock_client_manager = AsyncMock()
+        mock_client_manager_cls.return_value = mock_client_manager
 
+        # Instantiate ModbusRTU with the builder
+        modbus_rtu = self.builder.build()
+
+        # Perform the connect operation
+        await modbus_rtu.connect()
+
+        # Ensure the ModbusClientManager is initialized correctly
+        mock_client_manager_cls.assert_called_once_with(mock_client)
+
+        # Ensure connect is called on the client manager
+        mock_client_manager.connect.assert_called_once()
+
+        # Ensure the AsyncModbusSerialClient is instantiated with the correct parameters
         mock_client_cls.assert_called_once_with(
             port='COM1',
             baudrate=9600,
@@ -38,7 +50,6 @@ class TestModbusRTU(unittest.IsolatedAsyncioTestCase):
             reconnect_delay_max=10,
             retries=3
         )
-        mock_client.connect.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()
