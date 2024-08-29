@@ -19,15 +19,16 @@ class ModbusFactory:
         """
         if mode == ModbusMode.TCP:
             tcp_builder = ModbusTCPBuilder(builder)
-            (tcp_builder.set_ip_address(kwargs.get('ip_address'))
-                        .set_port(kwargs.get('port')))
+            tcp_builder.set_ip_address(kwargs.get('ip_address'))
+            tcp_builder.set_port(kwargs.get('port'))
             return tcp_builder.build()
 
         elif mode == ModbusMode.RTU:
             rtu_builder = ModbusRTUBuilder(builder)
-            (rtu_builder.set_baud_rate(kwargs.get('baud_rate'))
-                        .set_parity(kwargs.get('parity'))
-                        .set_stop_bits(kwargs.get('stop_bits')))
+            rtu_builder.set_baud_rate(kwargs.get('baud_rate'))
+            rtu_builder.set_parity(kwargs.get('parity'))
+            rtu_builder.set_stop_bits(kwargs.get('stop_bits'))
+            rtu_builder.set_serial_port(kwargs.get('serial_port'))
             return rtu_builder.build()
 
         else:

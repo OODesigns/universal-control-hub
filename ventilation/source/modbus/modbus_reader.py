@@ -4,27 +4,27 @@ from utils.value import ValidatedResponse, ValueStatus
 
 class ModbusResultAdapter(ABC):
     @abstractmethod
-    async def read(self, client, address: int, count: int):
+    async def read(self, client, address: int, count: int):# pragma: no cover
         """Performs the Modbus read operation asynchronously."""
         pass
 
     @abstractmethod
-    def is_error(self) -> bool:
+    def is_error(self) -> bool:# pragma: no cover
         """Indicates if there was an error in the operation."""
         pass
 
     @abstractmethod
-    def get_data(self) -> List[Any]:
+    def get_data(self) -> List[Any]:# pragma: no cover
         """Returns the data from the Modbus operation."""
         pass
 
     @abstractmethod
-    def get_error_message(self) -> str:
+    def get_error_message(self) -> str:# pragma: no cover
         """Returns the error message if there was an error."""
         pass
 
     @abstractmethod
-    def to_validated_result(self) -> ValidatedResponse:
+    def to_validated_result(self) -> ValidatedResponse:# pragma: no cover
         """Converts the ModbusResultAdapter to a ValidatedResult."""
         pass
 
