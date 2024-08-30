@@ -1,13 +1,9 @@
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 from pymodbus.client import ModbusBaseClient
-
 from modbus.pymodbus.modbus_client_manager import ModbusClientManager, ConnectionResponse, ConnectionStatus
 from modbus.pymodbus.modus_base import ModbusBase
-from modbus.pymodbus.py_modbus_result import PyModbusCoilResult, PyModbusDiscreteInputResult, PyModbusInputRegisterResult, PyModbusHoldingRegisterResult
 from modbus.modbus_builder import ModbusBuilder
-from modbus.modbus_reader import ModbusBitReader, ModbusWordReader
-from modbus.modbus import ModbusData
 
 class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
@@ -86,6 +82,34 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
         self.mock_client_manager.disconnect.assert_called_once()
         self.assertEqual(response.status, ConnectionStatus.FAILED)
         self.assertEqual(response.details, "Client was not connected or was already closed.")
+
+    async def test_read_success(self):
+        # Mock results for the readers
+        mock_coils_result = AsyncMock()
+        mock_discrete_result = AsyncMock()
+        mock_input_result = AsyncMock()
+        mock_holding_result = AsyncMock()
+
+        self.modbus_base._coils_reader.read = AsyncMock(return_value=mock_coils_result)
+        self.modbus_base._discrete_inputs.read = AsyncMock(return_value=mock_discrete_result)
+        self.modbus_base._input_registers.read = AsyncMock(return_value=mock_input_result)
+        self.modbus_base._holding_registers.read = AsyncMock(return_value=mock_holding_result)
+
+        # Call the read method
+        result = await self.modbus_base.read()
+
+        # Assert that read methods were called and returned expected results
+        self.modbus_base._coils_reader.read.assert_called_once_with(0, self.modbus_base.coil_size.value)
+        self.modbus_base._discrete_inputs.read.assert_called_once_with(0, self.modbus_base.discrete_input_size.value)
+        self.modbus_base._input_registers.read.assert_called_once_with(0, self.modbus_base.input_register_size.value)
+        self.modbus_base._holding_registers.read.assert_called_once_with(0, self.modbus_base.holding_register_size.value)
+
+        # Assert the result contains the mocked data
+        self.assertEqual(result._coils, mock_coils_result)
+        self.assertEqual(result._discrete_inputs, mock_discrete_result)
+        self.assertEqual(result._input_register, mock_input_result)
+        self.assertEqual(result._holding_register, mock_holding_result)
+
 
 
 if __name__ == '__main__':
