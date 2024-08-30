@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import List, Any
+
+from pymodbus import ModbusException
 from pymodbus.client import ModbusBaseClient
-from pymodbus.exceptions import ModbusException
 from pymodbus.pdu import ExceptionResponse, ModbusResponse
 from modbus.modbus_reader import ModbusResultAdapter
 from utils.value import ValidatedResponse, ValueStatus
@@ -21,12 +22,12 @@ class PyModbusBaseResult(ModbusResultAdapter, ABC):
         return instance
 
     @abstractmethod
-    async def read(self, client: ModbusBaseClient, address: int, count: int) -> ModbusResponse:
+    async def read(self, client: ModbusBaseClient, address: int, count: int) -> ModbusResponse: # pragma: no cover
         """Perform the Modbus read operation. Must be implemented by subclasses."""
         pass
 
     @abstractmethod
-    def get_data(self) -> List[Any]:
+    def get_data(self) -> List[Any]: # pragma: no cover
         """Extract data from the ModbusResponse. Must be implemented by subclasses."""
         pass
 
@@ -64,7 +65,7 @@ class PyModbusBitResult(PyModbusBaseResult):
         return self._result.bits if not self.is_error() else []
 
     @abstractmethod
-    async def read(self, client: ModbusBaseClient, address: int, count: int) -> ModbusResponse:
+    async def read(self, client: ModbusBaseClient, address: int, count: int) -> ModbusResponse: # pragma: no cover
         """To be implemented in subclasses."""
         pass
 
@@ -90,7 +91,7 @@ class PyModbusRegisterResult(PyModbusBaseResult):
         return self._result.registers if not self.is_error() else []
 
     @abstractmethod
-    async def read(self, client: ModbusBaseClient, address: int, count: int) -> ModbusResponse:
+    async def read(self, client: ModbusBaseClient, address: int, count: int) -> ModbusResponse: # pragma: no cover
         """To be implemented in subclasses."""
         pass
 

@@ -102,6 +102,3 @@ class TestModbusData(unittest.TestCase):
         # Ensure the coils property returns the correct list of booleans
         result = self.modbus_data.coils
         self.assertEqual(result, [False, True, False])
-
-if __name__ == '__main__':
-    unittest.main()
