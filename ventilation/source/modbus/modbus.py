@@ -70,12 +70,12 @@ class ModbusInterface(ABC):
 
     @abstractmethod
     async def connect(self) -> ValidatedResponse:
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def disconnect(self) -> ValidatedResponse:
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     async def read(self) -> ModbusData:
-        pass
+        raise NotImplementedError()
