@@ -1,8 +1,23 @@
 import importlib
 import sys
+from dataclasses import dataclass
+from enum import Enum
+
 from config.config_factory import ConfigFactory
 from devices.device import Device
+from typing import Optional
+
 DEVICES = "devices"
+
+class DeviceStatus(Enum):
+    VALID = 0
+    EXCEPTION = 1
+
+@dataclass
+class DeviceResponse:
+    status: DeviceStatus
+    details: str
+    device: Optional[Device]
 
 class DeviceFactory:
     _registry = {}
@@ -29,11 +44,14 @@ class DeviceFactory:
             return dependency_class
         return decorator
 
-    # TODO Add Exception Handling when device does not load
-    def create_device(self, device_name) ->Device:
+    def create_device(self, device_name) -> DeviceResponse:
         """Factory method to create a device instance."""
         if device_name not in DeviceFactory._registry:
-            raise ValueError(f"Device '{device_name}' is not registered.")
+            return DeviceResponse(
+                status=DeviceStatus.EXCEPTION,
+                details=f"Device '{device_name}' is not registered.",
+                device=None
+            )
         device_class = DeviceFactory._registry[device_name]
 
         # Prepare dependencies based on the device's required_dependencies
@@ -42,11 +60,19 @@ class DeviceFactory:
             if dep_name in DeviceFactory._dependency:
                 dependencies[dep_name] = DeviceFactory._dependency[dep_name]()
             else:
-                raise ValueError(f"Dependency '{dep_name}' is required by {device_name} but not provided.")
+                return DeviceResponse(
+                    status=DeviceStatus.EXCEPTION,
+                    details=f"Dependency '{dep_name}' is required by {device_name} but not provided.",
+                    device=None
+                )
 
         # Create the device with the injected dependencies
-        return device_class(self._config_factory.create_loader(device_name), **dependencies)
-
+        device = device_class(self._config_factory.create_loader(device_name), **dependencies)
+        return DeviceResponse(
+            status=DeviceStatus.VALID,
+            details=f"Device {device_name} has been initialized.",
+            device=device
+        )
 
     @classmethod
     def _load_registered_devices(cls):

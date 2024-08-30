@@ -14,11 +14,11 @@ class MVHR(Device):
 
     @property
     @abstractmethod
-    def modbus(self) -> ModbusInterface:
+    def modbus(self) -> ModbusInterface:  # pragma: no cover
         pass
 
     @abstractmethod
-    async def read_data(self)-> MVHRRepositoryInterface:
+    async def read_data(self)-> MVHRRepositoryInterface:  # pragma: no cover
         pass
 
     async def start(self) -> ValidatedResponse:
