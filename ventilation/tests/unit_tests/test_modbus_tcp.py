@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch, AsyncMock
 
 from modbus.modbus_tcp_builder import ModbusTCPBuilder
+from modbus.pymodbus.modbus_tcp import ModbusTCP
 from utils.tcp_values import IPAddress, Port
 from utils.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax
 
@@ -47,6 +48,12 @@ class TestModbusTCP(unittest.IsolatedAsyncioTestCase):
             reconnect_delay_max=10,
             retries=3
         )
+
+    def test_invalid_builder_type(self):
+        with self.assertRaises(AssertionError):
+            # Pass an invalid builder type to the ModbusTCP constructor
+            # noinspection PyTypeChecker
+            ModbusTCP(builder="InvalidBuilderType")
 
 if __name__ == '__main__':
     unittest.main()

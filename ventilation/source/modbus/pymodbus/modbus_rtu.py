@@ -8,8 +8,7 @@ class ModbusRTU(ModbusBase):
         # Lazy import to avoid circular dependency
         from modbus.modus_rtu_builder import ModbusRTUBuilder
 
-        if not isinstance(builder, ModbusRTUBuilder):
-            raise ValueError("builder must be an instance of ModbusRTUBuilder")
+        assert isinstance(builder, ModbusRTUBuilder), "builder must be an instance of ModbusRTUBuilder"
 
         client = AsyncModbusSerialClient(
             port=builder.serial_port.value,

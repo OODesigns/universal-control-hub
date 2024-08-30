@@ -54,13 +54,3 @@ class ModbusClientManager:
                 status=ConnectionStatus.EXCEPTION,
                 details=f"Error occurred during disconnect: {str(e)}"
             )
-
-    async def reconnect(self) -> ConnectionResponse:
-        disconnect_result = self.disconnect()
-        if disconnect_result.status == ConnectionStatus.OK:
-            return await self.connect()
-        else:
-            return ConnectionResponse(
-                status=ConnectionStatus.EXCEPTION,
-                details=f"Reconnection failed: {disconnect_result.details}"
-            )

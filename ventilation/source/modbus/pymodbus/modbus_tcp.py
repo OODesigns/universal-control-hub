@@ -8,8 +8,7 @@ class ModbusTCP(ModbusBase):
         # Lazy import to avoid circular dependency
         from modbus.modbus_tcp_builder import ModbusTCPBuilder
 
-        if not isinstance(builder, ModbusTCPBuilder):
-            raise ValueError("builder must be an instance of ModbusTCPBuilder")
+        assert isinstance(builder, ModbusTCPBuilder), "builder must be an instance of ModbusTCPBuilder"
 
         client = AsyncModbusTcpClient(
             host=builder.ip_address.value,
