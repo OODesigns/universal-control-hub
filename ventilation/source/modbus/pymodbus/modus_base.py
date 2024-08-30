@@ -1,11 +1,10 @@
 from pymodbus.client import ModbusBaseClient
 
-from modbus.pymodbus.modbus_client_manager import ModbusClientManager
+from modbus.pymodbus.modbus_client_manager import ModbusClientManager, ConnectionResponse
 from modbus.pymodbus.py_modbus_result import PyModbusCoilResult, PyModbusDiscreteInputResult, \
     PyModbusInputRegisterResult, PyModbusHoldingRegisterResult
 from modbus.modbus_builder import ModbusBuilder
 from modbus.modbus_reader import ModbusBitReader, ModbusWordReader
-from utils.value import ValidatedResponse
 from modbus.modbus import ModbusInterface, ModbusData
 
 class ModbusBase(ModbusInterface):
@@ -31,10 +30,10 @@ class ModbusBase(ModbusInterface):
                 self._client, address, count)
         )
 
-    async def connect(self) -> ValidatedResponse:
+    async def connect(self) -> ConnectionResponse:
         return await self._client_manager.connect()
 
-    def disconnect(self) -> ValidatedResponse:
+    def disconnect(self) -> ConnectionResponse:
         return self._client_manager.disconnect()
 
     async def read(self) -> ModbusData:
