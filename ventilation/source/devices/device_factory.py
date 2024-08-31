@@ -78,9 +78,9 @@ class DeviceFactory:
     def _load_registered_devices(cls):
         """Load the registered devices by importing the devices module."""
         if not cls._registry:
-            importlib.import_module(DEVICES) # pragma: no cover
+            importlib.import_module(DEVICES)
 
     @classmethod
     def _registered_devices_loaded(cls):
         """Check if the devices module is already loaded in sys.modules."""
-        return DEVICES in sys.modules # pragma: no cover
+        return DEVICES in sys.modules
