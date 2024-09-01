@@ -5,8 +5,6 @@ from modbus.modbus_tcp_builder import ModbusTCPBuilder
 from modbus.modus_rtu_builder import ModbusRTUBuilder
 from modbus.pymodbus.modus_client import ModbusClient
 
-
-@DeviceFactory.register_dependency('modbus')
 class ModbusFactory:
     @classmethod
     def create_modbus(cls, mode: ModbusMode, builder: ModbusBuilder, **kwargs) -> ModbusClient:

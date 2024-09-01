@@ -5,7 +5,7 @@ from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext
 from pymodbus.device import ModbusDeviceIdentification
 from pymodbus.server import StartTcpServer
 
-from devices.blauberg_registers import CoilRegister, HoldingRegister, DiscreteInputs, InputRegisters
+from devices.blauberg.blauberg_registers import CoilRegister, HoldingRegister, DiscreteInputs, InputRegisters
 
 MAX_BYTE_VALUE = 255
 

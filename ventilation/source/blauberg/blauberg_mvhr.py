@@ -1,7 +1,7 @@
+from blauberg.blauberg_mvhr_repository import BlaubergMVHRRepository
+from blauberg.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
 from config.config_loader import ConfigLoader
-from devices.blauberg_mvhr_repository import BlaubergMVHRRepository
 from devices.device_factory import DeviceFactory
-from devices.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
 from devices.mvhr import MVHR
 from modbus.modbus import MODBUS, ModbusInterface, ModbusMode
 from modbus.modbus_builder import ModbusBuilder
@@ -18,8 +18,6 @@ MVHR_RETRIES = 'mvhr-retries'
 MVHR_RECONNECT_DELAY = 'mvhr-reconnect-delay'
 MVHR_RECONNECT_DELAY_MAX = 'mvhr-reconnect-delay-max'
 
-
-@DeviceFactory.register_device('blauberg_mvhr')
 class BlaubergMVHR(MVHR):
     required_dependencies = [MODBUS]
 

@@ -1,5 +1,6 @@
 import unittest
-from devices.blauberg_temperature import BlaubergTemperature
+
+from blauberg.blauberg_temperature import BlaubergTemperature
 from utils.value import ValueStatus
 
 class TestBlaubergTemperature(unittest.TestCase):

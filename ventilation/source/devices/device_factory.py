@@ -1,13 +1,13 @@
 import importlib
+import pkgutil
 import sys
 from dataclasses import dataclass
 from enum import Enum
-
 from config.config_factory import ConfigFactory
 from devices.device import Device
 from typing import Optional
 
-DEVICES = "devices"
+REGISTERED = "registered"
 
 class DeviceStatus(Enum):
     VALID = 0
@@ -29,20 +29,14 @@ class DeviceFactory:
             self._load_registered_devices()
 
     @classmethod
-    def register_device(cls, name):
-        """Decorator to register a device class with the factory."""
-        def decorator(device_class):
+    def register_device(cls, name, device_class):
+        if issubclass(device_class, Device) and name not in cls._registry:
             cls._registry[name] = device_class
-            return device_class
-        return decorator
 
     @classmethod
-    def register_dependency(cls, name):
-        """Decorator to register a dependencies class with the factory."""
-        def decorator(dependency_class):
-            cls._dependency[name] = dependency_class
-            return dependency_class
-        return decorator
+    def register_dependency(cls, name, dependency_class:any):
+         if name not in cls._dependency:
+             cls._dependency[name] = dependency_class
 
     def create_device(self, device_name) -> DeviceResponse:
         """Factory method to create a device instance."""
@@ -81,11 +75,20 @@ class DeviceFactory:
 
     @classmethod
     def _load_registered_devices(cls):
-        """Load the registered devices by importing the devices module."""
-        if not cls._registry:
-            importlib.import_module(DEVICES)
+        """Dynamically import all modules in the specified package."""
+        try:
+            package = importlib.import_module(REGISTERED)
+        except ImportError as e:
+            raise ImportError(f"Failed to import package '{REGISTERED}': {e}")
+
+        for _, module_name, _ in pkgutil.iter_modules(package.__path__):
+            try:
+                importlib.import_module(f"{REGISTERED}.{module_name}")
+            except ImportError as e:
+                raise ImportError(f"Failed to import module '{module_name}' from '{REGISTERED}': {e}")
+
 
     @classmethod
     def _registered_devices_loaded(cls):
         """Check if the devices module is already loaded in sys.modules."""
-        return DEVICES in sys.modules
+        return REGISTERED in sys.modules

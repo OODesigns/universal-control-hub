@@ -1,13 +1,13 @@
 import unittest
 from unittest.mock import MagicMock, AsyncMock
-from devices.blauberg_mvhr import BlaubergMVHR
+from blauberg.blauberg_mvhr import BlaubergMVHR
+from blauberg.blauberg_mvhr_repository import BlaubergMVHRRepository
+from blauberg.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
 from config.config_loader import ConfigLoader
 from modbus.modbus import ModbusInterface, ModbusMode, ModbusData
 from modbus.modbus_factory import ModbusFactory
 from utils.tcp_values import IPAddress, Port
 from utils.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
-from devices.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
-from devices.blauberg_mvhr_repository import BlaubergMVHRRepository
 from utils.connection_reponse import ConnectionResponse, ConnectionStatus
 from utils.value import ValidatedResponse, ValueStatus
 

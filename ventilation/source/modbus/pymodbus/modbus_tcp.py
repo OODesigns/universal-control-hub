@@ -1,8 +1,6 @@
 from pymodbus.client import AsyncModbusTcpClient
-from devices.device_factory import DeviceFactory
 from modbus.pymodbus.modus_client import ModbusClient
 
-@DeviceFactory.register_dependency('modbus_tcp')
 class ModbusTCP(ModbusClient):
     def __init__(self, builder):
         # Lazy import to avoid circular dependency
