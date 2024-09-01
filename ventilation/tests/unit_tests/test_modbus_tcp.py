@@ -19,7 +19,7 @@ class TestModbusTCP(unittest.IsolatedAsyncioTestCase):
             .set_reconnect_delay_max(ReconnectDelayMax(10))
 
     @patch('modbus.pymodbus.modbus_tcp.AsyncModbusTcpClient')
-    @patch('modbus.pymodbus.modus_base.ModbusClientManager')
+    @patch('modbus.pymodbus.modus_client.ModbusConnectionManager')
     async def test_connect(self, mock_client_manager_cls, mock_client_cls):
         mock_client = AsyncMock()
         mock_client_cls.return_value = mock_client

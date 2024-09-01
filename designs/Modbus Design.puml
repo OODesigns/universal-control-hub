@@ -1,0 +1,24 @@
+@startuml
+'https://plantuml.com/class-diagram
+!theme spacelab
+
+class ModbusFactory{}
+class BlaubergMVHR{}
+class ModbusClient{}
+class ModbusTCP{}
+class ModbusRTU{}
+class ModbusConnectionManager
+note bottom
+ Decorates Modbus TCP and RTU Connection Responses
+end note
+protocol Pymodbus{}
+
+BlaubergMVHR  --  ModbusFactory
+BlaubergMVHR  --  ModbusClient
+ModbusFactory  --  ModbusClient: creates
+ModbusClient -- ModbusTCP
+ModbusClient -- ModbusRTU
+ModbusClient -- Pymodbus: uses this library
+ModbusClient -- ModbusConnectionManager
+
+@enduml

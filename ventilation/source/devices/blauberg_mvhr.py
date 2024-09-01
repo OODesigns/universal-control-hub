@@ -7,6 +7,7 @@ from modbus.modbus import MODBUS, ModbusInterface, ModbusMode
 from modbus.modbus_builder import ModbusBuilder
 from modbus.modbus_factory import ModbusFactory
 from mvhr_repository import MVHRRepositoryInterface
+from utils.connection_reponse import ConnectionResponse
 from utils.tcp_values import IPAddress, Port
 import utils.modbus_values
 
@@ -23,7 +24,8 @@ class BlaubergMVHR(MVHR):
     required_dependencies = [MODBUS]
 
     def __init__(self, config_loader: ConfigLoader, modbus_factory: ModbusFactory):
-        super().__init__(config_loader, modbus_factory)
+        super().__init__(config_loader)
+        self._modbus_factory = modbus_factory
 
         # Create a ModbusBuilder with common settings using specific size objects
         modbus_builder = ModbusBuilder()
@@ -54,3 +56,9 @@ class BlaubergMVHR(MVHR):
 
     async def read_data(self) -> MVHRRepositoryInterface:
         return BlaubergMVHRRepository(await self._modbus.read())
+
+    def stop(self) -> ConnectionResponse:
+        return self.modbus.disconnect()
+
+    async def start(self) -> ConnectionResponse:
+        return await self.modbus.connect()

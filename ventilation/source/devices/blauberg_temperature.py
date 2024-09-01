@@ -1,5 +1,5 @@
 from utils.temperaturecelsius import TemperatureCelsius
-from utils.value import RangeValidatedValue, ValidatedResponse, ValueStatus
+from utils.value import ValidatedResponse, ValueStatus
 
 SHORT_CIRCUIT = "Sensor short circuit"
 NO_SENSOR = "No sensor detected"

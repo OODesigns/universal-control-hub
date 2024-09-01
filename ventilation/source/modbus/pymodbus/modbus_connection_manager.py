@@ -1,19 +1,9 @@
-from dataclasses import dataclass
-from enum import Enum
-
 from pymodbus.client import ModbusBaseClient
 
-class ConnectionStatus(Enum):
-    OK = "OK"
-    EXCEPTION = "EXCEPTION"
-    FAILED = "FAILED"
+from utils.connection_reponse import ConnectionResponse, ConnectionStatus
 
-@dataclass(frozen=True)
-class ConnectionResponse:
-    status: ConnectionStatus
-    details: str
 
-class ModbusClientManager:
+class ModbusConnectionManager:
     def __init__(self, client: ModbusBaseClient):
         self.client = client
 

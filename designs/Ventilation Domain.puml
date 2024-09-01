@@ -8,6 +8,10 @@ class MVHR {}
 
 class TemperatureSensor{}
 
+class BlaubergMVHR{}
+
+class Modbus{}
+
 class Device{}
 
 class ConfigStore{}
@@ -15,6 +19,8 @@ class ConfigStore{}
 class ConfigLoader{}
 note bottom
  MVHR Modbus definition for Blauberg
+ TemperatureSensor will use it to define each unit
+ Could we use it to also define which dependency to use
 end note
 
 class VentilationConfig
@@ -24,6 +30,8 @@ end note
 
 VentilationConfig "1"-- "1" ConfigStore
 Ventilation "1"--VentilationConfig
+BlaubergMVHR "1" -- "1" Modbus: uses to connect to actual unit
+MVHR "1" -- "1" BlaubergMVHR
 Device <|-- MVHR
 Device <|-- TemperatureSensor
 Device "1" -- "1" ConfigLoader: uses it to define device

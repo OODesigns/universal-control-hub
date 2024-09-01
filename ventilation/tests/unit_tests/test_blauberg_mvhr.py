@@ -8,8 +8,8 @@ from utils.tcp_values import IPAddress, Port
 from utils.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
 from devices.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
 from devices.blauberg_mvhr_repository import BlaubergMVHRRepository
+from utils.connection_reponse import ConnectionResponse, ConnectionStatus
 from utils.value import ValidatedResponse, ValueStatus
-
 
 class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
 
@@ -63,19 +63,51 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
     async def test_modbus_startup(self):
         """Test the startup sequence of the BlaubergMVHR."""
         # Simulate a successful connection
-        self.mock_modbus_interface.connect.return_value = None
-        await self.blauberg_mvhr.start()
+        mock_response = ConnectionResponse(status=ConnectionStatus.OK, details="Connected successfully")
+        self.mock_modbus_interface.connect.return_value = mock_response
 
+        response = await self.blauberg_mvhr.start()
+
+        # Ensure the connect method was called
         self.mock_modbus_interface.connect.assert_called_once()
+
+        # Verify the response
+        self.assertIsInstance(response, ConnectionResponse)
+        self.assertEqual(response.status, ConnectionStatus.OK)
+        self.assertEqual(response.details, "Connected successfully")
 
     async def test_modbus_startup_failure(self):
         """Test the failure handling during the startup sequence."""
-        # Simulate a connection failure
-        self.mock_modbus_interface.connect.side_effect = Exception("Connection failed")
-        with self.assertRaises(Exception):  # Expecting the startup to raise an exception
-            await self.blauberg_mvhr.start()
+        # Simulate a connection failure with an appropriate ConnectionResponse
+        mock_response = ConnectionResponse(status=ConnectionStatus.FAILED, details="Connection failed")
+        self.mock_modbus_interface.connect.return_value = mock_response
 
+        response = await self.blauberg_mvhr.start()
+
+        # Ensure the connect method was called
         self.mock_modbus_interface.connect.assert_called_once()
+
+        # Verify the response
+        self.assertIsInstance(response, ConnectionResponse)
+        self.assertEqual(response.status, ConnectionStatus.FAILED)
+        self.assertEqual(response.details, "Connection failed")
+
+    async def test_modbus_stop(self):
+        """Test the stop method of BlaubergMVHR."""
+        # Simulate a successful disconnect
+        mock_response = ConnectionResponse(status=ConnectionStatus.OK, details="Disconnected successfully")
+        self.mock_modbus_interface.disconnect.return_value = mock_response
+
+        # Call the stop method
+        response = self.blauberg_mvhr.stop()
+
+        # Ensure the disconnect method was called
+        self.mock_modbus_interface.disconnect.assert_called_once()
+
+        # Verify that the response is as expected
+        self.assertIsInstance(response, ConnectionResponse)
+        self.assertEqual(response.status, ConnectionStatus.OK)
+        self.assertEqual(response.details, "Disconnected successfully")
 
     async def test_read_data(self):
         """Test that the read_data method returns a BlaubergMVHRRepository instance with correct data."""
@@ -85,7 +117,10 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
 
         repository = await self.blauberg_mvhr.read_data()
 
+        # Ensure the read method was called
         self.mock_modbus_interface.read.assert_called_once()
+
+        # Verify that the repository is correctly returned
         self.assertIsInstance(repository, BlaubergMVHRRepository)
         self.assertEqual(repository.data, mock_modbus_data)
 
@@ -141,8 +176,6 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(ValueError) as context_out:
             _ = repository.temp_supply_out.value
         self.assertEqual(str(context_out.exception), "Cannot access value: Sensor short circuit")
-
-
 
 if __name__ == '__main__':
     unittest.main()

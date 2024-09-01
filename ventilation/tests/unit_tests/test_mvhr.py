@@ -1,47 +1,72 @@
 import unittest
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock
 from config.config_loader import ConfigLoader
 from devices.mvhr import MVHR
-from modbus.modbus import ModbusInterface
-from modbus.modbus_builder import ModbusBuilder
-from modbus.modbus_factory import ModbusFactory
+from mvhr_repository import MVHRRepositoryInterface
+from utils.connection_reponse import ConnectionResponse, ConnectionStatus
 
 
-class TestMVHRAsync(unittest.IsolatedAsyncioTestCase):
+# Creating a concrete implementation of MVHR for testing
+class TestMVHR(MVHR):
+    async def read_data(self) -> MVHRRepositoryInterface:
+        return MagicMock(spec=MVHRRepositoryInterface)
 
+    async def start(self) -> ConnectionResponse:
+        return ConnectionResponse(status=ConnectionStatus.OK, details="Started successfully")
+
+    def stop(self) -> ConnectionResponse:
+        return ConnectionResponse(status=ConnectionStatus.OK, details="Stopped successfully")
+
+
+class MVHRTestCase(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        # Mock the ConfigLoader and ModbusFactory
-        self.config_loader = MagicMock(spec=ConfigLoader)
-        self.modbus_factory = MagicMock(spec=ModbusFactory)
+        self.mock_config_loader = MagicMock(spec=ConfigLoader)
+        self.device = TestMVHR(self.mock_config_loader)
 
-        # Create a basic ModbusBuilder instance
-        self.modbus_builder = ModbusBuilder()
+    def test_initialization(self):
+        self.assertIsInstance(self.device, MVHR)
+        self.assertEqual(self.device._config_loader, self.mock_config_loader)
 
-        # Define a simple subclass for testing
-        class TestMVHR(MVHR):
-            def __init__(self, config_loader: ConfigLoader, modbus_factory: ModbusFactory, builder: ModbusBuilder):
-                super().__init__(config_loader, modbus_factory)
-                self.mock_modbus_interface = AsyncMock(spec=ModbusInterface)
+    async def test_start(self):
+        response = await self.device.start()
+        self.assertIsInstance(response, ConnectionResponse)
+        self.assertEqual(response.status, ConnectionStatus.OK)
+        self.assertEqual(response.details, "Started successfully")
 
-            @property
-            def modbus(self) -> ModbusInterface:
-                return self.mock_modbus_interface
+    async def test_read_data(self):
+        data = await self.device.read_data()
+        self.assertIsInstance(data, MVHRRepositoryInterface)
 
-            async def read_data(self):
-                pass
+    def test_stop(self):
+        response = self.device.stop()
+        self.assertIsInstance(response, ConnectionResponse)
+        self.assertEqual(response.status, ConnectionStatus.OK)
+        self.assertEqual(response.details, "Stopped successfully")
 
-        # Instantiate the test MVHR class
-        self.mvhr = TestMVHR(self.config_loader, self.modbus_factory, self.modbus_builder)
 
-    async def test_start_connects_modbus(self):
-        """Test that the ModbusInterface connect method is called on start."""
-        await self.mvhr.start()
-        self.mvhr.modbus.connect.assert_called_once()
+class ConnectionResponseTestCase(unittest.TestCase):
 
-    def test_stop_disconnects_modbus(self):
-        """Test that the ModbusInterface disconnect method is called on stop."""
-        self.mvhr.stop()
-        self.mvhr.modbus.disconnect.assert_called_once()
+    def test_connection_response_ok(self):
+        response = ConnectionResponse(status=ConnectionStatus.OK, details="All good")
+        self.assertEqual(response.status, ConnectionStatus.OK)
+        self.assertEqual(response.details, "All good")
+
+    def test_connection_response_failed(self):
+        response = ConnectionResponse(status=ConnectionStatus.FAILED, details="Something went wrong")
+        self.assertEqual(response.status, ConnectionStatus.FAILED)
+        self.assertEqual(response.details, "Something went wrong")
+
+
+class MVHRRepositoryInterfaceTestCase(unittest.TestCase):
+
+    def test_temp_supply_in(self):
+        repo = MagicMock(spec=MVHRRepositoryInterface)
+        self.assertTrue(hasattr(repo, 'temp_supply_in'))
+
+    def test_temp_supply_out(self):
+        repo = MagicMock(spec=MVHRRepositoryInterface)
+        self.assertTrue(hasattr(repo, 'temp_supply_out'))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,13 +2,13 @@ import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 from pymodbus.client import ModbusBaseClient
 
-from modbus.pymodbus.modbus_client_manager import ModbusClientManager, ConnectionStatus
+from modbus.pymodbus.modbus_connection_manager import ModbusConnectionManager, ConnectionStatus
 
 class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
         self.mock_client = AsyncMock(spec=ModbusBaseClient)
-        self.mock_client_manager = ModbusClientManager(client=self.mock_client)
+        self.mock_client_manager = ModbusConnectionManager(client=self.mock_client)
 
     async def test_connect_success(self):
         self.mock_client.connected = True

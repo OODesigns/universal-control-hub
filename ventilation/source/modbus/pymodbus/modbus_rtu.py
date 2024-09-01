@@ -1,9 +1,9 @@
 from pymodbus.client import AsyncModbusSerialClient
 from devices.device_factory import DeviceFactory
-from modbus.pymodbus.modus_base import ModbusBase
+from modbus.pymodbus.modus_client import ModbusClient
 
 @DeviceFactory.register_dependency('modbus_rtu')
-class ModbusRTU(ModbusBase):
+class ModbusRTU(ModbusClient):
     def __init__(self, builder):
         # Lazy import to avoid circular dependency
         from modbus.modus_rtu_builder import ModbusRTUBuilder
