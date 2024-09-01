@@ -13,7 +13,7 @@ class ConfigFactory:
         """
         self.directory = directory
 
-    def create_loader(self, file_name):
+    def create_loader(self, file_name) -> ConfigLoader:
         """
         Creates an instance of ConfigLoader for the given file name.
 
@@ -23,7 +23,7 @@ class ConfigFactory:
         full_path = os.path.join(self.directory, file_name)
         return ConfigLoader(full_path)
 
-    def create_store(self, file_name):
+    def create_store(self, file_name) -> ConfigStore:
         """
         Creates an instance of ConfigStore for the given file name.
 

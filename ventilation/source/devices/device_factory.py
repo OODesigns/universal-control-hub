@@ -53,10 +53,15 @@ class DeviceFactory:
                 device=None
             )
         device_class = DeviceFactory._registry[device_name]
+        config_loader = self._config_factory.create_loader(device_name)
 
-        # Prepare dependencies based on the device's required_dependencies
+        # Load dependencies from both the config and required_dependencies
         dependencies = {}
-        for dep_name in device_class.required_dependencies:
+
+        # Load dependencies from the config_loader for this device
+        config_dependencies = config_loader.get_array('dependencies')
+
+        for dep_name in set(config_dependencies + device_class.required_dependencies):
             if dep_name in DeviceFactory._dependency:
                 dependencies[dep_name] = DeviceFactory._dependency[dep_name]()
             else:
@@ -67,7 +72,7 @@ class DeviceFactory:
                 )
 
         # Create the device with the injected dependencies
-        device = device_class(self._config_factory.create_loader(device_name), **dependencies)
+        device = device_class(config_loader, **dependencies)
         return DeviceResponse(
             status=DeviceStatus.VALID,
             details=f"Device {device_name} has been initialized.",

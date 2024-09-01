@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 import sys
-
 from config.config_factory import ConfigFactory
+from config.config_loader import ConfigLoader
 from devices.device_factory import DeviceFactory, DeviceStatus
 
 
@@ -102,13 +102,19 @@ class TestDeviceFactory(unittest.TestCase):
         self.assertIn("not registered", response.details)
 
     def test_create_device_missing_dependency(self):
-        config_factory_mock = MagicMock(spec=ConfigFactory)
+        config_loader_mock = MagicMock(spec=ConfigLoader)
 
+        config_factory_mock = MagicMock(spec=ConfigFactory)
+        config_factory_mock.create_loader.return_value = config_loader_mock
+
+        config_loader_mock.get_array.return_value = []
+
+        # noinspection PyUnusedLocal
         @DeviceFactory.register_device("TestDevice")
         class TestDevice:
             required_dependencies = ['missing']
 
-            def __init__(self, config_loader, missing):
+            def __init__(self, config_loader):
                 self.config_loader = config_loader
 
         factory = DeviceFactory(config_factory_mock)
@@ -119,8 +125,12 @@ class TestDeviceFactory(unittest.TestCase):
         self.assertIn("Dependency 'missing' is required", response.details)
 
     def test_create_device_with_dependency(self):
+        config_loader_mock = MagicMock(spec=ConfigLoader)
+
         config_factory_mock = MagicMock(spec=ConfigFactory)
-        dependency_mock = MagicMock()
+        config_factory_mock.create_loader.return_value = config_loader_mock
+
+        config_loader_mock.get_array.return_value = []
 
         @DeviceFactory.register_dependency("test_dependency")
         class TestDependency:
@@ -140,6 +150,42 @@ class TestDeviceFactory(unittest.TestCase):
         self.assertEqual(response.status, DeviceStatus.VALID)
         self.assertIsInstance(response.device, TestDevice)
         self.assertIsInstance(response.device.test_dependency, TestDependency)
+
+    def test_create_device_with_config_extended_dependencies(self):
+        # Mock the configuration to return additional dependencies from a file
+        config_factory_mock = MagicMock(spec=ConfigFactory)
+        loader_mock = MagicMock(spec=ConfigLoader)
+        loader_mock.get_array.return_value = ["extra_dependency"]
+        config_factory_mock.create_loader.return_value = loader_mock
+
+        # Register a core dependency
+        @DeviceFactory.register_dependency("core_dependency")
+        class CoreDependency:
+            pass
+
+        # Register an extra dependency
+        @DeviceFactory.register_dependency("extra_dependency")
+        class ExtraDependency:
+            pass
+
+        @DeviceFactory.register_device("TestDevice")
+        class TestDevice:
+            required_dependencies = ["core_dependency"]
+
+            def __init__(self, config_loader, core_dependency, extra_dependency):
+                self.config_loader = config_loader
+                self.core_dependency = core_dependency
+                self.extra_dependency = extra_dependency
+
+        factory = DeviceFactory(config_factory_mock)
+        response = factory.create_device("TestDevice")
+
+        self.assertEqual(response.status, DeviceStatus.VALID)
+        self.assertIsInstance(response.device, TestDevice)
+        self.assertIsInstance(response.device.core_dependency, CoreDependency)
+        self.assertIsInstance(response.device.extra_dependency, ExtraDependency)
+
+
 
 if __name__ == '__main__':
     unittest.main()

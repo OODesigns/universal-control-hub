@@ -20,7 +20,7 @@ class ConfigLoader:
                 json.dump({}, f)
 
     def _read_store(self):
-        """Loads the content of the store into the `self.data` dictionary."""
+        """Loads the content of the store into the `self._data` dictionary."""
         with open(self._file_name, 'r') as f:
             self._data = json.load(f)
 
@@ -32,3 +32,15 @@ class ConfigLoader:
         :return: The value associated with the key, or None if the key does not exist.
         """
         return self._data.get(key)
+
+    def get_array(self, key):
+        """
+        Gets an array of values associated with the given key.
+
+        :param key: The key whose value is to be retrieved.
+        :return: An array of values associated with the key, or an empty list if the key does not exist or is not an array.
+        """
+        value = self._data.get(key)
+        if isinstance(value, list):
+            return value
+        return []
