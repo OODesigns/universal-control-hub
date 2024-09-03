@@ -4,7 +4,7 @@ from enum import Enum
 from typing import List
 from modbus.modbus_builder import ModbusBuilder
 from utils.connection_reponse import ConnectionResponse
-from utils.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
+from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
 from utils.value import ValidatedResponse
 
 MODBUS = 'modbus'
@@ -70,13 +70,13 @@ class ModbusInterface(ABC):
         return self._holding_register_size
 
     @abstractmethod
-    async def connect(self) -> ConnectionResponse:
-        raise NotImplementedError()
+    async def connect(self) -> ConnectionResponse: #pragma: nocover
+        pass
 
     @abstractmethod
-    def disconnect(self) -> ConnectionResponse:
-        raise NotImplementedError()
+    def disconnect(self) -> ConnectionResponse: #pragma: nocover
+        pass
 
     @abstractmethod
-    async def read(self) -> ModbusData:
-        raise NotImplementedError()
+    async def read(self) -> ModbusData: #pragma: nocover
+       pass

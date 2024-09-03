@@ -1,5 +1,5 @@
 import unittest
-from utils.modbus_values import (
+from modbus.modbus_values import (
     Retries, ReconnectDelay, ReconnectDelayMax, Timeout, CoilSize, DiscreteInputSize,
     InputRegisterSize, HoldingRegisterSize, StrictRetries, StrictReconnectDelay,
     StrictReconnectDelayMax, StrictTimeout, StrictCoilSize, StrictDiscreteInputSize,

@@ -1,11 +1,12 @@
 from pymodbus.client import ModbusBaseClient
-
-from modbus.pymodbus.modbus_connection_manager import ModbusConnectionManager, ConnectionResponse
-from modbus.pymodbus.py_modbus_result import PyModbusCoilResult, PyModbusDiscreteInputResult, \
-    PyModbusInputRegisterResult, PyModbusHoldingRegisterResult
 from modbus.modbus_builder import ModbusBuilder
 from modbus.modbus_reader import ModbusBitReader, ModbusWordReader
 from modbus.modbus import ModbusInterface, ModbusData
+from py_modbus.modbus_connection_manager import ModbusConnectionManager
+from py_modbus.py_modbus_result import (PyModbusCoilResult, PyModbusDiscreteInputResult,
+                                        PyModbusInputRegisterResult, PyModbusHoldingRegisterResult)
+from utils.connection_reponse import ConnectionResponse
+
 
 class ModbusClient(ModbusInterface):
     def __init__(self, client: ModbusBaseClient, builder: ModbusBuilder):

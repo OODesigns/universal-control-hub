@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from utils.rtu_values import BaudRate, StopBits, SerialPort, StrictBaudRate, StrictStopBits, StrictSerialPort
+from modbus.rtu_values import BaudRate, StopBits, SerialPort, StrictBaudRate, StrictStopBits, StrictSerialPort
 from utils.value import ValueStatus
 
 

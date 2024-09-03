@@ -1,6 +1,6 @@
 import unittest
 from modbus.modbus_builder import ModbusBuilder
-import utils.modbus_values
+import modbus.modbus_values
 from utils.value import ValueStatus
 
 
@@ -8,14 +8,14 @@ class TestModbusBuilder(unittest.TestCase):
 
     def test_builder_with_valid_values(self):
         builder = ModbusBuilder()
-        builder.set_coil_size(utils.modbus_values.CoilSize(10))
-        builder.set_discrete_input_size(utils.modbus_values.DiscreteInputSize(20))
-        builder.set_input_register_size(utils.modbus_values.InputRegisterSize(30))
-        builder.set_holding_register_size(utils.modbus_values.HoldingRegisterSize(40))
-        builder.set_timeout(utils.modbus_values.Timeout(5.0))
-        builder.set_retries(utils.modbus_values.Retries(5))
-        builder.set_reconnect_delay(utils.modbus_values.ReconnectDelay(2.0))
-        builder.set_reconnect_delay_max(utils.modbus_values.ReconnectDelayMax(10.0))
+        builder.set_coil_size(modbus.modbus_values.CoilSize(10))
+        builder.set_discrete_input_size(modbus.modbus_values.DiscreteInputSize(20))
+        builder.set_input_register_size(modbus.modbus_values.InputRegisterSize(30))
+        builder.set_holding_register_size(modbus.modbus_values.HoldingRegisterSize(40))
+        builder.set_timeout(modbus.modbus_values.Timeout(5.0))
+        builder.set_retries(modbus.modbus_values.Retries(5))
+        builder.set_reconnect_delay(modbus.modbus_values.ReconnectDelay(2.0))
+        builder.set_reconnect_delay_max(modbus.modbus_values.ReconnectDelayMax(10.0))
 
         self.assertEqual(builder.coil_size.value, 10)
         self.assertEqual(builder.discrete_input_size.value, 20)
@@ -27,47 +27,47 @@ class TestModbusBuilder(unittest.TestCase):
         self.assertEqual(builder.reconnect_delay_max.value, 10.0)
 
     def test_builder_with_invalid_coil_size(self):
-        invalid_coil_size = utils.modbus_values.CoilSize(-1)
+        invalid_coil_size = modbus.modbus_values.CoilSize(-1)
         self.assertEqual(invalid_coil_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_discrete_input_size(self):
-        invalid_discrete_input_size = utils.modbus_values.DiscreteInputSize(-1)
+        invalid_discrete_input_size = modbus.modbus_values.DiscreteInputSize(-1)
         self.assertEqual(invalid_discrete_input_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_input_register_size(self):
-        invalid_input_register_size = utils.modbus_values.InputRegisterSize(-1)
+        invalid_input_register_size = modbus.modbus_values.InputRegisterSize(-1)
         self.assertEqual(invalid_input_register_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_holding_register_size(self):
-        invalid_holding_register_size = utils.modbus_values.HoldingRegisterSize(-1)
+        invalid_holding_register_size = modbus.modbus_values.HoldingRegisterSize(-1)
         self.assertEqual(invalid_holding_register_size.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_timeout(self):
-        invalid_timeout = utils.modbus_values.Timeout(-1)
+        invalid_timeout = modbus.modbus_values.Timeout(-1)
         self.assertEqual(invalid_timeout.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_retries(self):
-        invalid_retries = utils.modbus_values.Retries(-1)
+        invalid_retries = modbus.modbus_values.Retries(-1)
         self.assertEqual(invalid_retries.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_reconnect_delay(self):
-        invalid_reconnect_delay = utils.modbus_values.ReconnectDelay(-1)
+        invalid_reconnect_delay = modbus.modbus_values.ReconnectDelay(-1)
         self.assertEqual(invalid_reconnect_delay.status, ValueStatus.EXCEPTION)
 
     def test_builder_with_invalid_reconnect_delay_max(self):
-        invalid_reconnect_delay_max = utils.modbus_values.ReconnectDelayMax(-1)
+        invalid_reconnect_delay_max = modbus.modbus_values.ReconnectDelayMax(-1)
         self.assertEqual(invalid_reconnect_delay_max.status, ValueStatus.EXCEPTION)
 
     def test_copy_constructor_with_valid_builder(self):
         original_builder = ModbusBuilder()
-        original_builder.set_coil_size(utils.modbus_values.CoilSize(10))
-        original_builder.set_discrete_input_size(utils.modbus_values.DiscreteInputSize(20))
-        original_builder.set_input_register_size(utils.modbus_values.InputRegisterSize(30))
-        original_builder.set_holding_register_size(utils.modbus_values.HoldingRegisterSize(40))
-        original_builder.set_timeout(utils.modbus_values.Timeout(5.0))
-        original_builder.set_retries(utils.modbus_values.Retries(5))
-        original_builder.set_reconnect_delay(utils.modbus_values.ReconnectDelay(2.0))
-        original_builder.set_reconnect_delay_max(utils.modbus_values.ReconnectDelayMax(10.0))
+        original_builder.set_coil_size(modbus.modbus_values.CoilSize(10))
+        original_builder.set_discrete_input_size(modbus.modbus_values.DiscreteInputSize(20))
+        original_builder.set_input_register_size(modbus.modbus_values.InputRegisterSize(30))
+        original_builder.set_holding_register_size(modbus.modbus_values.HoldingRegisterSize(40))
+        original_builder.set_timeout(modbus.modbus_values.Timeout(5.0))
+        original_builder.set_retries(modbus.modbus_values.Retries(5))
+        original_builder.set_reconnect_delay(modbus.modbus_values.ReconnectDelay(2.0))
+        original_builder.set_reconnect_delay_max(modbus.modbus_values.ReconnectDelayMax(10.0))
 
         copied_builder = ModbusBuilder(original_builder)
 
@@ -86,8 +86,8 @@ class TestModbusBuilder(unittest.TestCase):
 
     def test_builder_with_edge_values(self):
         builder = ModbusBuilder()
-        builder.set_coil_size(utils.modbus_values.CoilSize(1))
-        builder.set_coil_size(utils.modbus_values.CoilSize(65535))
+        builder.set_coil_size(modbus.modbus_values.CoilSize(1))
+        builder.set_coil_size(modbus.modbus_values.CoilSize(65535))
         self.assertEqual(builder.coil_size.value, 65535)
 
     def test_builder_with_invalid_types(self):

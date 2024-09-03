@@ -1,5 +1,7 @@
 from pymodbus.client import AsyncModbusSerialClient
-from modbus.pymodbus.modus_client import ModbusClient
+
+from py_modbus.modus_client import ModbusClient
+
 
 class ModbusRTU(ModbusClient):
     def __init__(self, builder):

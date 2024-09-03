@@ -2,16 +2,17 @@ import unittest
 from unittest.mock import MagicMock
 
 from modbus.modbus import ModbusInterface, ModbusData
-from utils.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
+from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
+from utils.connection_reponse import ConnectionResponse
 from utils.value import ValidatedResponse, ValueStatus
 
 
 # Creating a concrete subclass for testing purposes
 class TestModbusInterfaceConcrete(ModbusInterface):
-    async def connect(self) -> ValidatedResponse:
+    async def connect(self) -> ConnectionResponse:
         return await super().connect()
 
-    def disconnect(self) -> ValidatedResponse:
+    def disconnect(self) -> ConnectionResponse:
         return super().disconnect()
 
     async def read(self) -> ModbusData:
@@ -53,18 +54,6 @@ class TestModbusInterface(unittest.IsolatedAsyncioTestCase):
         # Test holding_register_size property
         result = self.modbus_interface.holding_register_size
         self.assertEqual(result, HoldingRegisterSize(40))
-
-    async def test_connect_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            await self.modbus_interface.connect()
-
-    async def test_disconnect_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            self.modbus_interface.disconnect()
-
-    async def test_read_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            await self.modbus_interface.read()
 
 class TestModbusData(unittest.TestCase):
 

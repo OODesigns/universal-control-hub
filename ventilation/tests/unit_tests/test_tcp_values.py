@@ -1,5 +1,5 @@
 import unittest
-from utils.tcp_values import IPAddress, Port, StrictIPAddress, StrictPort
+from modbus.tcp_values import IPAddress, Port, StrictIPAddress, StrictPort
 from utils.value import ValueStatus
 
 class TestTCPValues(unittest.TestCase):

@@ -1,6 +1,7 @@
 from re import compile
 
-from utils.value import Value, ValidatedValue, ValidatedResponse, ValueStatus, StrictValidatedValue, RangeValidatedValue
+from utils.value import (ValidatedValue, ValidatedResponse, ValueStatus,
+                         StrictValidatedValue, RangeValidatedValue)
 
 
 class IPAddress(ValidatedValue):
@@ -25,13 +26,16 @@ class IPAddress(ValidatedValue):
             value=ip_address
         )
 
+
 class StrictIPAddress(StrictValidatedValue, IPAddress):
     pass
+
 
 class Port(RangeValidatedValue):
     valid_types = (int,)
     low_value = 0
     high_value = 65535
+
 
 class StrictPort(StrictValidatedValue, Port):
     pass

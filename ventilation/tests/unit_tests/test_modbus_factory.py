@@ -1,14 +1,15 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from modbus.modbus_factory import ModbusFactory
 from modbus.modbus import ModbusMode
 from modbus.modbus_builder import ModbusBuilder
-from modbus.pymodbus.modbus_rtu import ModbusRTU
-from modbus.pymodbus.modbus_tcp import ModbusTCP
-from utils.tcp_values import IPAddress, Port
-from utils.rtu_values import BaudRate, ParityType, StopBits, SerialPort
-from utils.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize, Timeout, Retries, \
-    ReconnectDelay, ReconnectDelayMax
+from modbus.modbus_factory import ModbusFactory
+from modbus.tcp_values import IPAddress, Port
+from modbus.rtu_values import BaudRate, ParityType, StopBits, SerialPort
+from modbus.modbus_values import (CoilSize, DiscreteInputSize, InputRegisterSize,
+                                  HoldingRegisterSize, Timeout, Retries,
+                                  ReconnectDelay, ReconnectDelayMax)
+from py_modbus.modbus_rtu import ModbusRTU
+from py_modbus.modbus_tcp import ModbusTCP
 
 
 class TestModbusFactory(unittest.TestCase):
@@ -24,6 +25,10 @@ class TestModbusFactory(unittest.TestCase):
             .set_retries(Retries(3)) \
             .set_reconnect_delay(ReconnectDelay(0.1)) \
             .set_reconnect_delay_max(ReconnectDelayMax(300.0))
+
+        # Register the Modbus clients
+        ModbusFactory.register_modbus(ModbusMode.TCP, ModbusTCP)
+        ModbusFactory.register_modbus(ModbusMode.RTU, ModbusRTU)
 
     @patch('modbus.modbus_factory.ModbusTCPBuilder')
     def test_create_modbus_tcp(self, mock_modbus_tcp_builder):
@@ -42,7 +47,7 @@ class TestModbusFactory(unittest.TestCase):
         )
 
         # Assert that the builder was used correctly
-        mock_modbus_tcp_builder.assert_called_once_with(self.builder)
+        mock_modbus_tcp_builder.assert_called_once_with(self.builder, client_class=ModbusTCP)
         mock_tcp_builder.set_ip_address.assert_called_once_with(IPAddress("192.168.1.1"))
         mock_tcp_builder.set_port.assert_called_once_with(Port(502))
         mock_tcp_builder.build.assert_called_once()
@@ -70,7 +75,7 @@ class TestModbusFactory(unittest.TestCase):
         )
 
         # Assert that the builder was used correctly
-        mock_modbus_rtu_builder.assert_called_once_with(self.builder)
+        mock_modbus_rtu_builder.assert_called_once_with(self.builder, client_class=ModbusRTU)
         mock_rtu_builder.set_baud_rate.assert_called_once_with(BaudRate(9600))
         mock_rtu_builder.set_parity.assert_called_once_with(ParityType.EVEN)
         mock_rtu_builder.set_stop_bits.assert_called_once_with(StopBits(1))
@@ -82,15 +87,14 @@ class TestModbusFactory(unittest.TestCase):
 
 
     def test_create_modbus_invalid_mode(self):
-        """Test that an unsupported mode raises a ValueError."""
-        with self.assertRaises(ValueError) as context:
+        """Test that an unsupported mode raises an AssertionError."""
+        with self.assertRaises(AssertionError) as context:
             # noinspection PyTypeChecker
             ModbusFactory.create_modbus(
                 mode="INVALID_MODE",
                 builder=self.builder
             )
-        self.assertEqual(str(context.exception), "Unsupported mode. Use ModbusMode.TCP or ModbusMode.RTU.")
-
+        self.assertEqual(str(context.exception), "No client registered for mode INVALID_MODE")
 
 if __name__ == '__main__':
     unittest.main()

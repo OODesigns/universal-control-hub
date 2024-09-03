@@ -6,7 +6,7 @@ from utils.temperaturecelsius import TemperatureInterface
 
 class TemperatureSensorInterface(Device):
     @abstractmethod
-    def get_temperature(self) -> TemperatureInterface:
+    def get_temperature(self) -> TemperatureInterface: #prgma nocover
         """
         Gets the temperature. Must be overridden by child classes.
 

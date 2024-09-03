@@ -3,13 +3,11 @@ from unittest.mock import AsyncMock, create_autospec
 
 from pymodbus import ModbusException
 from pymodbus.pdu import ModbusResponse, ExceptionResponse
-from modbus.pymodbus.py_modbus_result import (
-    PyModbusCoilResult,
-    PyModbusDiscreteInputResult,
-    PyModbusInputRegisterResult,
-    PyModbusHoldingRegisterResult,
-    ValueStatus
-)
+
+from py_modbus.py_modbus_result import PyModbusCoilResult, PyModbusDiscreteInputResult, PyModbusInputRegisterResult, \
+    PyModbusHoldingRegisterResult
+from utils.value import ValueStatus
+
 
 class TestPyModbusCoilResult(unittest.IsolatedAsyncioTestCase):
 

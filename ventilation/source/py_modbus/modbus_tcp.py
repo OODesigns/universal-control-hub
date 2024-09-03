@@ -1,5 +1,7 @@
-from pymodbus.client import AsyncModbusTcpClient
-from modbus.pymodbus.modus_client import ModbusClient
+from pymodbus.client.tcp import AsyncModbusTcpClient
+
+from py_modbus.modus_client import ModbusClient
+
 
 class ModbusTCP(ModbusClient):
     def __init__(self, builder):

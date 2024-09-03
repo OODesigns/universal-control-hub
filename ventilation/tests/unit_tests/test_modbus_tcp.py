@@ -1,10 +1,11 @@
 import unittest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch, AsyncMock, Mock
 
 from modbus.modbus_tcp_builder import ModbusTCPBuilder
-from modbus.pymodbus.modbus_tcp import ModbusTCP
-from utils.tcp_values import IPAddress, Port
-from utils.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax
+from modbus.tcp_values import IPAddress, Port
+from modbus.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax
+from py_modbus.modbus_tcp import ModbusTCP
+
 
 class TestModbusTCP(unittest.IsolatedAsyncioTestCase):
 
@@ -18,29 +19,17 @@ class TestModbusTCP(unittest.IsolatedAsyncioTestCase):
             .set_reconnect_delay(ReconnectDelay(0.1)) \
             .set_reconnect_delay_max(ReconnectDelayMax(10))
 
-    @patch('modbus.pymodbus.modbus_tcp.AsyncModbusTcpClient')
-    @patch('modbus.pymodbus.modus_client.ModbusConnectionManager')
-    async def test_connect(self, mock_client_manager_cls, mock_client_cls):
-        mock_client = AsyncMock()
-        mock_client_cls.return_value = mock_client
-
-        mock_client_manager = AsyncMock()
-        mock_client_manager_cls.return_value = mock_client_manager
+    @patch('py_modbus.modbus_tcp.AsyncModbusTcpClient')
+    async def test_modbus_tcp_initialization(self, mock_async_client):
+        # Mock the async client to avoid actual network calls
+        mock_client_instance = AsyncMock()
+        mock_async_client.return_value = mock_client_instance
 
         # Instantiate ModbusTCP with the builder
-        modbus_tcp = self.builder.build()
+        modbus_tcp = ModbusTCP(self.builder)
 
-        # Perform the connect operation
-        await modbus_tcp.connect()
-
-        # Ensure the ModbusClientManager is initialized correctly
-        mock_client_manager_cls.assert_called_once_with(mock_client)
-
-        # Ensure connect is called on the client manager
-        mock_client_manager.connect.assert_called_once()
-
-        # Ensure the AsyncModbusTcpClient is instantiated with the correct parameters
-        mock_client_cls.assert_called_once_with(
+        # Ensure that the AsyncModbusTcpClient is initialized with the correct parameters
+        mock_async_client.assert_called_once_with(
             host='192.168.1.100',
             port=502,
             timeout=5,
@@ -48,6 +37,29 @@ class TestModbusTCP(unittest.IsolatedAsyncioTestCase):
             reconnect_delay_max=10,
             retries=3
         )
+        self.assertIsInstance(modbus_tcp, ModbusTCP)
+
+    @patch('py_modbus.modbus_tcp.AsyncModbusTcpClient')
+    async def test_connect(self, mock_async_client):
+        mock_client_instance = AsyncMock()
+        mock_async_client.return_value = mock_client_instance
+
+        modbus_tcp = ModbusTCP(self.builder)
+        await modbus_tcp.connect()
+
+        # Ensure the connect method is called on the mock client
+        mock_client_instance.connect.assert_called_once()
+
+    @patch('py_modbus.modbus_tcp.AsyncModbusTcpClient')
+    async def test_disconnect(self, mock_async_client):
+        mock_client_instance = Mock()
+        mock_async_client.return_value = mock_client_instance
+
+        modbus_tcp = ModbusTCP(self.builder)
+        modbus_tcp.disconnect()
+
+        # Ensure the disconnect method is called on the mock client
+        mock_client_instance.close.assert_called_once()
 
     def test_invalid_builder_type(self):
         with self.assertRaises(AssertionError):

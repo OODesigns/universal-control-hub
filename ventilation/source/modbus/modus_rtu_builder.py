@@ -1,15 +1,16 @@
+from typing import Type
 from modbus.modbus_builder import ModbusBuilder
-from modbus.pymodbus.modbus_rtu import ModbusRTU
-from utils.rtu_values import BaudRate, StopBits, SerialPort, ParityType
-
+from modbus.rtu_values import BaudRate, StopBits, SerialPort, ParityType
+from modbus.modbus import ModbusInterface
 
 class ModbusRTUBuilder(ModbusBuilder):
-    def __init__(self, builder: ModbusBuilder = None):
+    def __init__(self, builder: ModbusBuilder = None, client_class: Type[ModbusInterface] = None):
         super().__init__(builder)
         self._baud_rate = None
         self._parity = None
         self._stop_bits = None
         self._serial_port = None
+        self._client_class = client_class  # Store the client class to instantiate later
 
     # Properties with getters
     @property
@@ -30,36 +31,28 @@ class ModbusRTUBuilder(ModbusBuilder):
 
     # Setter methods with validation
     def set_baud_rate(self, baud_rate: BaudRate):
-        if not isinstance(baud_rate, BaudRate):
-            raise ValueError("Invalid baud rate")
+        assert isinstance(baud_rate, BaudRate), "Invalid baud rate"
         self._baud_rate = baud_rate
         return self
 
     def set_parity(self, parity: ParityType):
-        if not isinstance(parity, ParityType):
-            raise ValueError("Invalid parity type")
+        assert isinstance(parity, ParityType), "Invalid parity type"
         self._parity = parity
         return self
 
     def set_stop_bits(self, stop_bits: StopBits):
-        if not isinstance(stop_bits, StopBits):
-            raise ValueError("Invalid stop bits")
+        assert isinstance(stop_bits, StopBits), "Invalid stop bits"
         self._stop_bits = stop_bits
         return self
 
     def set_serial_port(self, serial_port: SerialPort):
-        if not isinstance(serial_port, SerialPort):
-            raise ValueError("Invalid serial port")
+        assert isinstance(serial_port, SerialPort), "Invalid serial port"
         self._serial_port = serial_port
         return self
 
-    def build(self):
-        if not self._baud_rate:
-            raise ValueError("Baud rate must be set for ModbusRTU")
-        if not self._parity:
-            raise ValueError("Parity must be set for ModbusRTU")
-        if not self._stop_bits:
-            raise ValueError("Stop bits must be set for ModbusRTU")
-        if not self._serial_port:
-            raise ValueError("Serial port must be set for ModbusRTU")
-        return ModbusRTU(self)
+    def build(self) -> ModbusInterface:
+        assert self._baud_rate, "Baud rate must be set for ModbusRTU"
+        assert self._parity, "Parity must be set for ModbusRTU"
+        assert self._stop_bits, "Stop bits must be set for ModbusRTU"
+        assert self._serial_port, "Serial port must be set for ModbusRTU"
+        return self._client_class(self)

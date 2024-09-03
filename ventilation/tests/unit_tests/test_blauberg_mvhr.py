@@ -6,8 +6,8 @@ from blauberg.blauberg_registers import CoilRegister, DiscreteInputs, InputRegis
 from config.config_loader import ConfigLoader
 from modbus.modbus import ModbusInterface, ModbusMode, ModbusData
 from modbus.modbus_factory import ModbusFactory
-from utils.tcp_values import IPAddress, Port
-from utils.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
+from modbus.tcp_values import IPAddress, Port
+from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
 from utils.connection_reponse import ConnectionResponse, ConnectionStatus
 from utils.value import ValidatedResponse, ValueStatus
 
