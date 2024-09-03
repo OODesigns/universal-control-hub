@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, AsyncMock
 from blauberg.blauberg_mvhr import BlaubergMVHR
-from blauberg.blauberg_mvhr_repository import BlaubergMVHRRepository
+from blauberg.blauberg_mvhr_state import BlaubergMVHRState
 from blauberg.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
 from config.config_loader import ConfigLoader
 from modbus.modbus import ModbusInterface, ModbusMode, ModbusData
@@ -121,7 +121,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         self.mock_modbus_interface.read.assert_called_once()
 
         # Verify that the repository is correctly returned
-        self.assertIsInstance(repository, BlaubergMVHRRepository)
+        self.assertIsInstance(repository, BlaubergMVHRState)
         self.assertEqual(repository.data, mock_modbus_data)
 
     async def test_read_data_with_temp_supply_in_out(self):

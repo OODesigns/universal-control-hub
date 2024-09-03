@@ -2,11 +2,11 @@ from dataclasses import dataclass, field
 from blauberg.blauberg_registers import InputRegisters
 from blauberg.blauberg_temperature import BlaubergTemperature
 from modbus.modbus import ModbusData
-from mvhr_repository import MVHRRepositoryInterface
+from mvhr_state import MVHRStateInterface
 from utils.temperaturecelsius import TemperatureInterface
 
 @dataclass(frozen=True)
-class BlaubergMVHRRepository(MVHRRepositoryInterface):
+class BlaubergMVHRState(MVHRStateInterface):
     data: ModbusData  # This is the input data passed to the class
     _temp_supply_out: TemperatureInterface = field(init=False)
     _temp_supply_in: TemperatureInterface = field(init=False)

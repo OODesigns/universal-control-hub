@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from config.config_loader import ConfigLoader
 from devices.device import Device
-from mvhr_repository import MVHRRepositoryInterface
+from mvhr_state import MVHRStateInterface
 from utils.connection_reponse import ConnectionResponse
 
 class MVHR(Device):
@@ -9,7 +9,7 @@ class MVHR(Device):
         super().__init__(config_loader)
 
     @abstractmethod
-    async def read_data(self)-> MVHRRepositoryInterface:  # pragma: no cover
+    async def read_data(self)-> MVHRStateInterface:  # pragma: no cover
         pass
 
     @abstractmethod

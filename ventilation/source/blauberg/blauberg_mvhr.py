@@ -1,11 +1,11 @@
-from blauberg.blauberg_mvhr_repository import BlaubergMVHRRepository
+from blauberg.blauberg_mvhr_state import BlaubergMVHRState
 from blauberg.blauberg_registers import CoilRegister, DiscreteInputs, InputRegisters, HoldingRegister
 from config.config_loader import ConfigLoader
 from devices.mvhr import MVHR
 from modbus.modbus import MODBUS, ModbusInterface, ModbusMode
 from modbus.modbus_builder import ModbusBuilder
 from modbus.modbus_factory import ModbusFactory
-from mvhr_repository import MVHRRepositoryInterface
+from mvhr_state import MVHRStateInterface
 from utils.connection_reponse import ConnectionResponse
 from modbus.tcp_values import IPAddress, Port
 import modbus.modbus_values
@@ -52,8 +52,8 @@ class BlaubergMVHR(MVHR):
     def modbus(self) -> ModbusInterface:
         return self._modbus
 
-    async def read_data(self) -> MVHRRepositoryInterface:
-        return BlaubergMVHRRepository(await self._modbus.read())
+    async def read_data(self) -> MVHRStateInterface:
+        return BlaubergMVHRState(await self._modbus.read())
 
     def stop(self) -> ConnectionResponse:
         return self.modbus.disconnect()

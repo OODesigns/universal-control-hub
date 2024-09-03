@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from utils.temperaturecelsius import TemperatureInterface
 
-class MVHRRepositoryInterface(ABC):
+class MVHRStateInterface(ABC):
     @property
     @abstractmethod
     def temp_supply_in(self) -> TemperatureInterface:# pragma: no cover

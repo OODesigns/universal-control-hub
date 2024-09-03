@@ -2,14 +2,14 @@ import unittest
 from unittest.mock import MagicMock
 from config.config_loader import ConfigLoader
 from devices.mvhr import MVHR
-from mvhr_repository import MVHRRepositoryInterface
+from mvhr_state import MVHRStateInterface
 from utils.connection_reponse import ConnectionResponse, ConnectionStatus
 
 
 # Creating a concrete implementation of MVHR for testing
 class TestMVHR(MVHR):
-    async def read_data(self) -> MVHRRepositoryInterface:
-        return MagicMock(spec=MVHRRepositoryInterface)
+    async def read_data(self) -> MVHRStateInterface:
+        return MagicMock(spec=MVHRStateInterface)
 
     async def start(self) -> ConnectionResponse:
         return ConnectionResponse(status=ConnectionStatus.OK, details="Started successfully")
@@ -35,7 +35,7 @@ class MVHRTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_read_data(self):
         data = await self.device.read_data()
-        self.assertIsInstance(data, MVHRRepositoryInterface)
+        self.assertIsInstance(data, MVHRStateInterface)
 
     def test_stop(self):
         response = self.device.stop()
@@ -60,11 +60,11 @@ class ConnectionResponseTestCase(unittest.TestCase):
 class MVHRRepositoryInterfaceTestCase(unittest.TestCase):
 
     def test_temp_supply_in(self):
-        repo = MagicMock(spec=MVHRRepositoryInterface)
+        repo = MagicMock(spec=MVHRStateInterface)
         self.assertTrue(hasattr(repo, 'temp_supply_in'))
 
     def test_temp_supply_out(self):
-        repo = MagicMock(spec=MVHRRepositoryInterface)
+        repo = MagicMock(spec=MVHRStateInterface)
         self.assertTrue(hasattr(repo, 'temp_supply_out'))
 
 
