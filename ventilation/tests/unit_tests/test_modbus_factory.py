@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, Mock
 from modbus.modbus import ModbusMode
 from modbus.modbus_builder import ModbusBuilder
 from modbus.modbus_factory import ModbusFactory
@@ -10,7 +10,6 @@ from modbus.modbus_values import (CoilSize, DiscreteInputSize, InputRegisterSize
                                   ReconnectDelay, ReconnectDelayMax)
 from py_modbus.modbus_rtu import ModbusRTU
 from py_modbus.modbus_tcp import ModbusTCP
-
 
 class TestModbusFactory(unittest.TestCase):
 
@@ -86,7 +85,7 @@ class TestModbusFactory(unittest.TestCase):
         self.assertEqual(result, mock_rtu_instance)
 
 
-    def test_create_modbus_invalid_mode(self):
+    def test_create_modbus_invalid_mode_no_client(self):
         """Test that an unsupported mode raises an AssertionError."""
         with self.assertRaises(AssertionError) as context:
             # noinspection PyTypeChecker
@@ -95,6 +94,18 @@ class TestModbusFactory(unittest.TestCase):
                 builder=self.builder
             )
         self.assertEqual(str(context.exception), "No client registered for mode INVALID_MODE")
+
+    def test_create_modbus_invalid_mode(self):
+        """Test that an unsupported mode raises an AssertionError."""
+        with self.assertRaises(AssertionError) as context:
+            # noinspection PyTypeChecker
+            ModbusFactory.register_modbus("INVALID_MODE", Mock())
+            # noinspection PyTypeChecker
+            ModbusFactory.create_modbus(
+                mode="INVALID_MODE",
+                builder=self.builder
+            )
+        self.assertEqual(str(context.exception), "Unsupported mode. Use ModbusMode.TCP or ModbusMode.RTU.")
 
 if __name__ == '__main__':
     unittest.main()

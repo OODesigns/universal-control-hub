@@ -11,7 +11,6 @@ from utils.value import ValidatedResponse, ValueStatus
 @dataclass(frozen=True)
 class PyModbusBaseResult(ModbusResultAdapter, ABC):
     """Immutable base class for handling Modbus results using PyModbus."""
-
     _result: ModbusResponse = field(default=None, init=False)
 
     @classmethod

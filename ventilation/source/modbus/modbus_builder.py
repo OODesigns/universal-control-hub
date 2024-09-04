@@ -1,4 +1,6 @@
-from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize, Retries, ReconnectDelay, ReconnectDelayMax, Timeout
+from modbus.modbus_values import (CoilSize, DiscreteInputSize, InputRegisterSize,
+                                  HoldingRegisterSize, Retries, ReconnectDelay,
+                                  ReconnectDelayMax, Timeout)
 
 class ModbusBuilder:
     def __init__(self, builder=None):

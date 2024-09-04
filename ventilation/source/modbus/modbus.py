@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import List
 from modbus.modbus_builder import ModbusBuilder
 from utils.connection_reponse import ConnectionResponse
-from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
+from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize, Timeout, Retries, \
+    ReconnectDelayMax, ReconnectDelay
 from utils.value import ValidatedResponse
 
 MODBUS = 'modbus'
@@ -41,33 +42,34 @@ class ModbusMode(Enum):
     TCP = 1
     RTU = 2
 
+@dataclass(frozen=True)
 class ModbusInterface(ABC):
+    """
+    Immutable Modbus Interface initialized using the ModbusBuilder.
+    """
+    timeout: Timeout = field(init=False)
+    retries: Retries = field(init=False)
+    reconnect_delay_max: ReconnectDelayMax = field(init=False)
+    reconnect_delay: ReconnectDelay = field(init=False)
+    coil_size: CoilSize = field(init=False)
+    discrete_input_size: DiscreteInputSize = field(init=False)
+    input_register_size: InputRegisterSize = field(init=False)
+    holding_register_size: HoldingRegisterSize = field(init=False)
+
     def __init__(self, builder: ModbusBuilder):
-        # Initialize using the builder
-        self._timeout = builder.timeout
-        self._retries = builder.retries
-        self._reconnect_delay_max = builder.reconnect_delay_max
-        self._reconnect_delay = builder.reconnect_delay
-        self._coil_size = builder.coil_size
-        self._discrete_input_size = builder.discrete_input_size
-        self._input_register_size = builder.input_register_size
-        self._holding_register_size = builder.holding_register_size
-
-    @property
-    def coil_size(self) -> CoilSize:
-        return self._coil_size
-
-    @property
-    def discrete_input_size(self) -> DiscreteInputSize:
-        return self._discrete_input_size
-
-    @property
-    def input_register_size(self) -> InputRegisterSize:
-        return self._input_register_size
-
-    @property
-    def holding_register_size(self) -> HoldingRegisterSize:
-        return self._holding_register_size
+        """
+        initialize fields using a ModbusBuilder.
+        Extracts values from the builder and assigns them to the instance.
+        """
+        # Dynamically assign values from the builder to the fields
+        object.__setattr__(self, 'timeout', builder.timeout)
+        object.__setattr__(self, 'retries', builder.retries)
+        object.__setattr__(self, 'reconnect_delay_max', builder.reconnect_delay_max)
+        object.__setattr__(self, 'reconnect_delay', builder.reconnect_delay)
+        object.__setattr__(self, 'coil_size', builder.coil_size)
+        object.__setattr__(self, 'discrete_input_size', builder.discrete_input_size)
+        object.__setattr__(self, 'input_register_size', builder.input_register_size)
+        object.__setattr__(self, 'holding_register_size', builder.holding_register_size)
 
     @abstractmethod
     async def connect(self) -> ConnectionResponse: #pragma: nocover

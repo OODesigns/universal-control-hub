@@ -1,11 +1,10 @@
+from attr import dataclass
 from pymodbus.client import ModbusBaseClient
-
 from utils.connection_reponse import ConnectionResponse, ConnectionStatus
 
-
+@dataclass(frozen=True)
 class ModbusConnectionManager:
-    def __init__(self, client: ModbusBaseClient):
-        self.client = client
+    client: ModbusBaseClient
 
     async def connect(self) -> ConnectionResponse:
         try:
