@@ -1,13 +1,7 @@
 from dataclasses import dataclass
-from enum import Enum
 
-
-class ConnectionStatus(Enum):
-    OK = "OK"
-    EXCEPTION = "EXCEPTION"
-    FAILED = "FAILED"
+from utils.operation_response import OperationResponse
 
 @dataclass(frozen=True)
-class ConnectionResponse:
-    status: ConnectionStatus
-    details: str
+class ConnectionResponse(OperationResponse):
+    pass

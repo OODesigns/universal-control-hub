@@ -4,7 +4,8 @@ from pymodbus.client import ModbusBaseClient
 from modbus.modbus_builder import ModbusBuilder
 from py_modbus.modbus_connection_manager import ModbusConnectionManager
 from py_modbus.modus_client import ModbusClient
-from utils.connection_reponse import ConnectionResponse, ConnectionStatus
+from utils.connection_reponse import ConnectionResponse
+from utils.operation_response import OperationStatus
 
 
 class TestModbusBase(unittest.IsolatedAsyncioTestCase):
@@ -29,7 +30,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
     async def test_connect_success(self):
         # Mock a successful connection response
         self.mock_client_manager.connect.return_value = ConnectionResponse(
-            status=ConnectionStatus.OK,
+            status=OperationStatus.OK,
             details="Connected successfully."
         )
 
@@ -38,13 +39,13 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
         # Assert the connect method was called and returned the expected response
         self.mock_client_manager.connect.assert_called_once()
-        self.assertEqual(response.status, ConnectionStatus.OK)
+        self.assertEqual(response.status, OperationStatus.OK)
         self.assertEqual(response.details, "Connected successfully.")
 
     async def test_connect_failure(self):
         # Mock a failed connection response
         self.mock_client_manager.connect.return_value = ConnectionResponse(
-            status=ConnectionStatus.FAILED,
+            status=OperationStatus.FAILED,
             details="Failed to connect to the server."
         )
 
@@ -53,13 +54,13 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
         # Assert the connect method was called and returned the expected response
         self.mock_client_manager.connect.assert_called_once()
-        self.assertEqual(response.status, ConnectionStatus.FAILED)
+        self.assertEqual(response.status, OperationStatus.FAILED)
         self.assertEqual(response.details, "Failed to connect to the server.")
 
     def test_disconnect_success(self):
         # Mock a successful disconnection response
         self.mock_client_manager.disconnect.return_value = ConnectionResponse(
-            status=ConnectionStatus.OK,
+            status=OperationStatus.OK,
             details="Disconnected successfully."
         )
 
@@ -68,13 +69,13 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
         # Assert the disconnect method was called and returned the expected response
         self.mock_client_manager.disconnect.assert_called_once()
-        self.assertEqual(response.status, ConnectionStatus.OK)
+        self.assertEqual(response.status, OperationStatus.OK)
         self.assertEqual(response.details, "Disconnected successfully.")
 
     def test_disconnect_failure(self):
         # Mock a failed disconnection response
         self.mock_client_manager.disconnect.return_value = ConnectionResponse(
-            status=ConnectionStatus.FAILED,
+            status=OperationStatus.FAILED,
             details="Client was not connected or was already closed."
         )
 
@@ -83,7 +84,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
         # Assert the disconnect method was called and returned the expected response
         self.mock_client_manager.disconnect.assert_called_once()
-        self.assertEqual(response.status, ConnectionStatus.FAILED)
+        self.assertEqual(response.status, OperationStatus.FAILED)
         self.assertEqual(response.details, "Client was not connected or was already closed.")
 
     async def test_read_success(self):

@@ -1,4 +1,6 @@
 import os
+import random
+import string
 import tempfile
 import unittest
 from unittest.mock import MagicMock, patch
@@ -36,36 +38,6 @@ class TestDeviceFactory(unittest.TestCase):
         with patch.object(DeviceFactory, '_load_registered_devices') as mock_load:
             DeviceFactory(config_factory_mock)
             mock_load.assert_not_called()
-
-        def test_load_registered_devices_success(self):
-            with tempfile.TemporaryDirectory() as tmpdirname:
-                # Create a fake package directory structure
-                package_dir = os.path.join(tmpdirname, 'registered')
-                os.mkdir(package_dir)
-
-                # Create some fake modules in the package
-                with open(os.path.join(package_dir, 'module1.py'), 'w') as f:
-                    f.write('')  # Empty module file
-                with open(os.path.join(package_dir, 'module2.py'), 'w') as f:
-                    f.write('')  # Empty module file
-
-                # Add the temporary directory to sys.path
-                sys.path.insert(0, tmpdirname)
-
-                try:
-                    # 'registered' package should now be available to import
-                    DeviceFactory._load_registered_devices()
-
-                    # Check that the modules were loaded
-                    self.assertIn('registered.module1', sys.modules)
-                    self.assertIn('registered.module2', sys.modules)
-                finally:
-                    # Clean up sys.path
-                    sys.path.pop(0)
-                    # Clean up loaded modules
-                    sys.modules.pop('registered.module1', None)
-                    sys.modules.pop('registered.module2', None)
-                    sys.modules.pop('registered', None)
 
     def test_load_registered_devices_failure(self):
         with patch('importlib.import_module', side_effect=ImportError("Failed")):
@@ -217,6 +189,45 @@ class TestDeviceFactory(unittest.TestCase):
         self.assertIsInstance(response.device.core_dependency, CoreDependency)
         self.assertIsInstance(response.device.extra_dependency, ExtraDependency)
 
+
+    @classmethod
+    def _generate_random_package_name(cls, length=8):
+        """Generate a random package name to avoid name conflicts."""
+        return 'pkg_' + ''.join(random.choices(string.ascii_lowercase, k=length))
+
+    def test_load_registered_devices_success(self):
+        with tempfile.TemporaryDirectory() as tmp_dir_name:
+            # Generate a unique package name
+            random_package_name = self._generate_random_package_name()
+
+            # Create the random package directory
+            package_dir = os.path.join(tmp_dir_name, random_package_name)
+            os.mkdir(package_dir)
+
+            # Create empty Python module files in the random package
+            with open(os.path.join(package_dir, 'module1.py'), 'w') as f:
+                f.write('')  # Empty module file
+            with open(os.path.join(package_dir, 'module2.py'), 'w') as f:
+                f.write('')  # Empty module file
+
+            # Add the temporary directory to sys.path
+            sys.path.insert(0, tmp_dir_name)
+
+            try:
+                # Patch the REGISTERED constant to point to the unique package
+                with patch('devices.device_factory.REGISTERED', random_package_name):
+                    # Call the method to load registered devices
+                    DeviceFactory._load_registered_devices()
+
+                    # Check that the modules were loaded into sys.modules
+                    self.assertIn(f'{random_package_name}.module1', sys.modules)
+                    self.assertIn(f'{random_package_name}.module2', sys.modules)
+            finally:
+                # Clean up sys.path and sys.modules after the test
+                sys.path.pop(0)
+                sys.modules.pop(f'{random_package_name}.module1', None)
+                sys.modules.pop(f'{random_package_name}.module2', None)
+                sys.modules.pop(random_package_name, None)
 
 if __name__ == '__main__':
     unittest.main()
