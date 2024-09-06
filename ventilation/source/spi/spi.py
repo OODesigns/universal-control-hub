@@ -1,19 +1,26 @@
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 
+from spi.spi_values import SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord
+
+
 @dataclass(frozen=True)
 class SPIInterface(ABC):
-    spi_client: object = field(init=False, default=None)
+    bus: SPIBusNumber = field(init=False)
+    chip_select: SPIChipSelect = field(init=False)
+    max_speed_Hz: SPIMaxSpeedHz = field(init=False)
+    mode: SPIMode = field(init=False)
+    bits_per_word:SPIBitsPerWord = field(init=False)
 
-    def __init__(self,builder):
-
+    def __init__(self, builder):
         from spi.spi_builder import SPIBuilder
         assert isinstance(builder, SPIBuilder), "Expected builder to be an instance of SPIBuilder"
-        """
-        Post-initialization to set up any necessary clients or perform
-        tasks after the dataclass has been created.
-        """
-        object.__setattr__(self, 'spi_client', self.create_spi_client())
+        object.__setattr__(self, 'bus', builder.bus)
+        object.__setattr__(self, 'chip_select', builder.chip_select)
+        object.__setattr__(self, 'max_speed_hz', builder.max_speed_hz)
+        object.__setattr__(self, 'mode', builder.mode)
+        object.__setattr__(self, 'bits_per_word', builder.bits_per_word)
+
 
     @abstractmethod
     def create_spi_client(self):

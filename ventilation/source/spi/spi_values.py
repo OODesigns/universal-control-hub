@@ -1,4 +1,5 @@
-from utils.value import RangeValidatedValue
+from utils.value import RangeValidatedValue, ValidatedValue, ValidatedResponse, ValueStatus
+
 
 class SPIBusNumber(RangeValidatedValue):
     """
@@ -45,3 +46,53 @@ class SPIBitsPerWord(RangeValidatedValue):
     valid_types = (int,)
     low_value = 4   # Some devices may use as few as 4 bits.
     high_value = 32  # Some advanced devices use up to 32 bits per word.
+
+
+class SPIDataOrder(ValidatedValue):
+    """
+    Defines whether data is transmitted MSB-first or LSB-first using a string.
+    """
+    valid_values = ['MSB', 'LSB']
+
+    @classmethod
+    def validate(cls, value) -> ValidatedResponse:
+        if not isinstance(value, str) or value not in cls.valid_values:
+            return ValidatedResponse(
+                status=ValueStatus.EXCEPTION,
+                details=f"{cls.__name__} must be 'MSB' or 'LSB', got {value}",
+                value=None
+            )
+        return ValidatedResponse(status=ValueStatus.OK, details="", value=value)
+
+class SPIFullDuplex(ValidatedValue):
+    """
+    Defines whether the communication is full-duplex or half-duplex using a boolean.
+    True means full-duplex, False means half-duplex.
+    """
+    valid_types = (bool,)
+
+    @classmethod
+    def validate(cls, value) -> ValidatedResponse:
+        if not isinstance(value, bool):
+            return ValidatedResponse(
+                status=ValueStatus.EXCEPTION,
+                details=f"{cls.__name__} must be a boolean, got {value}",
+                value=None
+            )
+        return ValidatedResponse(status=ValueStatus.OK, details="", value=value)
+
+class SPIIdleState(ValidatedValue):
+    """
+    Defines the idle state of MOSI/MISO lines using a string (High or Low).
+    """
+    valid_values = ['High', 'Low']
+
+    @classmethod
+    def validate(cls, value) -> ValidatedResponse:
+        if not isinstance(value, str) or value not in cls.valid_values:
+            return ValidatedResponse(
+                status=ValueStatus.EXCEPTION,
+                details=f"{cls.__name__} must be 'High' or 'Low', got {value}",
+                value=None
+            )
+        return ValidatedResponse(status=ValueStatus.OK, details="", value=value)

@@ -56,6 +56,7 @@ class PyModbusBaseResult(ModbusResultAdapter, ABC):
                 details="Read successful",
                 value=self.get_data()
             )
+
 @dataclass(frozen=True)
 class PyModbusBitResult(PyModbusBaseResult):
     """Immutable class for handling the result of reading bits using PyModbus."""

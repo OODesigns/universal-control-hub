@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, create_autospec
 from pymodbus import ModbusException
 from pymodbus.pdu import ModbusResponse, ExceptionResponse
 
-from py_modbus.py_modbus_result import PyModbusCoilResult, PyModbusDiscreteInputResult, PyModbusInputRegisterResult, \
+from py_modbus.modbus_result import PyModbusCoilResult, PyModbusDiscreteInputResult, PyModbusInputRegisterResult, \
     PyModbusHoldingRegisterResult
 from utils.value import ValueStatus
 

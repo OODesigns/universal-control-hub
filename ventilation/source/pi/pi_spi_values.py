@@ -1,5 +1,5 @@
 from spi.spi_values import (SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz,
-                            SPIMode, SPIBitsPerWord)
+                            SPIBitsPerWord)
 
 
 class RaspberryPiSPIBus(SPIBusNumber):
@@ -23,12 +23,6 @@ class RaspberryPiSPIMaxSpeedHz(SPIMaxSpeedHz):
     """
     low_value = 500000  # Raspberry Pi typically operates at speeds starting from 500 kHz.
     high_value = 32000000  # 32 MHz is a typical upper limit for Raspberry Pi SPI communication.
-
-class RaspberryPiSPIMode(SPIMode):
-    """
-    RaspberryPiSPIMode defines the SPI mode for the Raspberry Pi, which supports standard SPI modes 0-3.
-    """
-    pass  # No changes needed, inherits valid modes from GenericSPIMode.
 
 class RaspberryPiSPIBitsPerWord(SPIBitsPerWord):
     """

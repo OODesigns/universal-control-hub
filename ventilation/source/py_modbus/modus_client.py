@@ -1,11 +1,12 @@
-from attrs import field
+from dataclasses import field
+
 from pymodbus.client import ModbusBaseClient
 from modbus.modbus_builder import ModbusBuilder
 from modbus.modbus_reader import ModbusBitReader, ModbusWordReader
 from modbus.modbus import ModbusInterface, ModbusData
 from py_modbus.modbus_connection_manager import ModbusConnectionManager
-from py_modbus.py_modbus_result import (PyModbusCoilResult, PyModbusDiscreteInputResult,
-                                        PyModbusInputRegisterResult, PyModbusHoldingRegisterResult)
+from py_modbus.modbus_result import (PyModbusCoilResult, PyModbusDiscreteInputResult,
+                                     PyModbusInputRegisterResult, PyModbusHoldingRegisterResult)
 from utils.connection_reponse import ConnectionResponse
 
 

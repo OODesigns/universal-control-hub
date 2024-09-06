@@ -88,6 +88,7 @@ class TestModbusFactory(unittest.TestCase):
     def test_create_modbus_invalid_mode_no_client(self):
         """Test that an unsupported mode raises an AssertionError."""
         with self.assertRaises(AssertionError) as context:
+            ModbusFactory._registry = {}
             # noinspection PyTypeChecker
             ModbusFactory.create_modbus(
                 mode="INVALID_MODE",
