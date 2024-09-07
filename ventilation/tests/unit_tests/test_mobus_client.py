@@ -4,8 +4,7 @@ from pymodbus.client import ModbusBaseClient
 from modbus.modbus_builder import ModbusBuilder
 from py_modbus.modbus_connection_manager import ModbusConnectionManager
 from py_modbus.modus_client import ModbusClient
-from utils.connection_reponse import ConnectionResponse
-from utils.operation_response import OperationStatus
+from utils.operation_response import OperationStatus, OperationResponse
 
 
 class TestModbusBase(unittest.IsolatedAsyncioTestCase):
@@ -29,7 +28,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
     async def test_connect_success(self):
         # Mock a successful connection response
-        self.mock_client_manager.connect.return_value = ConnectionResponse(
+        self.mock_client_manager.connect.return_value = OperationResponse(
             status=OperationStatus.OK,
             details="Connected successfully."
         )
@@ -44,7 +43,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
     async def test_connect_failure(self):
         # Mock a failed connection response
-        self.mock_client_manager.connect.return_value = ConnectionResponse(
+        self.mock_client_manager.connect.return_value = OperationResponse(
             status=OperationStatus.FAILED,
             details="Failed to connect to the server."
         )
@@ -59,7 +58,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
     def test_disconnect_success(self):
         # Mock a successful disconnection response
-        self.mock_client_manager.disconnect.return_value = ConnectionResponse(
+        self.mock_client_manager.disconnect.return_value = OperationResponse(
             status=OperationStatus.OK,
             details="Disconnected successfully."
         )
@@ -74,7 +73,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
 
     def test_disconnect_failure(self):
         # Mock a failed disconnection response
-        self.mock_client_manager.disconnect.return_value = ConnectionResponse(
+        self.mock_client_manager.disconnect.return_value = OperationResponse(
             status=OperationStatus.FAILED,
             details="Client was not connected or was already closed."
         )

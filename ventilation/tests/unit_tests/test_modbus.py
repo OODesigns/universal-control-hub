@@ -2,17 +2,18 @@ import unittest
 from unittest.mock import MagicMock
 
 from modbus.modbus import ModbusInterface, ModbusData
-from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
-from utils.connection_reponse import ConnectionResponse
+from modbus.modbus_values import (CoilSize, DiscreteInputSize,
+                                  InputRegisterSize, HoldingRegisterSize)
+from utils.operation_response import OperationResponse
 from utils.value import ValidatedResponse, ValueStatus
 
 
 # Creating a concrete subclass for testing purposes
 class TestModbusInterfaceConcrete(ModbusInterface):
-    async def connect(self) -> ConnectionResponse:
+    async def connect(self) -> OperationResponse:
         return await super().connect()
 
-    def disconnect(self) -> ConnectionResponse:
+    def disconnect(self) -> OperationResponse:
         return super().disconnect()
 
     async def read(self) -> ModbusData:

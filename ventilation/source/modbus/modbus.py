@@ -3,9 +3,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import List
 from modbus.modbus_builder import ModbusBuilder
-from utils.connection_reponse import ConnectionResponse
-from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize, Timeout, Retries, \
-    ReconnectDelayMax, ReconnectDelay
+from modbus.modbus_values import (CoilSize, DiscreteInputSize,
+                                  InputRegisterSize, HoldingRegisterSize,
+                                  Timeout, Retries, ReconnectDelayMax, ReconnectDelay)
+from utils.operation_response import OperationResponse
 from utils.value import ValidatedResponse
 
 MODBUS = 'modbus'
@@ -72,11 +73,11 @@ class ModbusInterface(ABC):
         object.__setattr__(self, 'holding_register_size', builder.holding_register_size)
 
     @abstractmethod
-    async def connect(self) -> ConnectionResponse: #pragma: nocover
+    async def connect(self) -> OperationResponse: #pragma: nocover
         pass
 
     @abstractmethod
-    def disconnect(self) -> ConnectionResponse: #pragma: nocover
+    def disconnect(self) -> OperationResponse: #pragma: nocover
         pass
 
     @abstractmethod

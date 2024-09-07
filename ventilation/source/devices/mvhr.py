@@ -2,7 +2,8 @@ from abc import abstractmethod
 from config.config_loader import ConfigLoader
 from devices.device import Device
 from mvhr_state import MVHRStateInterface
-from utils.connection_reponse import ConnectionResponse
+from utils.operation_response import OperationResponse
+
 
 class MVHR(Device):
     def __init__(self, config_loader: ConfigLoader):
@@ -13,10 +14,10 @@ class MVHR(Device):
         pass
 
     @abstractmethod
-    async def start(self) -> ConnectionResponse: # pragma: no cover
+    async def start(self) -> OperationResponse: # pragma: no cover
         pass
 
     @abstractmethod
-    def stop(self) -> ConnectionResponse: # pragma: no cover
+    def stop(self) -> OperationResponse: # pragma: no cover
         pass
 

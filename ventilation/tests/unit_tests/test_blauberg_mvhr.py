@@ -8,8 +8,7 @@ from modbus.modbus import ModbusInterface, ModbusMode, ModbusData
 from modbus.modbus_factory import ModbusFactory
 from modbus.tcp_values import IPAddress, Port
 from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
-from utils.connection_reponse import ConnectionResponse
-from utils.operation_response import OperationStatus
+from utils.operation_response import OperationStatus, OperationResponse
 from utils.value import ValidatedResponse, ValueStatus
 
 class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
@@ -64,7 +63,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
     async def test_modbus_startup(self):
         """Test the startup sequence of the BlaubergMVHR."""
         # Simulate a successful connection
-        mock_response = ConnectionResponse(status=OperationStatus.OK, details="Connected successfully")
+        mock_response = OperationResponse(status=OperationStatus.OK, details="Connected successfully")
         self.mock_modbus_interface.connect.return_value = mock_response
 
         response = await self.blauberg_mvhr.start()
@@ -73,14 +72,14 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         self.mock_modbus_interface.connect.assert_called_once()
 
         # Verify the response
-        self.assertIsInstance(response, ConnectionResponse)
+        self.assertIsInstance(response, OperationResponse)
         self.assertEqual(response.status, OperationStatus.OK)
         self.assertEqual(response.details, "Connected successfully")
 
     async def test_modbus_startup_failure(self):
         """Test the failure handling during the startup sequence."""
         # Simulate a connection failure with an appropriate ConnectionResponse
-        mock_response = ConnectionResponse(status=OperationStatus.FAILED, details="Connection failed")
+        mock_response = OperationResponse(status=OperationStatus.FAILED, details="Connection failed")
         self.mock_modbus_interface.connect.return_value = mock_response
 
         response = await self.blauberg_mvhr.start()
@@ -89,14 +88,14 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         self.mock_modbus_interface.connect.assert_called_once()
 
         # Verify the response
-        self.assertIsInstance(response, ConnectionResponse)
+        self.assertIsInstance(response, OperationResponse)
         self.assertEqual(response.status, OperationStatus.FAILED)
         self.assertEqual(response.details, "Connection failed")
 
     async def test_modbus_stop(self):
         """Test the stop method of BlaubergMVHR."""
         # Simulate a successful disconnect
-        mock_response = ConnectionResponse(status=OperationStatus.OK, details="Disconnected successfully")
+        mock_response = OperationResponse(status=OperationStatus.OK, details="Disconnected successfully")
         self.mock_modbus_interface.disconnect.return_value = mock_response
 
         # Call the stop method
@@ -106,7 +105,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         self.mock_modbus_interface.disconnect.assert_called_once()
 
         # Verify that the response is as expected
-        self.assertIsInstance(response, ConnectionResponse)
+        self.assertIsInstance(response, OperationResponse)
         self.assertEqual(response.status, OperationStatus.OK)
         self.assertEqual(response.details, "Disconnected successfully")
 

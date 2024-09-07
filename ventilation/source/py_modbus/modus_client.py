@@ -7,7 +7,7 @@ from modbus.modbus import ModbusInterface, ModbusData
 from py_modbus.modbus_connection_manager import ModbusConnectionManager
 from py_modbus.modbus_result import (PyModbusCoilResult, PyModbusDiscreteInputResult,
                                      PyModbusInputRegisterResult, PyModbusHoldingRegisterResult)
-from utils.connection_reponse import ConnectionResponse
+from utils.operation_response import OperationResponse
 
 
 class ModbusClient(ModbusInterface):
@@ -52,10 +52,10 @@ class ModbusClient(ModbusInterface):
                 self._client, address, count)
         ))
 
-    async def connect(self) -> ConnectionResponse:
+    async def connect(self) -> OperationResponse:
         return await self._client_manager.connect()
 
-    def disconnect(self) -> ConnectionResponse:
+    def disconnect(self) -> OperationResponse:
         return self._client_manager.disconnect()
 
     async def read(self) -> ModbusData:
