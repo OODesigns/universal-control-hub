@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
+
 class Value:
     """
     A base class to represent a generic value. Provides comparison methods for equality, less than,
@@ -54,6 +55,7 @@ class ValidatedResponse:
     status: ValueStatus
     details: str
     value: Any
+
 
 class ValidatedValue(Value, ABC):
     """

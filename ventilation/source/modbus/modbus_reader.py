@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Awaitable
-from utils.value import ValidatedResponse, ValueStatus
+from typing import Callable, List, Awaitable, Generic
+from utils.response import ResponseStatus, T, Response
 
-class ModbusResultAdapter(ABC):
+
+class ModbusResultAdapter(Generic[T], ABC):
     @abstractmethod
     async def read(self, client, address: int, count: int):# pragma: no cover
         """Performs the Modbus read operation asynchronously."""
@@ -14,7 +15,7 @@ class ModbusResultAdapter(ABC):
         pass
 
     @abstractmethod
-    def get_data(self) -> List[Any]:# pragma: no cover
+    def get_data(self) -> List[T]:# pragma: no cover
         """Returns the data from the Modbus operation."""
         pass
 
@@ -24,12 +25,12 @@ class ModbusResultAdapter(ABC):
         pass
 
     @abstractmethod
-    def to_validated_result(self) -> ValidatedResponse:# pragma: no cover
+    def to_response(self) -> Response[T]:# pragma: no cover
         """Converts the ModbusResultAdapter to a ValidatedResult."""
         pass
 
-class ModbusReader:
-    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter]], max_count: int):
+class ModbusReader(Generic[T]):
+    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter[T]]], max_count: int):
         """
         Initialize the ModbusReader.
 
@@ -39,7 +40,7 @@ class ModbusReader:
         self.read_function = read_function
         self.max_count = max_count
 
-    async def read(self, start_address: int, total_count: int) -> ValidatedResponse:
+    async def read(self, start_address: int, total_count: int) -> Response[T]:
         """
         Read the specified number of items starting at the given address.
 
@@ -54,27 +55,26 @@ class ModbusReader:
         while remaining_count > 0:
             current_count = min(self.max_count, remaining_count)
             result_adapter = await self.read_function(current_address, current_count)
-            validated_result = result_adapter.to_validated_result()
+            response = result_adapter.to_response()
 
-            if validated_result.status == ValueStatus.EXCEPTION:
-                return validated_result  # Return early if any error occurs
+            if response.status == ResponseStatus.EXCEPTION:
+                return response  # Return early if any error occurs
 
-            results.extend(validated_result.value)
+            results.extend(response.value)
             current_address += current_count
             remaining_count -= current_count
 
-        return ValidatedResponse(
-            status=ValueStatus.OK,
+        return Response[T](
+            status=ResponseStatus.OK,
             details="Read successful",
             value=results
         )
 
 
-
-class ModbusBitReader(ModbusReader):
-    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter]], max_count: int = 2000):
+class ModbusBitReader(ModbusReader[List[bool]]):
+    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter[List[bool]]]], max_count: int = 2000):
         super().__init__(read_function, max_count)
 
-class ModbusWordReader(ModbusReader):
-    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter]], max_count: int = 125):
+class ModbusWordReader(ModbusReader[List[int]]):
+    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter[List[int]]]], max_count: int = 125):
         super().__init__(read_function, max_count)

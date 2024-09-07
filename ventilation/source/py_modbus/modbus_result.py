@@ -1,15 +1,16 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import List, Any
+from typing import List
 
 from pymodbus import ModbusException
 from pymodbus.client import ModbusBaseClient
 from pymodbus.pdu import ExceptionResponse, ModbusResponse
 from modbus.modbus_reader import ModbusResultAdapter
-from utils.value import ValidatedResponse, ValueStatus
+from utils.response import ResponseStatus, T, Response
+
 
 @dataclass(frozen=True)
-class PyModbusBaseResult(ModbusResultAdapter, ABC):
+class PyModbusBaseResult(ModbusResultAdapter[T], ABC):
     """Immutable base class for handling Modbus results using PyModbus."""
     _result: ModbusResponse = field(default=None, init=False)
 
@@ -26,7 +27,7 @@ class PyModbusBaseResult(ModbusResultAdapter, ABC):
         pass
 
     @abstractmethod
-    def get_data(self) -> List[Any]: # pragma: no cover
+    def get_data(self) -> List[T]: # pragma: no cover
         """Extract data from the ModbusResponse. Must be implemented by subclasses."""
         pass
 
@@ -42,23 +43,23 @@ class PyModbusBaseResult(ModbusResultAdapter, ABC):
             return f"Modbus library error: {self._result}"
         return "Unknown error"
 
-    def to_validated_result(self) -> ValidatedResponse:
+    def to_response(self) -> Response[T]:
         """Converts the PyModbusBaseResult to a ValidatedResult."""
         if self.is_error():
-            return ValidatedResponse(
-                status=ValueStatus.EXCEPTION,
+            return Response[T](
+                status=ResponseStatus.EXCEPTION,
                 details=self.get_error_message(),
                 value=None
             )
         else:
-            return ValidatedResponse(
-                status=ValueStatus.OK,
+            return Response[T](
+                status=ResponseStatus.OK,
                 details="Read successful",
                 value=self.get_data()
             )
 
 @dataclass(frozen=True)
-class PyModbusBitResult(PyModbusBaseResult):
+class PyModbusBitResult(PyModbusBaseResult[List[bool]]):
     """Immutable class for handling the result of reading bits using PyModbus."""
 
     def get_data(self) -> List[bool]:
@@ -84,7 +85,7 @@ class PyModbusDiscreteInputResult(PyModbusBitResult):
         return await client.read_discrete_inputs(address, count)
 
 @dataclass(frozen=True)
-class PyModbusRegisterResult(PyModbusBaseResult):
+class PyModbusRegisterResult(PyModbusBaseResult[List[int]]):
     """Immutable class for handling the result of reading registers using PyModbus."""
 
     def get_data(self) -> List[int]:

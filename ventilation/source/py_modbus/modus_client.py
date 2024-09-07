@@ -60,8 +60,8 @@ class ModbusClient(ModbusInterface):
 
     async def read(self) -> ModbusData:
         return ModbusData(
-            _coils=await self._coils_reader.read(0, self.coil_size.value),
-            _discrete_inputs=await self._discrete_inputs.read(0, self.discrete_input_size.value),
-            _input_register=await self._input_registers.read(0, self.input_register_size.value),
-            _holding_register=await self._holding_registers.read(0, self.holding_register_size.value)
+            coils=await self._coils_reader.read(0, self.coil_size.value),
+            discrete_inputs=await self._discrete_inputs.read(0, self.discrete_input_size.value),
+            input_register=await self._input_registers.read(0, self.input_register_size.value),
+            holding_register=await self._holding_registers.read(0, self.holding_register_size.value)
         )

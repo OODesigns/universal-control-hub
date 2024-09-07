@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+from typing import List
 
 from spi.spi_values import SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord
+from utils.operation_response import OperationResponse
 
 
 @dataclass(frozen=True)
@@ -21,23 +23,29 @@ class SPIInterface(ABC):
         object.__setattr__(self, 'mode', builder.mode)
         object.__setattr__(self, 'bits_per_word', builder.bits_per_word)
 
-
     @abstractmethod
-    def create_spi_client(self):
+    def open(self) -> OperationResponse: # pragma: no cover
         """
-        Abstract method to create and return the SPI client.
-        This should be implemented in the subclass or specialized module.
+        Initialize the SPI connection and return an OperationResponse.
         """
-        pass  # pragma: no cover
-
     @abstractmethod
-    def transfer(self, data):
+    def close(self) -> OperationResponse: # pragma: no cover
         """
-        Transfer data to and from the SPI device.
-        :param data: A list of bytes to send to the SPI device.
-        :return: A list of bytes received from the SPI device.
+        Close the SPI connection and return a CloseResponse.
         """
-        pass  # pragma: no cover
+    # @abstractmethod
+    # def transfer(self, data: List[int]) -> List[int]:
+    #     """
+    #     Perform a full-duplex SPI transfer.
+    #     :param data: A list of bytes (0-255) to send.
+    #     :return: A list of bytes received during the transfer.
+    #     """
+    #     # Validate data is in byte range (0-255).
+    #     if not all(0 <= byte <= 255 for byte in data):
+    #         raise ValueError("All elements in data must be bytes (0-255).")
+    #     pass  # Actual transfer logic here.
+
+
 
     @abstractmethod
     def read(self, nbytes):
@@ -56,9 +64,4 @@ class SPIInterface(ABC):
         """
         pass  # pragma: no cover
 
-    @abstractmethod
-    def close(self):
-        """
-        Close the SPI connection.
-        """
-        pass  # pragma: no cover
+

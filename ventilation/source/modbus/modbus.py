@@ -7,7 +7,7 @@ from modbus.modbus_values import (CoilSize, DiscreteInputSize,
                                   InputRegisterSize, HoldingRegisterSize,
                                   Timeout, Retries, ReconnectDelayMax, ReconnectDelay)
 from utils.operation_response import OperationResponse
-from utils.value import ValidatedResponse
+from utils.response import Response
 
 MODBUS = 'modbus'
 
@@ -17,27 +17,10 @@ RETRIES = 3
 
 @dataclass(frozen=True)
 class ModbusData:
-    _input_register: ValidatedResponse
-    _holding_register: ValidatedResponse
-    _discrete_inputs: ValidatedResponse
-    _coils: ValidatedResponse
-
-    @property
-    def input_register(self) -> List[int]:
-        return self._input_register.value
-
-    @property
-    def holding_register(self) -> List[int]:
-        return self._holding_register.value
-
-    @property
-    def discrete_inputs(self) -> List[bool]:
-        return self._discrete_inputs.value
-
-    @property
-    def coils(self) -> List[bool]:
-        return self._coils.value
-
+    input_register: Response[List[int]]
+    holding_register: Response[List[int]]
+    discrete_inputs: Response[List[bool]]
+    coils: Response[List[bool]]
 
 class ModbusMode(Enum):
     TCP = 1

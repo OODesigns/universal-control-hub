@@ -6,11 +6,9 @@ from py_modbus.modbus_connection_manager import ModbusConnectionManager
 from py_modbus.modus_client import ModbusClient
 from utils.operation_response import OperationStatus, OperationResponse
 
-
-class TestModbusBase(unittest.IsolatedAsyncioTestCase):
+class TestModbusClient(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
-
         # Mock the ModbusConnectionManager
         self.mock_client = AsyncMock(spec=ModbusBaseClient)
         self.mock_builder = MagicMock(spec=ModbusBuilder)
@@ -20,8 +18,8 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
         self.patcher = patch('py_modbus.modus_client.ModbusConnectionManager', return_value=self.mock_client_manager)
         self.patcher.start()
 
-        # Create the ModbusBase instance
-        self.modbus_base = ModbusClient(client=self.mock_client, builder=self.mock_builder)
+        # Create the ModbusClient instance
+        self.modbus_client = ModbusClient(client=self.mock_client, builder=self.mock_builder)
 
     def tearDown(self):
         self.patcher.stop()
@@ -34,7 +32,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
         )
 
         # Call the connect method
-        response = await self.modbus_base.connect()
+        response = await self.modbus_client.connect()
 
         # Assert the connect method was called and returned the expected response
         self.mock_client_manager.connect.assert_called_once()
@@ -49,7 +47,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
         )
 
         # Call the connect method
-        response = await self.modbus_base.connect()
+        response = await self.modbus_client.connect()
 
         # Assert the connect method was called and returned the expected response
         self.mock_client_manager.connect.assert_called_once()
@@ -64,7 +62,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
         )
 
         # Call the disconnect method
-        response = self.modbus_base.disconnect()
+        response = self.modbus_client.disconnect()
 
         # Assert the disconnect method was called and returned the expected response
         self.mock_client_manager.disconnect.assert_called_once()
@@ -79,7 +77,7 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
         )
 
         # Call the disconnect method
-        response = self.modbus_base.disconnect()
+        response = self.modbus_client.disconnect()
 
         # Assert the disconnect method was called and returned the expected response
         self.mock_client_manager.disconnect.assert_called_once()
@@ -93,26 +91,25 @@ class TestModbusBase(unittest.IsolatedAsyncioTestCase):
         mock_input_result = AsyncMock()
         mock_holding_result = AsyncMock()
 
-        self.modbus_base._coils_reader.read = AsyncMock(return_value=mock_coils_result)
-        self.modbus_base._discrete_inputs.read = AsyncMock(return_value=mock_discrete_result)
-        self.modbus_base._input_registers.read = AsyncMock(return_value=mock_input_result)
-        self.modbus_base._holding_registers.read = AsyncMock(return_value=mock_holding_result)
+        self.modbus_client._coils_reader.read = AsyncMock(return_value=mock_coils_result)
+        self.modbus_client._discrete_inputs.read = AsyncMock(return_value=mock_discrete_result)
+        self.modbus_client._input_registers.read = AsyncMock(return_value=mock_input_result)
+        self.modbus_client._holding_registers.read = AsyncMock(return_value=mock_holding_result)
 
         # Call the read method
-        result = await self.modbus_base.read()
+        result = await self.modbus_client.read()
 
         # Assert that read methods were called and returned expected results
-        self.modbus_base._coils_reader.read.assert_called_once_with(0, self.modbus_base.coil_size.value)
-        self.modbus_base._discrete_inputs.read.assert_called_once_with(0, self.modbus_base.discrete_input_size.value)
-        self.modbus_base._input_registers.read.assert_called_once_with(0, self.modbus_base.input_register_size.value)
-        self.modbus_base._holding_registers.read.assert_called_once_with(0, self.modbus_base.holding_register_size.value)
+        self.modbus_client._coils_reader.read.assert_called_once_with(0, self.modbus_client.coil_size.value)
+        self.modbus_client._discrete_inputs.read.assert_called_once_with(0, self.modbus_client.discrete_input_size.value)
+        self.modbus_client._input_registers.read.assert_called_once_with(0, self.modbus_client.input_register_size.value)
+        self.modbus_client._holding_registers.read.assert_called_once_with(0, self.modbus_client.holding_register_size.value)
 
         # Assert the result contains the mocked data
-        self.assertEqual(result._coils, mock_coils_result)
-        self.assertEqual(result._discrete_inputs, mock_discrete_result)
-        self.assertEqual(result._input_register, mock_input_result)
-        self.assertEqual(result._holding_register, mock_holding_result)
-
+        self.assertEqual(result.coils, mock_coils_result)
+        self.assertEqual(result.discrete_inputs, mock_discrete_result)
+        self.assertEqual(result.input_register, mock_input_result)
+        self.assertEqual(result.holding_register, mock_holding_result)
 
 
 if __name__ == '__main__':

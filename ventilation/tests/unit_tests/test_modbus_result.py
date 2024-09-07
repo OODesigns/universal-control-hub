@@ -1,13 +1,14 @@
 import unittest
 from unittest.mock import AsyncMock, create_autospec
-
 from pymodbus import ModbusException
 from pymodbus.pdu import ModbusResponse, ExceptionResponse
-
-from py_modbus.modbus_result import PyModbusCoilResult, PyModbusDiscreteInputResult, PyModbusInputRegisterResult, \
+from py_modbus.modbus_result import (
+    PyModbusCoilResult,
+    PyModbusDiscreteInputResult,
+    PyModbusInputRegisterResult,
     PyModbusHoldingRegisterResult
-from utils.value import ValueStatus
-
+)
+from utils.response import ResponseStatus
 
 class TestPyModbusCoilResult(unittest.IsolatedAsyncioTestCase):
 
@@ -21,7 +22,7 @@ class TestPyModbusCoilResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusCoilResult.create(mock_client, address=1, count=3)
         self.assertFalse(result.is_error())
         self.assertEqual(result.get_data(), [True, False, True])
-        self.assertEqual(result.to_validated_result().status, ValueStatus.OK)
+        self.assertEqual(result.to_response().status, ResponseStatus.OK)  # Updated to ResponseStatus
 
     async def test_read_coils_error(self):
         mock_client = AsyncMock()
@@ -32,7 +33,7 @@ class TestPyModbusCoilResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusCoilResult.create(mock_client, address=1, count=3)
         self.assertEqual(result.get_data(), [])
         self.assertTrue(result.is_error())
-        self.assertEqual(result.to_validated_result().status, ValueStatus.EXCEPTION)
+        self.assertEqual(result.to_response().status, ResponseStatus.EXCEPTION)  # Updated to ResponseStatus
 
     async def test_get_error_message_modbus_exception(self):
         mock_client = AsyncMock()
@@ -68,6 +69,7 @@ class TestPyModbusCoilResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusCoilResult.create(mock_client, address=1, count=3)
         self.assertEqual(result.get_error_message(), "Unknown error")
 
+
 class TestPyModbusDiscreteInputResult(unittest.IsolatedAsyncioTestCase):
 
     async def test_read_discrete_inputs_success(self):
@@ -80,7 +82,7 @@ class TestPyModbusDiscreteInputResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusDiscreteInputResult.create(mock_client, address=1, count=3)
         self.assertEqual(result.get_data(), [False, True, False])
         self.assertFalse(result.is_error())
-        self.assertEqual(result.to_validated_result().status, ValueStatus.OK)
+        self.assertEqual(result.to_response().status, ResponseStatus.OK)
 
     async def test_read_discrete_inputs_error(self):
         mock_client = AsyncMock()
@@ -91,7 +93,8 @@ class TestPyModbusDiscreteInputResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusDiscreteInputResult.create(mock_client, address=1, count=3)
         self.assertEqual(result.get_data(), [])
         self.assertTrue(result.is_error())
-        self.assertEqual(result.to_validated_result().status, ValueStatus.EXCEPTION)
+        self.assertEqual(result.to_response().status, ResponseStatus.EXCEPTION)
+
 
 class TestPyModbusInputRegisterResult(unittest.IsolatedAsyncioTestCase):
 
@@ -105,7 +108,7 @@ class TestPyModbusInputRegisterResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusInputRegisterResult.create(mock_client, address=1, count=3)
         self.assertEqual(result.get_data(), [123, 456, 789])
         self.assertFalse(result.is_error())
-        self.assertEqual(result.to_validated_result().status, ValueStatus.OK)
+        self.assertEqual(result.to_response().status, ResponseStatus.OK)
 
     async def test_read_input_registers_error(self):
         mock_client = AsyncMock()
@@ -116,7 +119,8 @@ class TestPyModbusInputRegisterResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusInputRegisterResult.create(mock_client, address=1, count=3)
         self.assertEqual(result.get_data(), [])
         self.assertTrue(result.is_error())
-        self.assertEqual(result.to_validated_result().status, ValueStatus.EXCEPTION)
+        self.assertEqual(result.to_response().status, ResponseStatus.EXCEPTION)
+
 
 class TestPyModbusHoldingRegisterResult(unittest.IsolatedAsyncioTestCase):
 
@@ -130,7 +134,7 @@ class TestPyModbusHoldingRegisterResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusHoldingRegisterResult.create(mock_client, address=1, count=3)
         self.assertEqual(result.get_data(), [321, 654, 987])
         self.assertFalse(result.is_error())
-        self.assertEqual(result.to_validated_result().status, ValueStatus.OK)
+        self.assertEqual(result.to_response().status, ResponseStatus.OK)
 
     async def test_read_holding_registers_error(self):
         mock_client = AsyncMock()
@@ -141,7 +145,8 @@ class TestPyModbusHoldingRegisterResult(unittest.IsolatedAsyncioTestCase):
         result = await PyModbusHoldingRegisterResult.create(mock_client, address=1, count=3)
         self.assertEqual(result.get_data(), [])
         self.assertTrue(result.is_error())
-        self.assertEqual(result.to_validated_result().status, ValueStatus.EXCEPTION)
+        self.assertEqual(result.to_response().status, ResponseStatus.EXCEPTION)
+
 
 if __name__ == '__main__':
     unittest.main()
