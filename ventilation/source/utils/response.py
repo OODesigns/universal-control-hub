@@ -1,16 +1,7 @@
-from enum import Enum
+from dataclasses import dataclass
 from typing import TypeVar, Generic
 
-from attr import dataclass
-
-
-class ResponseStatus(Enum):
-    """
-    Enum to represent the status of a process.
-    """
-    OK = 0
-    EXCEPTION = 1
-
+from utils.status import Status
 
 T = TypeVar('T')
 
@@ -25,6 +16,6 @@ class Response(Generic[T]):
         details: A message detailing the result of the validation.
         value: The value being validated.
     """
-    status: ResponseStatus
+    status: Status
     details: str
     value: T

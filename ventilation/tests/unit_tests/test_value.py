@@ -1,173 +1,132 @@
 import unittest
-from utils.value import Value, ValidatedResponse, ValueStatus, ValidatedValue, StrictValidatedValue, RangeValidatedValue
+from typing import List
+
+from utils.response import Response
+from utils.value import Value, EnumValidatedValue, RangeValidatedValue, EnumValidationStrategy, TypeValidationStrategy, \
+    RangeValidationStrategy, ValidatedValue, ValidationStrategy
+from utils.status import Status
 
 class TestValue(unittest.TestCase):
-
-    def test_value_initialization(self):
-        v = Value(10)
-        self.assertEqual(v.value, 10)
-
     def test_value_equality(self):
-        v1 = Value(10)
-        v2 = Value(10)
-        v3 = Value(20)
-        self.assertTrue(v1 == v2)
-        self.assertFalse(v1 == v3)
+        val1 = Value(10)
+        val2 = Value(10)
+        val3 = Value(20)
 
-    def test_value_comparison(self):
-        v1 = Value(10)
-        v2 = Value(20)
-        self.assertTrue(v1 < v2)
-        self.assertTrue(v1 <= v2)
-        self.assertFalse(v2 < v1)
-        self.assertFalse(v2 <= v1)
+        self.assertEqual(val1, val2, "Values with the same content should be equal")
+        self.assertNotEqual(val1, val3, "Values with different content should not be equal")
 
-    def test_value_invalid_comparison(self):
-        v1 = Value(10)
-        self.assertFalse(v1 == 10)  # Comparing with a non-Value type should return False
-        self.assertFalse(v1 < 10)   # Should return False because `10` is not of type `Value`
-        self.assertFalse(v1 <= 10)  # Should return False because `10` is not of type `Value`
+    def test_value_comparisons(self):
+        val1 = Value(10)
+        val2 = Value(20)
 
-        v2 = Value(20)
-        self.assertFalse(v1 == v2)  # Check that equality with different values returns False
+        self.assertLess(val1, val2, "val1 should be less than val2")
+        self.assertLessEqual(val1, val2, "val1 should be less or equal to val2")
+        self.assertLessEqual(val1, val1, "val1 should be less or equal to itself")
+        self.assertGreater(val2, val1, "val2 should be greater than val1")
+        self.assertGreaterEqual(val2, val1, "val2 should be greater or equal to val1")
 
+class TestEnumValidatedValue(unittest.TestCase):
+    def test_enum_validated_value(self):
+        valid_values = [Status.OK, Status.EXCEPTION]
+        enum_val = EnumValidatedValue(Status.OK, Status, valid_values)
 
-class TestValidatedResponse(unittest.TestCase):
+        self.assertEqual(enum_val.status, Status.OK, "Status should be OK after validation")
+        self.assertIsNotNone(enum_val.value, "Validated value should not be None")
+        self.assertEqual(enum_val.value, Status.OK, "Enum value should be OK")
 
-    def test_validated_response_initialization(self):
-        result = ValidatedResponse(status=ValueStatus.OK, details="All good", value=100)
-        self.assertEqual(result.status, ValueStatus.OK)
-        self.assertEqual(result.details, "All good")
-        self.assertEqual(result.value, 100)
+    def test_enum_invalid_value(self):
+        valid_values = [Status.OK, Status.EXCEPTION]
+        invalid_val = EnumValidatedValue('Invalid', Status, valid_values)
 
-
-class MockValidatedValue(ValidatedValue):
-
-    @classmethod
-    def validate(cls, validated_value) -> ValidatedResponse:
-        if validated_value is None:
-            return ValidatedResponse(status=ValueStatus.EXCEPTION, details="Invalid value", value=None)
-        return ValidatedResponse(status=ValueStatus.OK, details="Valid value", value=validated_value)
-
-
-class TestValidatedValue(unittest.TestCase):
-
-    def test_validated_value_initialization_success(self):
-        v = MockValidatedValue(100)
-        self.assertEqual(v.value, 100)
-        self.assertEqual(v.status, ValueStatus.OK)
-        self.assertEqual(v.details, "Valid value")
-
-    def test_validated_value_initialization_failure(self):
-        v = MockValidatedValue(None)
-        self.assertEqual(v.status, ValueStatus.EXCEPTION)
-        self.assertEqual(v.details, "Invalid value")
-        with self.assertRaises(ValueError):
-            _ = v.value  # Should raise ValueError since validation failed
-
-    def test_validated_value_comparison(self):
-        v1 = MockValidatedValue(10)
-        v2 = MockValidatedValue(20)
-        v3 = MockValidatedValue(10)
-        v4 = MockValidatedValue(None)  # Invalid value
-
-        self.assertTrue(v1 < v2)
-        self.assertTrue(v1 <= v2)
-        self.assertTrue(v1 == v3)
-        self.assertFalse(v1 < v3)
-        self.assertFalse(v1 > v3)
-        self.assertFalse(v4 == v1)  # Can't compare invalid with valid
-
-    def test_validated_value_validate_method(self):
-        """Test the validate method directly."""
-        valid_response = MockValidatedValue.validate(100)
-        invalid_response = MockValidatedValue.validate(None)
-
-        self.assertEqual(valid_response.status, ValueStatus.OK)
-        self.assertEqual(valid_response.details, "Valid value")
-        self.assertEqual(valid_response.value, 100)
-
-        self.assertEqual(invalid_response.status, ValueStatus.EXCEPTION)
-        self.assertEqual(invalid_response.details, "Invalid value")
-        self.assertIsNone(invalid_response.value)
-
-
-class MockStrictValidatedValue(StrictValidatedValue):
-
-    @classmethod
-    def validate(cls, validated_value) -> ValidatedResponse:
-        if validated_value is None:
-            return ValidatedResponse(status=ValueStatus.EXCEPTION, details="Invalid value", value=None)
-        return ValidatedResponse(status=ValueStatus.OK, details="Valid value", value=validated_value)
-
-
-class TestStrictValidatedValue(unittest.TestCase):
-
-    def test_strict_validated_value_success(self):
-        strict_v = MockStrictValidatedValue(100)
-        self.assertEqual(strict_v.value, 100)
-        self.assertEqual(strict_v.status, ValueStatus.OK)
-        self.assertEqual(strict_v.details, "Valid value")
-
-    def test_strict_validated_value_failure(self):
-        with self.assertRaises(ValueError):
-            MockStrictValidatedValue(None)  # Should raise ValueError immediately
-
-    def test_strict_validated_value_validate_method(self):
-        """Test the validate method directly for StrictValidatedValue."""
-        valid_response = MockStrictValidatedValue.validate(100)
-        invalid_response = MockStrictValidatedValue.validate(None)
-
-        self.assertEqual(valid_response.status, ValueStatus.OK)
-        self.assertEqual(valid_response.details, "Valid value")
-        self.assertEqual(valid_response.value, 100)
-
-        self.assertEqual(invalid_response.status, ValueStatus.EXCEPTION)
-        self.assertEqual(invalid_response.details, "Invalid value")
-        self.assertIsNone(invalid_response.value)
-
-
-class MockRangeValidatedValue(RangeValidatedValue):
-    valid_types = (int,)
-    low_value = 0
-    high_value = 100
-
+        self.assertEqual(invalid_val.status, Status.EXCEPTION, "Status should be EXCEPTION after invalid input")
+        self.assertIsNone(invalid_val.value, "Value should be None when validation fails")
 
 class TestRangeValidatedValue(unittest.TestCase):
+    def test_range_validated_value(self):
+        range_val = RangeValidatedValue(15, int, 10, 20)
 
-    def test_range_validated_value_within_range(self):
-        v = MockRangeValidatedValue(50)
-        self.assertEqual(v.value, 50)
-        self.assertEqual(v.status, ValueStatus.OK)
-        self.assertEqual(v.details, "")
+        self.assertEqual(range_val.status, Status.OK, "Status should be OK after valid input")
+        self.assertEqual(range_val.value, 15, "Value should be 15")
 
-    def test_range_validated_value_out_of_range(self):
-        v = MockRangeValidatedValue(150)
-        self.assertEqual(v.status, ValueStatus.EXCEPTION)
-        with self.assertRaises(ValueError):
-            _ = v.value  # Should raise ValueError since the value is out of range
+    def test_range_invalid_value(self):
+        range_val = RangeValidatedValue(25, int, 10, 20)
 
-    def test_range_validated_value_invalid_type(self):
-        v = MockRangeValidatedValue("50")  # Invalid type
-        self.assertEqual(v.status, ValueStatus.EXCEPTION)
-        with self.assertRaises(ValueError):
-            _ = v.value  # Should raise ValueError due to invalid type
+        self.assertEqual(range_val.status, Status.EXCEPTION, "Status should be EXCEPTION after invalid input")
+        self.assertIsNone(range_val.value, "Value should be None when validation fails")
 
-    def test_range_validated_value_validate_method(self):
-        """Test the validate method directly for RangeValidatedValue."""
-        valid_response = MockRangeValidatedValue.validate(50)
-        invalid_response = MockRangeValidatedValue.validate(150)
-        invalid_type_response = MockRangeValidatedValue.validate("50")
+class TestValidatedValueStrategies(unittest.TestCase):
+    def test_enum_validated_value_strategies(self):
+        valid_values = [Status.OK, Status.EXCEPTION]
+        enum_val = EnumValidatedValue(Status.OK, Status, valid_values)
 
-        self.assertEqual(valid_response.status, ValueStatus.OK)
-        self.assertEqual(valid_response.value, 50)
+        # Test that EnumValidatedValue has specific strategies
+        self.assertEqual(len(enum_val._strategies), 2, "EnumValidatedValue should have 2 validation strategies")
+        self.assertIsInstance(enum_val._strategies[0], EnumValidationStrategy, "First strategy should be EnumValidationStrategy")
+        self.assertIsInstance(enum_val._strategies[1], TypeValidationStrategy, "Second strategy should be TypeValidationStrategy")
 
-        self.assertEqual(invalid_response.status, ValueStatus.EXCEPTION)
-        self.assertIsNone(invalid_response.value)
+        # Prove that EnumValidatedValue strategies are not shared with RangeValidatedValue
+        range_val = RangeValidatedValue(15, int, 10, 20)
+        self.assertNotEqual(enum_val._strategies, range_val._strategies, "EnumValidatedValue should not share strategies with RangeValidatedValue")
 
-        self.assertEqual(invalid_type_response.status, ValueStatus.EXCEPTION)
-        self.assertIsNone(invalid_type_response.value)
+    def test_range_validated_value_strategies(self):
+        range_val = RangeValidatedValue(15, int, 10, 20)
 
+        # Test that RangeValidatedValue has specific strategies
+        self.assertEqual(len(range_val._strategies), 2, "RangeValidatedValue should have 2 validation strategies")
+        self.assertIsInstance(range_val._strategies[0], RangeValidationStrategy, "First strategy should be RangeValidationStrategy")
+        self.assertIsInstance(range_val._strategies[1], TypeValidationStrategy, "Second strategy should be TypeValidationStrategy")
+
+    def test_run_validations_references_correct_strategies(self):
+        valid_values = [Status.OK, Status.EXCEPTION]
+
+        # EnumValidatedValue should use EnumValidationStrategy and TypeValidationStrategy
+        enum_val = EnumValidatedValue(Status.OK, Status, valid_values)
+        enum_result = enum_val.run_validations(Status.OK)
+        self.assertEqual(enum_result.status, Status.OK, "EnumValidatedValue should pass validation with correct enum")
+        self.assertEqual(enum_result.details, "All validations passed", "EnumValidatedValue should pass all validations")
+
+        # RangeValidatedValue should use RangeValidationStrategy and TypeValidationStrategy
+        range_val = RangeValidatedValue(15, int, 10, 20)
+        range_result = range_val.run_validations(15)
+        self.assertEqual(range_result.status, Status.OK, "RangeValidatedValue should pass validation with correct range")
+        self.assertEqual(range_result.details, "All validations passed", "RangeValidatedValue should pass all validations")
+
+        # Confirm that run_validations uses the correct strategies for EnumValidatedValue and RangeValidatedValue
+        self.assertNotEqual(enum_val._strategies, range_val._strategies, "EnumValidatedValue and RangeValidatedValue should not share strategies")
+
+    # Test chaining between strategies in run_validations
+    def test_run_validations_with_chaining(self):
+        # Custom strategies to simulate chaining
+        class IncrementStrategy:
+            """ A simple strategy that increments the value by 1. """
+            @staticmethod
+            def validate(value):
+                return Response(status=Status.OK, details="Incremented value", value=value + 1)
+
+        class DoubleStrategy:
+            """ A simple strategy that doubles the value. """
+            @staticmethod
+            def validate(value):
+                return Response(status=Status.OK, details="Doubled value", value=value * 2)
+
+        # Creating a custom validated value with chained strategies
+        class ChainedValue(ValidatedValue):
+            def get__strategies(self) -> [List[ValidationStrategy]]:
+                return [
+                    IncrementStrategy(),
+                    DoubleStrategy(),
+                    RangeValidationStrategy(10, 50)  # Ensure the final value falls in range
+                ]
+
+        # Test a value that should pass the chain
+        result = ChainedValue(4)
+        self.assertEqual(result.status, Status.OK, "Value should pass all validations after chaining")
+        self.assertEqual(result.value, 10, "Value should be incremented and then doubled to 10")
+
+        # Test a value that should fail the range validation after chaining
+        result = ChainedValue(26)
+        self.assertEqual(result.status, Status.EXCEPTION, "Value should fail range validation after chaining")
+        self.assertIsNone(result.value, "Value should be None after failing validation")
 
 if __name__ == '__main__':
     unittest.main()

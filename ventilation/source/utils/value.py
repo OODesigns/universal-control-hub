@@ -1,93 +1,125 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any
+from http.client import responses
+from typing import Generic, List
+from utils.response import Response, T
+from utils.status import Status
 
-
-class Value:
+class Value(Generic[T]):
     """
     A base class to represent a generic value. Provides comparison methods for equality, less than,
     and less than or equal to comparisons between instances of derived classes.
     """
-    def __init__(self, value):
+
+    def __init__(self, value: T):
         self._value = value
 
     @property
-    def value(self):
+    def value(self) -> T:
         """Returns the stored value."""
         return self._value
 
-    def __eq__(self, other):
-        """Checks equality between two Value instances."""
-        if type(self) is type(other):
-            return self.value == other.value
+    def _compare(self, other, comparison_func):
+        if isinstance(other, self.__class__):
+            return comparison_func(self.value, other.value)
         return False
+
+    def __eq__(self, other):
+        return self._compare(other, lambda x, y: x == y)
 
     def __lt__(self, other):
-        """Checks if this value is less than another."""
-        if type(self) is type(other):
-            return self.value < other.value
-        return False
+        return self._compare(other, lambda x, y: x < y)
 
     def __le__(self, other):
-        """Checks if this value is less than or equal to another."""
-        if type(self) is type(other):
-            return self.value <= other.value
-        return False
-
-class ValueStatus(Enum):
-    """
-    Enum to represent the status of a validation process.
-    """
-    OK = 0
-    EXCEPTION = 1
-
-@dataclass
-class ValidatedResponse:
-    """
-    Data class to encapsulate the result of a validation process.
-
-    Attributes:
-        status: The status of the validation (OK or EXCEPTION).
-        details: A message detailing the result of the validation.
-        value: The value being validated.
-    """
-    status: ValueStatus
-    details: str
-    value: Any
+        return self._compare(other, lambda x, y: x <= y)
 
 
-class ValidatedValue(Value, ABC):
+class ValidationStrategy(ABC):
+    @abstractmethod
+    def validate(self, value) -> Response:
+        """Perform validation and return a Response."""
+        pass
+
+class TypeValidationStrategy(ValidationStrategy):
+    def __init__(self, valid_types):
+        self.valid_types = valid_types
+
+    def validate(self, value) -> Response:
+        if not isinstance(value, self.valid_types):
+            return Response(
+                status=Status.EXCEPTION,
+                details=f"Value must be one of {self.valid_types}, got {type(value).__name__}",
+                value=None
+            )
+        return Response(status=Status.OK, details="Type validation successful", value=value)
+
+class RangeValidationStrategy(ValidationStrategy):
+    def __init__(self, low_value, high_value):
+        self.low_value = low_value
+        self.high_value = high_value
+
+    def validate(self, value) -> Response:
+        if value < self.low_value:
+            return Response(
+                status=Status.EXCEPTION,
+                details=f"Value must be greater than or equal to {self.low_value}, got {value}",
+                value=None
+            )
+        if value > self.high_value:
+            return Response(
+                status=Status.EXCEPTION,
+                details=f"Value must be less than or equal to {self.high_value}, got {value}",
+                value=None
+            )
+        return Response(status=Status.OK, details="Range validation successful", value=value)
+
+class EnumValidationStrategy(ValidationStrategy):
+    def __init__(self, valid_values):
+        self.valid_values = valid_values
+
+    def validate(self, value) -> Response:
+        if value not in self.valid_values:
+            return Response(
+                status=Status.EXCEPTION,
+                details=f"Value must be one of {self.valid_values}, got {value}",
+                value=None
+            )
+        return Response(status=Status.OK, details="Enum validation successful", value=value)
+
+class ValidatedValue(Value[T], ABC):
     """
-    A base class that represents a value which must be validated. Subclasses are required to implement
+    A base class that represents a value which must be validated. ValidationStrategy are required to implement
     the validate method to perform validation and return a ValidatedResult.
 
     Attributes:
         _status: The status of the validation.
         _details: Additional details regarding the validation status.
     """
-    def __init__(self, validated_value=None):
-        result = self.__class__.validate(validated_value)
-        super().__init__(value=result.value)
+    def __init__(self, value):
+        result = self.run_validations(value)
+        super().__init__(result.value)
         self._status = result.status
         self._details = result.details
 
-    @classmethod
+    def run_validations(self, value):
+        """Run the list of validation strategies on the value, chaining responses."""
+
+        current_value = value  # Start with the initial value
+
+        for strategy in self.get__strategies():
+            response = strategy.validate(current_value)
+            if response.status == Status.EXCEPTION:
+                return response  # Stop if any strategy fails
+            # Update current_value with the value returned from the successful strategy
+            current_value = response.value
+
+        return Response(status=Status.OK, details="Validation successful", value=current_value)
+
     @abstractmethod
-    def validate(cls, validated_value) -> ValidatedResponse:  # pragma: no cover
-        """
-        Abstract method to validate the value. Subclasses must implement this to return a ValidatedResult.
-
-        Args:
-            validated_value: The value to be validated.
-
-        Returns:
-            A ValidatedResult object containing the status, details, and the validated value.
-        """
-        pass
+    def get__strategies(self) -> [List[ValidationStrategy]]:
+        return []
 
     @property
-    def status(self) -> ValueStatus:
+    def status(self) -> Status:
         """Returns the status of the validation."""
         return self._status
 
@@ -97,10 +129,10 @@ class ValidatedValue(Value, ABC):
         return self._details
 
     @property
-    def value(self):
-        """Returns the value if validation was successful, otherwise raises a ValueError."""
-        if self._status == ValueStatus.EXCEPTION:
-            raise ValueError(f"Cannot access value: {self.details}")
+    def value(self) -> T:
+        """Returns the value if validation was successful, otherwise return None."""
+        if self._status == Status.EXCEPTION:
+            return None
         return self._value
 
     def _same_status(self, other):
@@ -119,35 +151,38 @@ class ValidatedValue(Value, ABC):
         """Checks if this value is less than or equal to another, considering validation status."""
         return self._same_status(other) and super().__le__(other)
 
-class StrictValidatedValue(ValidatedValue, ABC):
+
+class EnumValidatedValue(ValidatedValue[T]):
+    def get__strategies(self) -> [List[ValidationStrategy]]:
+        return self._strategies
+
+    def __init__(self, value, valid_types, valid_values):
+        # Initialize the strategies for this subclass
+        self._strategies = [
+            EnumValidationStrategy(valid_values),
+            TypeValidationStrategy(valid_types)
+        ]
+        super().__init__(value)
+
+
+class RangeValidatedValue(ValidatedValue[T]):
+    def get__strategies(self) -> [List[ValidationStrategy]] :
+        return self._strategies
+
+    def __init__(self, value, valid_types, low_value, high_value):
+        # Initialize the strategies for this subclass
+        self._strategies = [
+            RangeValidationStrategy(low_value, high_value),
+            TypeValidationStrategy(valid_types)
+        ]
+        super().__init__(value)
+
+
+class StrictValidatedValue(ValidatedValue[T], ABC):
     """
     A stricter version of ValidatedValue that raises an exception immediately if the validation fails.
     """
-    def __init__(self, validated_value=None):
-        super().__init__(validated_value)
-        if self.status == ValueStatus.EXCEPTION:
-            raise ValueError(f"Validation failed for value '{validated_value}': {self.details}")
-
-class RangeValidatedValue(ValidatedValue):
-    """
-    A base class that provides range validation for numeric values.
-    Subclasses should define `valid_types`, `low_value`, and `high_value`.
-
-    """
-    high_value = None
-    low_value = None
-    valid_types = None
-
-    @classmethod
-    def validate(cls, value) -> ValidatedResponse:
-        if not (type(value) in cls.valid_types) or not (cls.low_value <= value <= cls.high_value):
-            return ValidatedResponse(
-                status=ValueStatus.EXCEPTION,
-                details=f"{cls.__name__} must be a {cls.valid_types} between {cls.low_value} and {cls.high_value}, got {value}",
-                value=None
-            )
-        return ValidatedResponse(
-            status=ValueStatus.OK,
-            details="",
-            value=value
-        )
+    def __init__(self, value: T =None):
+        super().__init__(value)
+        if self.status == Status.EXCEPTION:
+            raise ValueError(f"Validation failed for value '{value}': {self.details}")

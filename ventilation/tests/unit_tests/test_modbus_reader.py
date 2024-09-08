@@ -2,7 +2,9 @@ import unittest
 from typing import List
 from unittest.mock import AsyncMock
 from modbus.modbus_reader import ModbusBitReader, ModbusWordReader, ModbusResultAdapter
-from utils.response import Response, ResponseStatus
+from utils.response import Response
+from utils.status import Status
+
 
 class MockModbusResultAdapter(ModbusResultAdapter[List[bool]]):
     def __init__(self, data=None, error=False):
@@ -24,12 +26,12 @@ class MockModbusResultAdapter(ModbusResultAdapter[List[bool]]):
     def to_response(self) -> Response[List[bool]]:
         if self._error:
             return Response[List[bool]](
-                status=ResponseStatus.EXCEPTION,
+                status=Status.EXCEPTION,
                 details=self.get_error_message(),
                 value=None
             )
         return Response[List[bool]](
-            status=ResponseStatus.OK,
+            status=Status.OK,
             details="Read successful",
             value=self._data
         )
@@ -45,7 +47,7 @@ class TestModbusBitReader(unittest.IsolatedAsyncioTestCase):
         result = await reader.read(0, 4)
 
         # Verify the result
-        self.assertEqual(result.status, ResponseStatus.OK)
+        self.assertEqual(result.status, Status.OK)
         self.assertEqual(result.value, [True, False, True, False])
 
     async def test_read_bits_multiple_chunks(self):
@@ -67,7 +69,7 @@ class TestModbusBitReader(unittest.IsolatedAsyncioTestCase):
         result = await reader.read(0, 2500)
 
         # Verify the result
-        self.assertEqual(result.status, ResponseStatus.OK)
+        self.assertEqual(result.status, Status.OK)
         self.assertEqual(len(result.value), 2500)
         self.assertEqual(result.value[:2000], [True] * 2000)
         self.assertEqual(result.value[2000:], [False] * 500)
@@ -81,7 +83,7 @@ class TestModbusBitReader(unittest.IsolatedAsyncioTestCase):
         result = await reader.read(0, 4)
 
         # Verify the result
-        self.assertEqual(result.status, ResponseStatus.EXCEPTION)
+        self.assertEqual(result.status, Status.EXCEPTION)
         self.assertIsNone(result.value)
 
 class MockModbusWordResultAdapter(ModbusResultAdapter[List[int]]):
@@ -104,12 +106,12 @@ class MockModbusWordResultAdapter(ModbusResultAdapter[List[int]]):
     def to_response(self) -> Response[List[int]]:
         if self._error:
             return Response[List[int]](
-                status=ResponseStatus.EXCEPTION,
+                status=Status.EXCEPTION,
                 details=self.get_error_message(),
                 value=None
             )
         return Response[List[int]](
-            status=ResponseStatus.OK,
+            status=Status.OK,
             details="Read successful",
             value=self._data
         )
@@ -125,7 +127,7 @@ class TestModbusWordReader(unittest.IsolatedAsyncioTestCase):
         result = await reader.read(0, 4)
 
         # Verify the result
-        self.assertEqual(result.status, ResponseStatus.OK)
+        self.assertEqual(result.status, Status.OK)
         self.assertEqual(result.value, [100, 200, 300, 400])
 
     async def test_read_words_multiple_chunks(self):
@@ -145,7 +147,7 @@ class TestModbusWordReader(unittest.IsolatedAsyncioTestCase):
         result = await reader.read(0, 225)
 
         # Verify the result
-        self.assertEqual(result.status, ResponseStatus.OK)
+        self.assertEqual(result.status, Status.OK)
         self.assertEqual(len(result.value), 225)
         self.assertEqual(result.value[:125], [100] * 125)
         self.assertEqual(result.value[125:], [200] * 100)
@@ -159,7 +161,7 @@ class TestModbusWordReader(unittest.IsolatedAsyncioTestCase):
         result = await reader.read(0, 4)
 
         # Verify the result
-        self.assertEqual(result.status, ResponseStatus.EXCEPTION)
+        self.assertEqual(result.status, Status.EXCEPTION)
         self.assertIsNone(result.value)
 
 

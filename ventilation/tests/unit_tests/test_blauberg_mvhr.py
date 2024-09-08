@@ -9,7 +9,9 @@ from modbus.modbus_factory import ModbusFactory
 from modbus.tcp_values import IPAddress, Port
 from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
 from utils.operation_response import OperationStatus, OperationResponse
-from utils.value import ValidatedResponse, ValueStatus
+from utils.value import Response
+from utils.status import Status
+
 
 class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
 
@@ -128,7 +130,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         """Test the read_data method with focus on temp_supply_in and temp_supply_out properties."""
 
         # Create a validated response that mimics successful Modbus data retrieval
-        validated_response = ValidatedResponse(status=ValueStatus.OK, value=[
+        validated_response = Response(status=Status.OK, value=[
             0,    # IR_CUR_SEL_TEMP, not used in this test
             250,  # IR_CURTEMP_SUAIR_IN -> 25.0°C
             300   # IR_CURTEMP_SUAIR_OUT -> 30.0°C
@@ -152,7 +154,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         """Test the read_data method with sensor fault values (-32768 and 32767)."""
 
         # Create a validated response that mimics Modbus data with faults
-        validated_response = ValidatedResponse(status=ValueStatus.EXCEPTION, value=[
+        validated_response = Response(status=Status.EXCEPTION, value=[
             0,       # IR_CUR_SEL_TEMP, not used in this test
             -32768,  # IR_CURTEMP_SUAIR_IN -> No sensor detected
             32767    # IR_CURTEMP_SUAIR_OUT -> Short circuit

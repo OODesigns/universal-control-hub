@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable, List, Awaitable, Generic
-from utils.response import ResponseStatus, T, Response
+from utils.response import T, Response
+from utils.status import Status
 
 
 class ModbusResultAdapter(Generic[T], ABC):
@@ -57,7 +58,7 @@ class ModbusReader(Generic[T]):
             result_adapter = await self.read_function(current_address, current_count)
             response = result_adapter.to_response()
 
-            if response.status == ResponseStatus.EXCEPTION:
+            if response.status == Status.EXCEPTION:
                 return response  # Return early if any error occurs
 
             results.extend(response.value)
@@ -65,7 +66,7 @@ class ModbusReader(Generic[T]):
             remaining_count -= current_count
 
         return Response[T](
-            status=ResponseStatus.OK,
+            status=Status.OK,
             details="Read successful",
             value=results
         )

@@ -1,10 +1,10 @@
 import unittest
 from modbus.tcp_values import IPAddress, Port, StrictIPAddress, StrictPort
-from utils.value import ValueStatus
+from utils.status import Status
 
 class TestTCPValues(unittest.TestCase):
 
-    # Test for IPAddress class
+    # Test for IPAddress class (non-strict)
     def test_ip_address_valid(self):
         valid_ips = [
             "0.0.0.0",
@@ -18,8 +18,8 @@ class TestTCPValues(unittest.TestCase):
             with self.subTest(ip=ip):
                 ip_address = IPAddress(ip)
                 self.assertEqual(ip_address.value, ip)
-                self.assertEqual(ip_address.status, ValueStatus.OK)
-                self.assertEqual(ip_address.details, "")
+                self.assertEqual(ip_address.status, Status.OK)
+                self.assertEqual(ip_address.details, "Validation successful")
 
     def test_ip_address_invalid(self):
         invalid_ips = [
@@ -38,11 +38,11 @@ class TestTCPValues(unittest.TestCase):
         for ip in invalid_ips:
             with self.subTest(ip=ip):
                 ip_address = IPAddress(ip)
-                self.assertEqual(ip_address.status, ValueStatus.EXCEPTION)
+                self.assertEqual(ip_address.status, Status.EXCEPTION)
                 self.assertTrue("Invalid IP address" in ip_address.details)
-                with self.assertRaises(ValueError):
-                    _ = ip_address.value  # Accessing the value should raise ValueError
+                self.assertIsNone(ip_address.value)
 
+    # Test for StrictIPAddress class (strict)
     def test_strict_ip_address_invalid(self):
         invalid_ips = [
             "999.999.999.999",
@@ -59,32 +59,36 @@ class TestTCPValues(unittest.TestCase):
         ]
         for ip in invalid_ips:
             with self.subTest(ip=ip):
+                # Expecting strict validation to raise ValueError
                 with self.assertRaises(ValueError):
                     StrictIPAddress(ip)
 
 class TestPort(unittest.TestCase):
 
+    # Test for Port class (non-strict)
     def test_port_valid(self):
         valid_ports = [0, 80, 8080, 65535]
         for port_num in valid_ports:
             with self.subTest(port=port_num):
                 port = Port(port_num)
                 self.assertEqual(port.value, port_num)
-                self.assertEqual(port.status, ValueStatus.OK)
+                self.assertEqual(port.status, Status.OK)
+                self.assertEqual(port.details, "Validation successful")
 
     def test_port_invalid(self):
         invalid_ports = [-1, 70000, "8080", 65536]
         for port_num in invalid_ports:
             with self.subTest(port=port_num):
                 port = Port(port_num)
-                self.assertEqual(port.status, ValueStatus.EXCEPTION)
-                with self.assertRaises(ValueError):
-                    _ = port.value
+                self.assertEqual(port.status, Status.EXCEPTION)
+                self.assertIsNone(port.value)
 
+    # Test for StrictPort class (strict)
     def test_strict_port_invalid(self):
         invalid_ports = [-1, 70000, "8080", 65536]
         for port_num in invalid_ports:
             with self.subTest(port=port_num):
+                # Expecting strict validation to raise ValueError
                 with self.assertRaises(ValueError):
                     StrictPort(port_num)
 

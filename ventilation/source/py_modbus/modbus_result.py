@@ -6,7 +6,8 @@ from pymodbus import ModbusException
 from pymodbus.client import ModbusBaseClient
 from pymodbus.pdu import ExceptionResponse, ModbusResponse
 from modbus.modbus_reader import ModbusResultAdapter
-from utils.response import ResponseStatus, T, Response
+from utils.response import T, Response
+from utils.status import Status
 
 
 @dataclass(frozen=True)
@@ -47,13 +48,13 @@ class PyModbusBaseResult(ModbusResultAdapter[T], ABC):
         """Converts the PyModbusBaseResult to a ValidatedResult."""
         if self.is_error():
             return Response[T](
-                status=ResponseStatus.EXCEPTION,
+                status=Status.EXCEPTION,
                 details=self.get_error_message(),
                 value=None
             )
         else:
             return Response[T](
-                status=ResponseStatus.OK,
+                status=Status.OK,
                 details="Read successful",
                 value=self.get_data()
             )

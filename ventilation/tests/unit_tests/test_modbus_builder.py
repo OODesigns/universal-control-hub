@@ -1,7 +1,7 @@
 import unittest
 from modbus.modbus_builder import ModbusBuilder
 import modbus.modbus_values
-from utils.value import ValueStatus
+from utils.status import Status
 
 
 class TestModbusBuilder(unittest.TestCase):
@@ -28,35 +28,35 @@ class TestModbusBuilder(unittest.TestCase):
 
     def test_builder_with_invalid_coil_size(self):
         invalid_coil_size = modbus.modbus_values.CoilSize(-1)
-        self.assertEqual(invalid_coil_size.status, ValueStatus.EXCEPTION)
+        self.assertEqual(invalid_coil_size.status, Status.EXCEPTION)
 
     def test_builder_with_invalid_discrete_input_size(self):
         invalid_discrete_input_size = modbus.modbus_values.DiscreteInputSize(-1)
-        self.assertEqual(invalid_discrete_input_size.status, ValueStatus.EXCEPTION)
+        self.assertEqual(invalid_discrete_input_size.status, Status.EXCEPTION)
 
     def test_builder_with_invalid_input_register_size(self):
         invalid_input_register_size = modbus.modbus_values.InputRegisterSize(-1)
-        self.assertEqual(invalid_input_register_size.status, ValueStatus.EXCEPTION)
+        self.assertEqual(invalid_input_register_size.status, Status.EXCEPTION)
 
     def test_builder_with_invalid_holding_register_size(self):
         invalid_holding_register_size = modbus.modbus_values.HoldingRegisterSize(-1)
-        self.assertEqual(invalid_holding_register_size.status, ValueStatus.EXCEPTION)
+        self.assertEqual(invalid_holding_register_size.status, Status.EXCEPTION)
 
     def test_builder_with_invalid_timeout(self):
         invalid_timeout = modbus.modbus_values.Timeout(-1)
-        self.assertEqual(invalid_timeout.status, ValueStatus.EXCEPTION)
+        self.assertEqual(invalid_timeout.status, Status.EXCEPTION)
 
     def test_builder_with_invalid_retries(self):
         invalid_retries = modbus.modbus_values.Retries(-1)
-        self.assertEqual(invalid_retries.status, ValueStatus.EXCEPTION)
+        self.assertEqual(invalid_retries.status, Status.EXCEPTION)
 
     def test_builder_with_invalid_reconnect_delay(self):
         invalid_reconnect_delay = modbus.modbus_values.ReconnectDelay(-1)
-        self.assertEqual(invalid_reconnect_delay.status, ValueStatus.EXCEPTION)
+        self.assertEqual(invalid_reconnect_delay.status, Status.EXCEPTION)
 
     def test_builder_with_invalid_reconnect_delay_max(self):
         invalid_reconnect_delay_max = modbus.modbus_values.ReconnectDelayMax(-1)
-        self.assertEqual(invalid_reconnect_delay_max.status, ValueStatus.EXCEPTION)
+        self.assertEqual(invalid_reconnect_delay_max.status, Status.EXCEPTION)
 
     def test_copy_constructor_with_valid_builder(self):
         original_builder = ModbusBuilder()
