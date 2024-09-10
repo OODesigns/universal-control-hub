@@ -10,7 +10,7 @@ class MVHR(Device):
         super().__init__(config_loader)
 
     @abstractmethod
-    async def read_data(self)-> MVHRStateInterface:  # pragma: no cover
+    async def read(self)-> MVHRStateInterface:  # pragma: no cover
         pass
 
     @abstractmethod
@@ -20,4 +20,3 @@ class MVHR(Device):
     @abstractmethod
     def stop(self) -> OperationResponse: # pragma: no cover
         pass
-

@@ -83,13 +83,13 @@ class TestValidatedValueStrategies(unittest.TestCase):
         enum_val = EnumValidatedValue(Status.OK, Status, valid_values)
         enum_result = enum_val.run_validations(Status.OK)
         self.assertEqual(enum_result.status, Status.OK, "EnumValidatedValue should pass validation with correct enum")
-        self.assertEqual(enum_result.details, "All validations passed", "EnumValidatedValue should pass all validations")
+        self.assertEqual(enum_result.details, "Validation successful", "EnumValidatedValue should pass all validations")
 
         # RangeValidatedValue should use RangeValidationStrategy and TypeValidationStrategy
         range_val = RangeValidatedValue(15, int, 10, 20)
         range_result = range_val.run_validations(15)
         self.assertEqual(range_result.status, Status.OK, "RangeValidatedValue should pass validation with correct range")
-        self.assertEqual(range_result.details, "All validations passed", "RangeValidatedValue should pass all validations")
+        self.assertEqual(range_result.details, "Validation successful", "RangeValidatedValue should pass all validations")
 
         # Confirm that run_validations uses the correct strategies for EnumValidatedValue and RangeValidatedValue
         self.assertNotEqual(enum_val._strategies, range_val._strategies, "EnumValidatedValue and RangeValidatedValue should not share strategies")
@@ -127,6 +127,63 @@ class TestValidatedValueStrategies(unittest.TestCase):
         result = ChainedValue(26)
         self.assertEqual(result.status, Status.EXCEPTION, "Value should fail range validation after chaining")
         self.assertIsNone(result.value, "Value should be None after failing validation")
+
+class TestTypeValidationStrategy(unittest.TestCase):
+
+    def test_single_type_validation(self):
+        # Test single type validation (int)
+        strategy = TypeValidationStrategy(int)
+
+        # Test valid int value
+        response = strategy.validate(42)
+        self.assertEqual(response.status, Status.OK)
+        self.assertEqual(response.details, "Type validation successful")
+        self.assertEqual(response.value, 42)
+
+        # Test invalid string value
+        response = strategy.validate("string")
+        self.assertEqual(response.status, Status.EXCEPTION)
+        self.assertEqual(response.details, "Value must be one of (<class 'int'>,), got str")
+        self.assertIsNone(response.value)
+
+    def test_multiple_types_validation(self):
+        # Test multiple types validation (int and float)
+        strategy = TypeValidationStrategy([int, float])
+
+        # Test valid int value
+        response = strategy.validate(42)
+        self.assertEqual(response.status, Status.OK)
+        self.assertEqual(response.details, "Type validation successful")
+        self.assertEqual(response.value, 42)
+
+        # Test valid float value
+        response = strategy.validate(42.0)
+        self.assertEqual(response.status, Status.OK)
+        self.assertEqual(response.details, "Type validation successful")
+        self.assertEqual(response.value, 42.0)
+
+        # Test invalid string value
+        response = strategy.validate("string")
+        self.assertEqual(response.status, Status.EXCEPTION)
+        self.assertEqual(response.details, "Value must be one of (<class 'int'>, <class 'float'>), got str")
+        self.assertIsNone(response.value)
+
+    def test_single_type_as_list(self):
+        # Test that a single type in a list works the same as passing it directly
+        strategy = TypeValidationStrategy([int])
+
+        # Test valid int value
+        response = strategy.validate(42)
+        self.assertEqual(response.status, Status.OK)
+        self.assertEqual(response.details, "Type validation successful")
+        self.assertEqual(response.value, 42)
+
+        # Test invalid string value
+        response = strategy.validate("string")
+        self.assertEqual(response.status, Status.EXCEPTION)
+        self.assertEqual(response.details, "Value must be one of (<class 'int'>,), got str")
+        self.assertIsNone(response.value)
+
 
 if __name__ == '__main__':
     unittest.main()

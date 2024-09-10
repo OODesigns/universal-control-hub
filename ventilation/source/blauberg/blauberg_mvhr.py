@@ -53,7 +53,7 @@ class BlaubergMVHR(MVHR):
     def modbus(self) -> ModbusInterface:
         return self._modbus
 
-    async def read_data(self) -> MVHRStateInterface:
+    async def read(self) -> MVHRStateInterface:
         return BlaubergMVHRState(await self._modbus.read())
 
     def stop(self) -> OperationResponse:

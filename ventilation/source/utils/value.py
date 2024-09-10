@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from http.client import responses
 from typing import Generic, List
 from utils.response import Response, T
 from utils.status import Status
@@ -41,7 +40,10 @@ class ValidationStrategy(ABC):
 
 class TypeValidationStrategy(ValidationStrategy):
     def __init__(self, valid_types):
-        self.valid_types = valid_types
+        # If valid_types is a single type, convert it to a tuple
+        if not isinstance(valid_types, (list, tuple)):
+            valid_types = (valid_types,)
+        self.valid_types = tuple(valid_types)  # Ensure it's always a tuple
 
     def validate(self, value) -> Response:
         if not isinstance(value, self.valid_types):

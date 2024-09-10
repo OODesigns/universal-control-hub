@@ -8,7 +8,7 @@ from utils.operation_response import OperationStatus, OperationResponse
 
 # Creating a concrete implementation of MVHR for testing
 class TestMVHR(MVHR):
-    async def read_data(self) -> MVHRStateInterface:
+    async def read(self) -> MVHRStateInterface:
         return MagicMock(spec=MVHRStateInterface)
 
     async def start(self) -> OperationResponse:
@@ -34,7 +34,7 @@ class MVHRTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.details, "Started successfully")
 
     async def test_read_data(self):
-        data = await self.device.read_data()
+        data = await self.device.read()
         self.assertIsInstance(data, MVHRStateInterface)
 
     def test_stop(self):

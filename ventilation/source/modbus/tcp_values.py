@@ -12,7 +12,7 @@ class IPAddress(ValidatedValue[str]):
     def get__strategies(self):
         # Include TypeValidationStrategy to ensure the input is a string
         return [
-            TypeValidationStrategy((str,)),  # Ensure the value is a string
+            TypeValidationStrategy(str),  # Ensure the value is a string
             IPAddressValidationStrategy()    # Validate the IP address format
         ]
 
@@ -50,7 +50,7 @@ class Port(RangeValidatedValue[int]):
     def get__strategies(self):
         # Include TypeValidationStrategy to ensure the input is an integer
         return [
-            TypeValidationStrategy((int,)),  # Ensure the value is an integer
+            TypeValidationStrategy(int),  # Ensure the value is an integer
             RangeValidationStrategy(0, 65535)  # Validate the port range
         ]
 

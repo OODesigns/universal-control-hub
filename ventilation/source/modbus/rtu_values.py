@@ -1,7 +1,7 @@
 import platform
 import re
 from enum import Enum
-from utils.value import ValidatedValue, StrictValidatedValue, TypeValidationStrategy, EnumValidationStrategy, RangeValidationStrategy
+from utils.value import ValidatedValue, StrictValidatedValue, TypeValidationStrategy, EnumValidationStrategy
 from utils.response import Response
 from utils.status import Status
 
@@ -19,7 +19,7 @@ class SerialPort(ValidatedValue[str]):
 
     def get__strategies(self):
         # Include TypeValidationStrategy to ensure the input is a string
-        return [TypeValidationStrategy((str,)), SerialPortValidationStrategy()]
+        return [TypeValidationStrategy(str), SerialPortValidationStrategy()]
 
     def __init__(self, value: str):
         # Run validations and store value and validation status
@@ -70,7 +70,7 @@ class BaudRate(ValidatedValue[int]):
 
     def get__strategies(self):
         # Include TypeValidationStrategy to ensure the input is an integer
-        return [TypeValidationStrategy((int,)), EnumValidationStrategy(BaudRate.VALID_RATES)]
+        return [TypeValidationStrategy(int), EnumValidationStrategy(BaudRate.VALID_RATES)]
 
     def __init__(self, value: int):
         # Run validations and store value and validation status
@@ -92,7 +92,7 @@ class StopBits(ValidatedValue[int]):
 
     def get__strategies(self):
         # Include TypeValidationStrategy to ensure the input is an integer
-        return [TypeValidationStrategy((int,)), EnumValidationStrategy(StopBits.VALID_BITS)]
+        return [TypeValidationStrategy(int), EnumValidationStrategy(StopBits.VALID_BITS)]
 
     def __init__(self, value: int):
         # Run validations and store value and validation status
