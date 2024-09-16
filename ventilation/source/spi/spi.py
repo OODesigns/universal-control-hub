@@ -2,9 +2,20 @@ from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import List
 
-from spi.spi_values import SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord
-from utils.operation_response import OperationResponse
+from spi.spi_command import SPICommand
+from spi.spi_values import (SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz,
+                            SPIMode, SPIBitsPerWord, SPIChannel)
+from utils.response import Response
 
+class SPIExecutorInterface(ABC):
+    @abstractmethod
+    def execute(self, command: SPICommand) -> Response[List[int]]:
+        """
+        Execute an SPICommand that includes both the command and optional data.
+        :param command: The SPICommand to execute.
+        :return: A Response object containing the result of the SPI transfer (list of bytes).
+        """
+        pass
 
 @dataclass(frozen=True)
 class SPIInterface(ABC):
@@ -13,6 +24,8 @@ class SPIInterface(ABC):
     max_speed_Hz: SPIMaxSpeedHz = field(init=False)
     mode: SPIMode = field(init=False)
     bits_per_word:SPIBitsPerWord = field(init=False)
+    channel: SPIChannel = field(init=False)
+    spi_Executor: SPIExecutorInterface = field(init=False)
 
     def __init__(self, builder):
         from spi.spi_builder import SPIBuilder
@@ -22,46 +35,24 @@ class SPIInterface(ABC):
         object.__setattr__(self, 'max_speed_hz', builder.max_speed_hz)
         object.__setattr__(self, 'mode', builder.mode)
         object.__setattr__(self, 'bits_per_word', builder.bits_per_word)
+        object.__setattr__(self, 'channel', builder.channel)
+        object.__setattr__(self, 'spi_Executor', builder.executor)
 
     @abstractmethod
-    def open(self) -> OperationResponse: # pragma: no cover
+    def execute(self, command: SPICommand = None) -> Response:
         """
-        Initialize the SPI connection and return an OperationResponse.
+        Execute an SPICommand, optionally provided. If no command is provided,
+        the default behavior for the device will be executed.
+
+        :param command: Optional SPICommand to execute. If None, default command will be used.
+        :return: A Response object containing the result of the SPI transfer (list of bytes).
         """
-    @abstractmethod
-    def close(self) -> OperationResponse: # pragma: no cover
-        """
-        Close the SPI connection and return a CloseResponse.
-        """
-    # @abstractmethod
-    # def transfer(self, data: List[int]) -> List[int]:
-    #     """
-    #     Perform a full-duplex SPI transfer.
-    #     :param data: A list of bytes (0-255) to send.
-    #     :return: A list of bytes received during the transfer.
-    #     """
-    #     # Validate data is in byte range (0-255).
-    #     if not all(0 <= byte <= 255 for byte in data):
-    #         raise ValueError("All elements in data must be bytes (0-255).")
-    #     pass  # Actual transfer logic here.
+        pass
 
 
 
-    @abstractmethod
-    def read(self, nbytes):
-        """
-        Read a specified number of bytes from the SPI device.
-        :param nbytes: Number of bytes to read.
-        :return: A list of bytes received from the SPI device.
-        """
-        pass  # pragma: no cover
 
-    @abstractmethod
-    def write(self, data):
-        """
-        Write data to the SPI device.
-        :param data: A list of bytes to send to the SPI device.
-        """
-        pass  # pragma: no cover
+
+
 
 

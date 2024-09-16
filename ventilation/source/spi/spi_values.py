@@ -77,3 +77,12 @@ class SPIIdleState(EnumValidatedValue[str]):
     def __init__(self, value: str):
         # Valid values are "High" or "Low"
         super().__init__(value, str, ['High', 'Low'])
+
+class SPIChannel(RangeValidatedValue[int]):
+    """
+    SPIChannel represents the valid channel numbers for SPI devices that support multiple channels,
+    such as ADCs like MCP3008.
+    """
+    def __init__(self, value: int):
+        # Channel numbers for most SPI ADCs like MCP3008 range from 0 to 7
+        super().__init__(value, int, 0, 7)

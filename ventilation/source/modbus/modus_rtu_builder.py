@@ -1,16 +1,14 @@
-from typing import Type
 from modbus.modbus_builder import ModbusBuilder
 from modbus.rtu_values import BaudRate, StopBits, SerialPort, ParityType
 from modbus.modbus import ModbusInterface
 
 class ModbusRTUBuilder(ModbusBuilder):
-    def __init__(self, builder: ModbusBuilder = None, client_class: Type[ModbusInterface] = None):
-        super().__init__(builder)
+    def __init__(self):
+        super().__init__()
         self._baud_rate = None
         self._parity = None
         self._stop_bits = None
         self._serial_port = None
-        self._client_class = client_class  # Store the client class to instantiate later
 
     # Properties with getters
     @property
@@ -55,4 +53,4 @@ class ModbusRTUBuilder(ModbusBuilder):
         assert self._parity, "Parity must be set for ModbusRTU"
         assert self._stop_bits, "Stop bits must be set for ModbusRTU"
         assert self._serial_port, "Serial port must be set for ModbusRTU"
-        return self._client_class(self)
+        return super().build()

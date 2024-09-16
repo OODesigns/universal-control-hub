@@ -1,11 +1,10 @@
-from typing import Type
-from spi.spi import SPIInterface
+from spi.spi import SPIInterface, SPIExecutorInterface
 from spi.spi_values import (SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz,
-                            SPIMode, SPIBitsPerWord, SPIDataOrder, SPIFullDuplex, SPIIdleState)
+                            SPIMode, SPIBitsPerWord, SPIDataOrder, SPIFullDuplex, SPIIdleState, SPIChannel)
 
 
 class SPIBuilder:
-    def __init__(self, builder=None, client_class: Type[SPIInterface] = None):
+    def __init__(self, builder=None):
         """
         Initializes the SPIBuilder. If a builder is provided, copies values from it.
         Otherwise, initializes default values or None.
@@ -21,6 +20,7 @@ class SPIBuilder:
             self.set_data_order(builder.data_order)
             self.set_full_duplex(builder.full_duplex)
             self.set_idle_state(builder.idle_state)
+            self.set_channel(builder.channel)
         else:
             # Initialize attributes to None or appropriate defaults
             self._bus = None
@@ -31,8 +31,9 @@ class SPIBuilder:
             self._data_order = None
             self._full_duplex = None
             self._idle_state = None
-
-        self._client_class = client_class  # Store the client class to instantiate later
+            self._channel = None
+            self._executor = None
+            self._client_class = None
 
     # Properties with getters
     @property
@@ -66,6 +67,14 @@ class SPIBuilder:
     @property
     def idle_state(self) -> SPIIdleState:
         return self._idle_state
+
+    @property
+    def channel(self) -> SPIChannel:
+        return self._channel
+
+    @property
+    def executor(self) -> SPIExecutorInterface:
+        return self._executor
 
     # Setter methods with validation
     def set_bus(self, bus: SPIBusNumber):
@@ -108,19 +117,34 @@ class SPIBuilder:
         self._idle_state = idle_state
         return self
 
-    # Method to "build" and return a configured SPI object
+    def set_channel(self, channel: SPIChannel):
+        assert isinstance(channel, SPIChannel), "Invalid channel value"
+        self._channel = channel
+        return self
+
+    def set_executor(self, executor: SPIExecutorInterface):
+        assert isinstance(executor, SPIExecutorInterface), "Invalid SPIExecutorInterface value"
+        self._executor = executor
+        return self
+
+    def set_client_class(self, client_class: type[SPIInterface]):
+        assert isinstance(client_class, type), "Invalid class value"
+        self._client_class = client_class
+        return self
+
+        # Method to "build" and return a configured SPI object
     def build(self) -> SPIInterface:
         """
         Builds the SPI configuration and returns it.
         This can be used to create a configured SPI object or return the parameters for the SPI connection.
         """
+        # Assert required values
         assert self._bus is not None, "SPI bus not set"
         assert self._chip_select is not None, "SPI chip select not set"
         assert self._max_speed_hz is not None, "SPI max speed not set"
         assert self._mode is not None, "SPI mode not set"
         assert self._bits_per_word is not None, "SPI bits per word not set"
-        assert self._data_order is not None, "SPI data order not set"
-        assert self._full_duplex is not None, "SPI duplex mode not set"
-        assert self._idle_state is not None, "SPI idle state not set"
+        assert self._executor is not None, "SPI executor object not set"
 
+        # Create the client class with the set values
         return self._client_class(self)

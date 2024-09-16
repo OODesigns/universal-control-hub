@@ -1,30 +1,35 @@
+from typing import Type
+
+from modbus.modbus import ModbusInterface
+from modbus.modbus_builder_client import ModbusBuilderClient
 from modbus.modbus_values import (CoilSize, DiscreteInputSize, InputRegisterSize,
                                   HoldingRegisterSize, Retries, ReconnectDelay,
                                   ReconnectDelayMax, Timeout)
 
 class ModbusBuilder:
-    def __init__(self, builder=None):
-        if builder:
-            assert isinstance(builder, ModbusBuilder), "Expected builder to be an instance of ModbusBuilder"
-            # Use setter methods to copy values from the provided builder
-            self.set_coil_size(builder.coil_size)
-            self.set_discrete_input_size(builder.discrete_input_size)
-            self.set_input_register_size(builder.input_register_size)
-            self.set_holding_register_size(builder.holding_register_size)
-            self.set_timeout(builder.timeout)
-            self.set_retries(builder.retries)
-            self.set_reconnect_delay(builder.reconnect_delay)
-            self.set_reconnect_delay_max(builder.reconnect_delay_max)
-        else:
-            # Initialize attributes to None or appropriate defaults
-            self._coil_size = None
-            self._discrete_input_size = None
-            self._input_register_size = None
-            self._holding_register_size = None
-            self._timeout = None
-            self._retries = None
-            self._reconnect_delay = None
-            self._reconnect_delay_max = None
+    _client_class: Type[ModbusBuilderClient] = None
+
+    @classmethod
+    def register_modbus(cls, client_class: Type[ModbusBuilderClient]):
+        """
+        :type client_class: object
+        """
+        cls._client_class = client_class
+
+    def __init__(self):
+        # Initialize attributes to None or appropriate defaults
+        self._coil_size = None
+        self._discrete_input_size = None
+        self._input_register_size = None
+        self._holding_register_size = None
+        self._timeout = None
+        self._retries = None
+        self._reconnect_delay = None
+        self._reconnect_delay_max = None
+
+    def build(self) -> ModbusInterface:
+        assert self._client_class is not None, "The modbus client class has not been assigned "
+        return self._client_class(self)
 
     # Properties with getters
     @property

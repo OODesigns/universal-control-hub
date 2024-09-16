@@ -1,14 +1,12 @@
-from typing import Type
 from modbus.modbus_builder import ModbusBuilder
 from modbus.tcp_values import IPAddress, Port
 from modbus.modbus import ModbusInterface
 
 class ModbusTCPBuilder(ModbusBuilder):
-    def __init__(self, builder: ModbusBuilder = None, client_class: Type[ModbusInterface] = None):
-        super().__init__(builder)
+    def __init__(self):
+        super().__init__()
         self._ip_address = None
         self._port = None
-        self._client_class = client_class  # Store the client class to instantiate later
 
     @property
     def ip_address(self) -> IPAddress:
@@ -31,4 +29,5 @@ class ModbusTCPBuilder(ModbusBuilder):
     def build(self) -> ModbusInterface:
         assert self._ip_address, "IP address must be set for ModbusTCP"
         assert self._port, "Port must be set for ModbusTCP"
-        return self._client_class(self)
+        return super().build()
+

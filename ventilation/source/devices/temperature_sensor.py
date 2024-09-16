@@ -1,5 +1,4 @@
 from abc import abstractmethod
-
 from devices.device import Device
 from utils.temperaturecelsius import TemperatureInterface
 
@@ -13,3 +12,4 @@ class TemperatureSensorInterface(Device):
         :return: The temperature value.
         """
         pass
+

@@ -14,9 +14,9 @@ class BlaubergMVHRState(MVHRStateInterface):
     def __post_init__(self):
         # Use object.__setattr__ to bypass the immutability in __post_init__
         object.__setattr__(self, '_temp_supply_out',
-                           BlaubergTemperature(self.data.input_register.value, InputRegisters.IR_CURTEMP_SUAIR_OUT.value))
+                           BlaubergTemperature(self.data.input_register, InputRegisters.IR_CURTEMP_SUAIR_OUT.value))
         object.__setattr__(self, '_temp_supply_in',
-                           BlaubergTemperature(self.data.input_register.value, InputRegisters.IR_CURTEMP_SUAIR_IN.value))
+                           BlaubergTemperature(self.data.input_register, InputRegisters.IR_CURTEMP_SUAIR_IN.value))
 
     @property
     def temp_supply_out(self) -> TemperatureInterface:
