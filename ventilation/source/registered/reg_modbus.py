@@ -1,7 +1,7 @@
-from modbus.modbus_tcp_builder import ModbusTCPBuilder
-from modbus.modus_rtu_builder import ModbusRTUBuilder
-from py_modbus.modbus_rtu import ModbusRTU
-from py_modbus.modbus_tcp import ModbusTCP
+from modbus.modbus_tcp_client_builder import ModbusTCPClientBuilder
+from modbus.modus_rtu_client_builder import ModbusRTUClientBuilder
+from py_modbus.modbus_rtu_client import ModbusRTUClient
+from py_modbus.modbus_tcp_client import ModbusTCPClient
 
-ModbusTCPBuilder.register_modbus(client_class= ModbusTCP)
-ModbusRTUBuilder.register_modbus(client_class= ModbusRTU)
+ModbusTCPClientBuilder.register_client(client_class= ModbusTCPClient)
+ModbusRTUClientBuilder.register_client(client_class= ModbusRTUClient)

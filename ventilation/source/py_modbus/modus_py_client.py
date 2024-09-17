@@ -1,7 +1,7 @@
 from dataclasses import field
 
 from pymodbus.client import ModbusBaseClient
-from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_client_builder import ModbusClientBuilder
 from modbus.modbus_builder_client import ModbusBuilderClient
 from modbus.modbus_reader import ModbusBitReader, ModbusWordReader
 from modbus.modbus import ModbusData
@@ -11,7 +11,7 @@ from py_modbus.modbus_result import (PyModbusCoilResult, PyModbusDiscreteInputRe
 from utils.operation_response import OperationResponse
 
 
-class ModbusClient(ModbusBuilderClient):
+class ModbusPYClient(ModbusBuilderClient):
     """
    ModbusClient class that inherits from frozen ModbusInterface.
    Declares client-related fields to be supplied later, after initialization.
@@ -22,9 +22,9 @@ class ModbusClient(ModbusBuilderClient):
     _discrete_inputs: ModbusBitReader = field(init=False)
     _input_registers: ModbusWordReader = field(init=False)
     _holding_registers: ModbusWordReader = field(init=False)
-    _builder: ModbusBuilder = field(init=False)
+    _builder: ModbusClientBuilder = field(init=False)
 
-    def __init__(self, client: ModbusBaseClient, builder: ModbusBuilder):
+    def __init__(self, client: ModbusBaseClient, builder: ModbusClientBuilder):
 
         object.__setattr__(self, '_builder', builder)
 

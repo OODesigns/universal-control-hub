@@ -1,16 +1,16 @@
 import unittest
 from unittest.mock import patch, AsyncMock
-from modbus.modus_rtu_builder import ModbusRTUBuilder
+from modbus.modus_rtu_client_builder import ModbusRTUClientBuilder
 from modbus.rtu_values import BaudRate, StopBits, SerialPort, ParityType
 from modbus.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax
-from py_modbus.modbus_rtu import ModbusRTU
+from py_modbus.modbus_rtu_client import ModbusRTUClient
 
 
 class TestModbusRTU(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
         # Setting up a ModbusRTUBuilder with all necessary values
-        self.builder = ModbusRTUBuilder()
+        self.builder = ModbusRTUClientBuilder()
         self.builder.set_baud_rate(BaudRate(9600)) \
             .set_parity(ParityType.EVEN) \
             .set_stop_bits(StopBits(1)) \
@@ -30,7 +30,7 @@ class TestModbusRTU(unittest.IsolatedAsyncioTestCase):
         mock_client_manager_cls.return_value = mock_client_manager
 
         # Instantiate ModbusRTU with the builder
-        modbus_rtu = ModbusRTU(self.builder)
+        modbus_rtu = ModbusRTUClient(self.builder)
 
         # Perform the connect operation
         await modbus_rtu.connect()
@@ -57,7 +57,7 @@ class TestModbusRTU(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(AssertionError):
             # Pass an invalid builder type to the ModbusTCP constructor
             # noinspection PyTypeChecker
-            ModbusRTU(builder="InvalidBuilderType")
+            ModbusRTUClient(builder="InvalidBuilderType")
 
 if __name__ == '__main__':
     unittest.main()

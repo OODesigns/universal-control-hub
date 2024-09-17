@@ -2,23 +2,33 @@
 'https://plantuml.com/class-diagram
 !theme spacelab
 
-class ModbusFactory{}
+interface ModbusInterface{}
+class ModbusBuilderClient{}
+class ModbusTCPClientBuilder{}
 class BlaubergMVHR{}
-class ModbusClient{}
-class ModbusTCP{}
-class ModbusRTU{}
+class ModbusPYClient{}
+class ModbusTCPClient{}
+note bottom
+ Registered into ModbusTCPClientBuilder
+end note
+class ModbusRTUClient{}
 class ModbusConnectionManager
 note bottom
  Decorates Modbus TCP and RTU Connection Responses
 end note
 protocol Pymodbus{}
 
-BlaubergMVHR  --  ModbusFactory
-BlaubergMVHR  --  ModbusClient
-ModbusFactory  --  ModbusClient: creates
-ModbusClient -- ModbusTCP
-ModbusClient -- ModbusRTU
-ModbusClient -- Pymodbus: uses this library
-ModbusClient -- ModbusConnectionManager
+BlaubergMVHR  --  ModbusTCPClientBuilder: creates the ModbusInterface using
+BlaubergMVHR  --  ModbusInterface: interacts with modbus using
+ModbusTCPClientBuilder -- ModbusBuilderClient : builds the registered TCP client
+ModbusPYClient -- ModbusTCPClient
+ModbusPYClient -- ModbusRTUClient
+ModbusPYClient -- Pymodbus: uses this library
+ModbusPYClient -- ModbusConnectionManager
+
+
+
+ModbusBuilderClient -- ModbusInterface: implements
+ModbusBuilderClient --> ModbusPYClient
 
 @enduml

@@ -1,7 +1,7 @@
 import unittest
 from abc import ABC
 
-from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_client_builder import ModbusClientBuilder
 from modbus.modbus_builder_client import ModbusBuilderClient
 from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize, Timeout, Retries, ReconnectDelay, ReconnectDelayMax
 from utils.status import Status
@@ -16,10 +16,10 @@ class TestModbusBuilder(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Register the mock Modbus client
-        ModbusBuilder.register_modbus(MockModbusClient)
+        ModbusClientBuilder.register_client(MockModbusClient)
 
     def test_default_initialization(self):
-        builder = ModbusBuilder()
+        builder = ModbusClientBuilder()
         # Ensure all values are None by default
         self.assertIsNone(builder.coil_size)
         self.assertIsNone(builder.discrete_input_size)
@@ -31,7 +31,7 @@ class TestModbusBuilder(unittest.TestCase):
         self.assertIsNone(builder.reconnect_delay_max)
 
     def test_builder_with_valid_values(self):
-        builder = ModbusBuilder()
+        builder = ModbusClientBuilder()
         builder.set_coil_size(CoilSize(10))
         builder.set_discrete_input_size(DiscreteInputSize(20))
         builder.set_input_register_size(InputRegisterSize(30))
@@ -62,14 +62,14 @@ class TestModbusBuilder(unittest.TestCase):
         self.assertEqual(ReconnectDelayMax(-1).status, Status.EXCEPTION)
 
     def test_builder_with_edge_values(self):
-        builder = ModbusBuilder()
+        builder = ModbusClientBuilder()
         builder.set_coil_size(CoilSize(1))
         builder.set_coil_size(CoilSize(65535))  # Max allowable value
         self.assertEqual(builder.coil_size.value, 65535)
 
     # noinspection PyTypeChecker
     def test_builder_with_invalid_types(self):
-        builder = ModbusBuilder()
+        builder = ModbusClientBuilder()
         with self.assertRaises(AssertionError):
             builder.set_coil_size("InvalidType")  # Invalid type
 
@@ -80,8 +80,8 @@ class TestModbusBuilder(unittest.TestCase):
 
     def test_build_without_registering_client(self):
         # Test case when no client class is registered
-        ModbusBuilder._client_class = None
-        builder = ModbusBuilder()
+        ModbusClientBuilder._client_class = None
+        builder = ModbusClientBuilder()
         with self.assertRaises(AssertionError):
             builder.build()
 

@@ -6,11 +6,11 @@ from modbus.modbus_values import (CoilSize, DiscreteInputSize, InputRegisterSize
                                   HoldingRegisterSize, Retries, ReconnectDelay,
                                   ReconnectDelayMax, Timeout)
 
-class ModbusBuilder:
+class ModbusClientBuilder:
     _client_class: Type[ModbusBuilderClient] = None
 
     @classmethod
-    def register_modbus(cls, client_class: Type[ModbusBuilderClient]):
+    def register_client(cls, client_class: Type[ModbusBuilderClient]):
         """
         :type client_class: object
         """
@@ -28,6 +28,14 @@ class ModbusBuilder:
         self._reconnect_delay_max = None
 
     def build(self) -> ModbusInterface:
+        assert self._coil_size is not None, "Coil size must be set"
+        assert self._discrete_input_size is not None, "Discrete input size must be set"
+        assert self._input_register_size is not None, "Input register size must be set"
+        assert self._holding_register_size is not None, "Holding register size must be set"
+        assert self._timeout is not None, "Timeout must be set"
+        assert self._reconnect_delay is not None, "Reconnect delay must be set"
+        assert self._reconnect_delay_max is not None, "Reconnect delay max must be set"
+
         assert self._client_class is not None, "The modbus client class has not been assigned "
         return self._client_class(self)
 

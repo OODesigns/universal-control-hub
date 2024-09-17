@@ -4,7 +4,7 @@ from blauberg.blauberg_registers import (CoilRegister, DiscreteInputs,
 from config.config_loader import ConfigLoader
 from devices.mvhr import MVHR
 from modbus.modbus import ModbusInterface
-from modbus.modbus_tcp_builder import ModbusTCPBuilder
+from modbus.modbus_tcp_client_builder import ModbusTCPClientBuilder
 from mvhr_state import MVHRStateInterface
 from modbus.tcp_values import IPAddress, Port
 from utils.operation_response import OperationResponse
@@ -25,7 +25,7 @@ class BlaubergMVHR(MVHR):
 
        # Use the factory to create the Modbus interface
         self._modbus =(
-            ModbusTCPBuilder()
+            ModbusTCPClientBuilder()
             .set_coil_size(CoilSize(CoilRegister.CL_SIZE.value))
             .set_discrete_input_size(DiscreteInputSize(DiscreteInputs.DI_SIZE.value))
             .set_input_register_size(InputRegisterSize(InputRegisters.IR_SIZE.value))

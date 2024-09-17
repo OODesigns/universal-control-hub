@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 from pymodbus.client import ModbusBaseClient
-from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_client_builder import ModbusClientBuilder
 from py_modbus.modbus_connection_manager import ModbusConnectionManager
-from py_modbus.modus_client import ModbusClient
+from py_modbus.modus_py_client import ModbusPYClient
 from utils.operation_response import OperationStatus, OperationResponse
 
 class TestModbusClient(unittest.IsolatedAsyncioTestCase):
@@ -11,7 +11,7 @@ class TestModbusClient(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         # Mock the ModbusConnectionManager
         self.mock_client = AsyncMock(spec=ModbusBaseClient)
-        self.mock_builder = MagicMock(spec=ModbusBuilder)
+        self.mock_builder = MagicMock(spec=ModbusClientBuilder)
         self.mock_client_manager = MagicMock(spec=ModbusConnectionManager)
 
         # Patch ModbusClientManager to use our mock
@@ -19,7 +19,7 @@ class TestModbusClient(unittest.IsolatedAsyncioTestCase):
         self.patcher.start()
 
         # Create the ModbusClient instance
-        self.modbus_client = ModbusClient(client=self.mock_client, builder=self.mock_builder)
+        self.modbus_client = ModbusPYClient(client=self.mock_client, builder=self.mock_builder)
 
     def tearDown(self):
         self.patcher.stop()

@@ -1,8 +1,8 @@
-from modbus.modbus_builder import ModbusBuilder
+from modbus.modbus_client_builder import ModbusClientBuilder
 from modbus.rtu_values import BaudRate, StopBits, SerialPort, ParityType
 from modbus.modbus import ModbusInterface
 
-class ModbusRTUBuilder(ModbusBuilder):
+class ModbusRTUClientBuilder(ModbusClientBuilder):
     def __init__(self):
         super().__init__()
         self._baud_rate = None

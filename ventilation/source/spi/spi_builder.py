@@ -1,39 +1,31 @@
-from spi.spi import SPIInterface, SPIExecutorInterface
+from typing import Type
+
+from spi.spi import SPIInterface
+from spi.spi_builder_client import SPIBuilderClient
 from spi.spi_values import (SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz,
-                            SPIMode, SPIBitsPerWord, SPIDataOrder, SPIFullDuplex, SPIIdleState, SPIChannel)
+                            SPIMode, SPIBitsPerWord, SPIDataOrder, SPIFullDuplex, SPIIdleState)
 
 
-class SPIBuilder:
-    def __init__(self, builder=None):
+class SPIClientBuilder:
+    _client_class: Type[SPIBuilderClient] = None
+
+    @classmethod
+    def register_client(cls, client_class: Type[SPIBuilderClient]):
         """
-        Initializes the SPIBuilder. If a builder is provided, copies values from it.
-        Otherwise, initializes default values or None.
+        :type client_class: object
         """
-        if builder:
-            assert isinstance(builder, SPIBuilder), "Expected builder to be an instance of SPIBuilder"
-            # Copy values from the provided builder
-            self.set_bus(builder.bus)
-            self.set_chip_select(builder.chip_select)
-            self.set_max_speed_hz(builder.max_speed_hz)
-            self.set_mode(builder.mode)
-            self.set_bits_per_word(builder.bits_per_word)
-            self.set_data_order(builder.data_order)
-            self.set_full_duplex(builder.full_duplex)
-            self.set_idle_state(builder.idle_state)
-            self.set_channel(builder.channel)
-        else:
-            # Initialize attributes to None or appropriate defaults
-            self._bus = None
-            self._chip_select = None
-            self._max_speed_hz = None
-            self._mode = None
-            self._bits_per_word = None
-            self._data_order = None
-            self._full_duplex = None
-            self._idle_state = None
-            self._channel = None
-            self._executor = None
-            self._client_class = None
+        cls._client_class = client_class
+
+    def __init__(self):
+        # Initialize attributes to None or appropriate defaults
+        self._bus = None
+        self._chip_select = None
+        self._max_speed_hz = None
+        self._mode = None
+        self._bits_per_word = None
+        self._data_order = None
+        self._full_duplex = None
+        self._idle_state = None
 
     # Properties with getters
     @property
@@ -67,14 +59,6 @@ class SPIBuilder:
     @property
     def idle_state(self) -> SPIIdleState:
         return self._idle_state
-
-    @property
-    def channel(self) -> SPIChannel:
-        return self._channel
-
-    @property
-    def executor(self) -> SPIExecutorInterface:
-        return self._executor
 
     # Setter methods with validation
     def set_bus(self, bus: SPIBusNumber):
@@ -117,21 +101,6 @@ class SPIBuilder:
         self._idle_state = idle_state
         return self
 
-    def set_channel(self, channel: SPIChannel):
-        assert isinstance(channel, SPIChannel), "Invalid channel value"
-        self._channel = channel
-        return self
-
-    def set_executor(self, executor: SPIExecutorInterface):
-        assert isinstance(executor, SPIExecutorInterface), "Invalid SPIExecutorInterface value"
-        self._executor = executor
-        return self
-
-    def set_client_class(self, client_class: type[SPIInterface]):
-        assert isinstance(client_class, type), "Invalid class value"
-        self._client_class = client_class
-        return self
-
         # Method to "build" and return a configured SPI object
     def build(self) -> SPIInterface:
         """
@@ -144,7 +113,19 @@ class SPIBuilder:
         assert self._max_speed_hz is not None, "SPI max speed not set"
         assert self._mode is not None, "SPI mode not set"
         assert self._bits_per_word is not None, "SPI bits per word not set"
-        assert self._executor is not None, "SPI executor object not set"
+        assert self._data_order is not None, "SPI data order not set"
+        assert self._full_duplex is not None, "SPI full_duplex not set"
+        assert self._idle_state is not None, "SPI Idle state not set"
 
+        assert self._client_class is not None, "The spi client class has not been assigned "
         # Create the client class with the set values
         return self._client_class(self)
+
+
+
+
+
+
+
+
+

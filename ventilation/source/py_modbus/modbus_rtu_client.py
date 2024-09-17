@@ -1,14 +1,14 @@
 from pymodbus.client import AsyncModbusSerialClient
 
-from py_modbus.modus_client import ModbusClient
+from py_modbus.modus_py_client import ModbusPYClient
 
 
-class ModbusRTU(ModbusClient):
+class ModbusRTUClient(ModbusPYClient):
     def __init__(self, builder):
         # Lazy import to avoid circular dependency
-        from modbus.modus_rtu_builder import ModbusRTUBuilder
+        from modbus.modus_rtu_client_builder import ModbusRTUClientBuilder
 
-        assert isinstance(builder, ModbusRTUBuilder), "builder must be an instance of ModbusRTUBuilder"
+        assert isinstance(builder, ModbusRTUClientBuilder), "builder must be an instance of ModbusRTUBuilder"
 
         client = AsyncModbusSerialClient(
             port=builder.serial_port.value,

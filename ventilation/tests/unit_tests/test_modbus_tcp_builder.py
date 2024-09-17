@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from modbus.modbus import ModbusData
 from modbus.modbus_builder_client import ModbusBuilderClient
-from modbus.modbus_tcp_builder import ModbusTCPBuilder
+from modbus.modbus_tcp_client_builder import ModbusTCPClientBuilder
 from modbus.tcp_values import IPAddress, Port
 from utils.operation_response import OperationResponse
 
@@ -27,39 +27,39 @@ class TestModbusTCPBuilder(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Register the mock Modbus client for TCP
-        ModbusTCPBuilder.register_modbus(MockModbusClient)
+        ModbusTCPClientBuilder.register_client(MockModbusClient)
 
     def test_default_initialization(self):
-        builder = ModbusTCPBuilder()
+        builder = ModbusTCPClientBuilder()
         self.assertIsNone(builder.ip_address)
         self.assertIsNone(builder.port)
 
     def test_set_ip_address(self):
-        builder = ModbusTCPBuilder()
+        builder = ModbusTCPClientBuilder()
         ip = IPAddress('192.168.1.1')
         builder.set_ip_address(ip)
         self.assertEqual(builder.ip_address, ip)
 
     def test_set_port(self):
-        builder = ModbusTCPBuilder()
+        builder = ModbusTCPClientBuilder()
         port = Port(502)
         builder.set_port(port)
         self.assertEqual(builder.port, port)
 
     def test_invalid_ip_address(self):
-        builder = ModbusTCPBuilder()
+        builder = ModbusTCPClientBuilder()
         with self.assertRaises(AssertionError):  # Invalid IP format
             # noinspection PyTypeChecker
             builder.set_ip_address("invalid_ip")
 
     def test_invalid_port(self):
-        builder = ModbusTCPBuilder()
+        builder = ModbusTCPClientBuilder()
         with self.assertRaises(AssertionError):  # Invalid port range
             # noinspection PyTypeChecker
             builder.set_port(123456)
 
     def test_build_with_valid_ip_and_port(self):
-        builder = ModbusTCPBuilder()
+        builder = ModbusTCPClientBuilder()
         builder.set_ip_address(IPAddress('192.168.1.1')).set_port(Port(502))
 
         with patch.object(MockModbusClient, '__init__', return_value=None) as mock_init:
@@ -68,13 +68,13 @@ class TestModbusTCPBuilder(unittest.TestCase):
             self.assertIsInstance(modbus_client, MockModbusClient)
 
     def test_build_without_ip_address(self):
-        builder = ModbusTCPBuilder()
+        builder = ModbusTCPClientBuilder()
         builder.set_port(Port(502))
         with self.assertRaises(AssertionError):  # IP address is not set
             builder.build()
 
     def test_build_without_port(self):
-        builder = ModbusTCPBuilder()
+        builder = ModbusTCPClientBuilder()
         builder.set_ip_address(IPAddress('192.168.1.1'))
         with self.assertRaises(AssertionError):  # Port is not set
             builder.build()
