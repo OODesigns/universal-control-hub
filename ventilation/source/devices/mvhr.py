@@ -14,9 +14,9 @@ class MVHR(Device):
         pass
 
     @abstractmethod
-    async def start(self) -> OperationResponse: # pragma: no cover
+    async def open(self) -> OperationResponse: # pragma: no cover
         pass
 
     @abstractmethod
-    def stop(self) -> OperationResponse: # pragma: no cover
+    def close(self) -> OperationResponse: # pragma: no cover
         pass

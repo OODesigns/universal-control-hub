@@ -27,7 +27,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         self.mock_modbus_factory.create_modbus.return_value = self.mock_modbus_interface
 
         # Initialize the BlaubergMVHR object
-        self.blauberg_mvhr = BlaubergMVHR(self.mock_config_loader, self.mock_modbus_factory)
+        self.blauberg_mvhr = BlaubergMVHR(self.mock_config_loader)
 
     async def test_read_data(self):
         """Test that read_data returns a BlaubergMVHRState instance based on the Modbus read."""
@@ -55,7 +55,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         self.mock_modbus_interface.connect.return_value = OperationResponse(status=OperationStatus.OK, details="Connected")
 
         # Call the start method
-        response = await self.blauberg_mvhr.start()
+        response = await self.blauberg_mvhr.open()
 
         # Ensure the Modbus connect method was called
         self.mock_modbus_interface.connect.assert_called_once()
@@ -73,7 +73,7 @@ class TestBlaubergMVHR(unittest.IsolatedAsyncioTestCase):
         # even though normally you would not use it
 
         # noinspection PyUnresolvedReferences
-        response = await self.blauberg_mvhr.stop()
+        response = await self.blauberg_mvhr.close()
 
         # Ensure the Modbus disconnect method was called
         self.mock_modbus_interface.disconnect.assert_called_once()

@@ -1,5 +1,5 @@
 from config.config_store import ConfigStore
-from utils.temperaturecelsius import TemperatureInterface
+from utils.temperaturecelsius import TemperatureInterface, TemperatureCelsius
 from ventilation_mode import VentilationMode
 
 
@@ -17,7 +17,7 @@ class VentilationConfiguration:
 
     @property
     def setpoint_temperature(self) ->TemperatureInterface:
-        return self._store.get_value('setpoint_temperature')
+        return TemperatureCelsius(self._store.get_value('setpoint_temperature'))
 
     @setpoint_temperature.setter
     def setpoint_temperature(self, value: TemperatureInterface):

@@ -1,16 +1,16 @@
 from typing import Type
 
 from spi.spi import SPIInterface
-from spi.spi_builder_client import SPIBuilderClient
+from spi.spi_client import SPIClient
 from spi.spi_values import (SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz,
                             SPIMode, SPIBitsPerWord, SPIDataOrder, SPIFullDuplex, SPIIdleState)
 
 
 class SPIClientBuilder:
-    _client_class: Type[SPIBuilderClient] = None
+    _client_class: Type[SPIClient] = None
 
     @classmethod
-    def register_client(cls, client_class: Type[SPIBuilderClient]):
+    def register_client(cls, client_class: Type[SPIClient]):
         """
         :type client_class: object
         """
@@ -23,9 +23,25 @@ class SPIClientBuilder:
         self._max_speed_hz = None
         self._mode = None
         self._bits_per_word = None
-        self._data_order = None
-        self._full_duplex = None
-        self._idle_state = None
+        """
+        These values can have sensible defaults and are not required for all devices or use cases:
+
+        SPI Data Order (SPIDataOrder): 
+        Refers to whether data is transmitted MSB-first or LSB-first. While important for some devices, 
+        most devices default to MSB-first, so this can be optional.
+        
+        SPI Full Duplex (SPIFullDuplex): 
+        Defines whether the communication is full-duplex (simultaneous send/receive) or half-duplex 
+        (alternating send/receive). Many devices default to full-duplex, making this optional unless you 
+        need specific half-duplex support.
+        
+        SPI Idle State (SPIIdleState): Specifies the idle state of the MOSI/MISO lines (High or Low). 
+        Many systems and devices have a default idle state, so this could be optional unless explicitly required.
+        """
+        self._data_order = SPIDataOrder("MSB")
+        self._full_duplex = SPIFullDuplex(True)
+        self._idle_state = SPIIdleState("Low")
+
 
     # Properties with getters
     @property

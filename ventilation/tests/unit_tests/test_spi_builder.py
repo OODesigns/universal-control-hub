@@ -7,7 +7,7 @@ from spi.spi_builder import SPIClientBuilder
 from spi.spi_values import SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord, SPIDataOrder, SPIFullDuplex, SPIIdleState
 
 
-class MockSPIInterface(SPIInterface, ABC):
+class MockSPIExecuteInterface(SPIInterface, ABC):
     pass
 
 
@@ -65,7 +65,7 @@ class TestSPIBuilder(unittest.TestCase):
         self.assertEqual(builder.idle_state, idle_state)
 
     def test_build_valid(self):
-        mock = MagicMock(spec=MockSPIInterface)
+        mock = MagicMock(spec=MockSPIExecuteInterface)
         # noinspection PyTypeChecker
         builder = SPIClientBuilder()
         builder.set_bus(SPIBusNumber(0)) \

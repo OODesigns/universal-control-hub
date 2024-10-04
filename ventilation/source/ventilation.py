@@ -1,14 +1,9 @@
-from devices.device import Device
 from utils.temperaturecelsius import TemperatureCelsius, TemperatureInterface
-from devices.temperature_sensor import TemperatureSensorInterface
 from ventilation_mode import VentilationMode
 
-
-class Ventilation(Device):
-    def __init__(self, outside_temp_sensor: TemperatureSensorInterface):
-        super().__init__()
+class Ventilation:
+    def __init__(self):
         self.mode = None
-        self.outside_temp_sensor = outside_temp_sensor
 
     @property
     def mode(self) -> VentilationMode:

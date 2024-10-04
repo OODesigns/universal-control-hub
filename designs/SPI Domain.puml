@@ -1,0 +1,67 @@
+@startuml
+'https://plantuml.com/class-diagram
+!theme spacelab
+
+class MCP3208 {}
+note left
+ Will need Channel No
+ + Config transformer SPIBuilder
+
+ This is also registered into the ReaderBuilder
+end note
+
+class SPIBuilder {}
+
+class TemperatureSensor{}
+
+class TemperatureCelsius{}
+note right
+ This is what the ResponseTransformer
+ should return
+end note
+
+
+class SPIClient{}
+
+class SPIDevClient{}
+note right
+ This is registered into the SPIBuilder
+end note
+
+class ReaderBuilder{}
+class Reader{}
+
+class ResponseTransformer{}
+note bottom
+ the transformer will be based on the
+ type of sensor will are using
+
+ Some temperature sensor will be different
+ and hence transforming differently
+
+ These are registered into the factory
+end note
+
+class ResponseTransformerFactory{}
+
+class TemperatureTransformer{}
+note right
+  This should be using TemperatureCelsius
+  Strategy pattern
+end note
+
+MCP3208 -- SPIClient : executes command on
+MCP3208 -- SPIBuilder: requests a client from
+SPIClient -> SPIDevClient
+SPIBuilder -- SPIClient : Creates
+TemperatureSensor -- Reader :requests and reads response from
+TemperatureSensor -- ReaderBuilder
+Reader --> MCP3208 : requests and reads response from
+ReaderBuilder -- Reader: Creates
+TemperatureSensor -- ResponseTransformer: transforms the response from the reader
+TemperatureSensor -- ResponseTransformerFactory
+ResponseTransformer --> TemperatureTransformer
+TemperatureTransformer -- TemperatureCelsius
+
+
+@enduml

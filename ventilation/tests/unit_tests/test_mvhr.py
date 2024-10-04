@@ -11,10 +11,10 @@ class TestMVHR(MVHR):
     async def read(self) -> MVHRStateInterface:
         return MagicMock(spec=MVHRStateInterface)
 
-    async def start(self) -> OperationResponse:
+    async def open(self) -> OperationResponse:
         return OperationResponse(status=OperationStatus.OK, details="Started successfully")
 
-    def stop(self) -> OperationResponse:
+    def close(self) -> OperationResponse:
         return OperationResponse(status=OperationStatus.OK, details="Stopped successfully")
 
 
@@ -28,7 +28,7 @@ class MVHRTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.device._config_loader, self.mock_config_loader)
 
     async def test_start(self):
-        response = await self.device.start()
+        response = await self.device.open()
         self.assertIsInstance(response, OperationResponse)
         self.assertEqual(response.status, OperationStatus.OK)
         self.assertEqual(response.details, "Started successfully")
@@ -38,7 +38,7 @@ class MVHRTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsInstance(data, MVHRStateInterface)
 
     def test_stop(self):
-        response = self.device.stop()
+        response = self.device.close()
         self.assertIsInstance(response, OperationResponse)
         self.assertEqual(response.status, OperationStatus.OK)
         self.assertEqual(response.details, "Stopped successfully")
