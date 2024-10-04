@@ -1,6 +1,6 @@
 import unittest
 
-from unit_tests.spi_mock_client import MockSPIClient
+from spi_dev.spi_mock_client import MockSPIClient
 
 
 class TestMockSPIClient(unittest.TestCase):

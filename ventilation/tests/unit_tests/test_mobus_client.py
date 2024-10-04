@@ -15,7 +15,7 @@ class TestModbusClient(unittest.IsolatedAsyncioTestCase):
         self.mock_client_manager = MagicMock(spec=ModbusConnectionManager)
 
         # Patch ModbusClientManager to use our mock
-        self.patcher = patch('py_modbus.modus_client.ModbusConnectionManager', return_value=self.mock_client_manager)
+        self.patcher = patch('py_modbus.modus_py_client.ModbusConnectionManager', return_value=self.mock_client_manager)
         self.patcher.start()
 
         # Create the ModbusClient instance

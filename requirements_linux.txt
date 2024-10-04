@@ -1,0 +1,5 @@
+behave==1.2.6
+pymodbus==3.7.0
+pyserial
+spidev
+

@@ -1,15 +1,13 @@
 from dataclasses import dataclass
 
-from spi.spi_client import SPIClient
-from spi.spi_command import SPICommand
-from utils.response import Response
+from readers.device_reader import DeviceReader
 
 
 @dataclass(frozen=True)
-class MCP3208(SPIClient):
+class MCP3208(DeviceReader):
 
-    def __init__(self, builder):
+    def read(self) -> int:
         pass
 
-    def execute(self, command: SPICommand = None) -> Response:
+    def __init__(self):
         pass

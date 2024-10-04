@@ -1,22 +1,18 @@
 import unittest
-from abc import ABC
+from unittest.mock import Mock
 
 from modbus.modbus_client_builder import ModbusClientBuilder
 from modbus.modbus_builder_client import ModbusBuilderClient
 from modbus.modbus_values import CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize, Timeout, Retries, ReconnectDelay, ReconnectDelayMax
 from utils.status import Status
 
-# Mock Modbus client class for testing
-class MockModbusClient(ModbusBuilderClient, ABC):
-    def __init__(self, builder):
-        pass
-
 class TestModbusBuilder(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         # Register the mock Modbus client
-        ModbusClientBuilder.register_client(MockModbusClient)
+        # noinspection PyTypeChecker
+        ModbusClientBuilder.register_client(Mock(spec=ModbusBuilderClient))
 
     def test_default_initialization(self):
         builder = ModbusClientBuilder()

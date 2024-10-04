@@ -1,4 +1,7 @@
-class MockSPIClient:
+from spi_dev.spi_client_interface import SPIDevClientInterface
+
+
+class MockSPIClient(SPIDevClientInterface):
     """
     This class simulates the behavior of an SPI client for an MCP3208 ADC.
     Instead of calculating ADC values on the fly, it uses a precomputed table based on current-to-voltage-to-ADC calculations.
@@ -155,18 +158,3 @@ class MockSPIClient:
             raise ValueError("threewire must be a boolean value.")
         self._threewire = value
 
-# Example usage of MockSPIClient
-if __name__ == "__main__":
-    spi_client = MockSPIClient()
-    spi_client.open(0, 0)
-    spi_client.max_speed_hz = 50000
-    spi_client.mode = 0
-    spi_client.bits_per_word = 8
-    spi_client.cshigh = False
-    spi_client.loop = False
-    spi_client.lsbfirst = False
-    spi_client.threewire = False
-    command = [0x01, (0x88 | (2 << 4)), 0x00]  # Example command for Channel 2 with single-ended mode
-    response = spi_client.xfer2(command)
-    print(response)  # Expected output for Channel 2: [0x00, 0x06, 0xDC]
-    spi_client.close()

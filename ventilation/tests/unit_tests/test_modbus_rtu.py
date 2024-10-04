@@ -20,8 +20,8 @@ class TestModbusRTU(unittest.IsolatedAsyncioTestCase):
             .set_reconnect_delay(ReconnectDelay(0.1)) \
             .set_reconnect_delay_max(ReconnectDelayMax(10))
 
-    @patch('py_modbus.modbus_rtu.AsyncModbusSerialClient')
-    @patch('py_modbus.modus_client.ModbusConnectionManager')
+    @patch('py_modbus.modbus_rtu_client.AsyncModbusSerialClient')
+    @patch('py_modbus.modus_py_client.ModbusConnectionManager')
     async def test_connect(self, mock_client_manager_cls, mock_client_cls):
         mock_client = AsyncMock()
         mock_client_cls.return_value = mock_client

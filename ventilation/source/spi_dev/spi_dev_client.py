@@ -1,13 +1,10 @@
+from typing import List
 from spi.spi_client import SPIClient
 from spi.spi_command import SPICommand
+from spi_dev.spi_client_interface import SPIDevClientInterface
+from spi_dev.spi_dev_factory import SPIDevFactory
 from utils.response import Response
 from utils.status import Status
-
-
-class SpiDev:
-    def open(self, value, value1):
-        pass
-
 
 class SPIDevClient(SPIClient):
     def __init__(self, builder):
@@ -16,7 +13,7 @@ class SPIDevClient(SPIClient):
         :param builder: An SPIClientBuilder object that holds the configuration.
         """
         self.builder = builder
-        self.spi = SpiDev()  # Create spidev instance
+        self.spi:SPIDevClientInterface = SPIDevFactory.create()
         self.is_open = False
 
     def open(self):
@@ -28,10 +25,11 @@ class SPIDevClient(SPIClient):
             self.spi.max_speed_hz = self.builder.max_speed_hz.value
             self.spi.mode = self.builder.mode.value
             self.spi.bits_per_word = self.builder.bits_per_word.value
+            # noinspection SpellCheckingInspection
             self.spi.lsbfirst = (self.builder.data_order.value == 'LSB')
             self.is_open = True
 
-    def execute(self, command: SPICommand = None) -> Response:
+    def execute(self, command: SPICommand = None) -> Response[List[int]]:
         """
         Execute the SPI command. Ensure the connection is open before performing the transfer.
         :param command: The SPICommand to execute.
