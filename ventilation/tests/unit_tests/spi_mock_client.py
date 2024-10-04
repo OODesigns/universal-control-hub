@@ -9,6 +9,13 @@ class MockSPIClient:
         self._max_speed_hz = None
         self._mode = None
         self._bits_per_word = None
+        self._loop = False
+        # noinspection SpellCheckingInspection
+        self._cshigh = False
+        # noinspection SpellCheckingInspection
+        self._lsbfirst = False
+        # noinspection SpellCheckingInspection
+        self._threewire = False
         # Precomputed table of ADC values for each channel
         self.adc_values = {
             0: 819,   # 4 mA -> 1V -> ADC value ~819
@@ -98,9 +105,55 @@ class MockSPIClient:
 
     @bits_per_word.setter
     def bits_per_word(self, value):
-        if value != 8:
-            raise ValueError("Invalid bits_per_word value. Only 8 bits per word is supported.")
+        if value not in range(8, 17):
+            raise ValueError("Invalid bits_per_word value. Must be between 8 and 16.")
         self._bits_per_word = value
+
+    # noinspection SpellCheckingInspection
+    @property
+    def cshigh(self):
+        return self._cshigh
+
+    # noinspection SpellCheckingInspection
+    @cshigh.setter
+    def cshigh(self, value):
+        if not isinstance(value, bool):
+            raise ValueError("cshigh must be a boolean value.")
+        self._cshigh = value
+
+    @property
+    def loop(self):
+        return self._loop
+
+    @loop.setter
+    def loop(self, value):
+        if not isinstance(value, bool):
+            raise ValueError("loop must be a boolean value.")
+        self._loop = value
+
+    # noinspection SpellCheckingInspection
+    @property
+    def lsbfirst(self):
+        return self._lsbfirst
+
+    # noinspection SpellCheckingInspection
+    @lsbfirst.setter
+    def lsbfirst(self, value):
+        if not isinstance(value, bool):
+            raise ValueError("lsbfirst must be a boolean value.")
+        self._lsbfirst = value
+
+    # noinspection SpellCheckingInspection
+    @property
+    def threewire(self):
+        return self._threewire
+
+    # noinspection SpellCheckingInspection
+    @threewire.setter
+    def threewire(self, value):
+        if not isinstance(value, bool):
+            raise ValueError("threewire must be a boolean value.")
+        self._threewire = value
 
 # Example usage of MockSPIClient
 if __name__ == "__main__":
@@ -109,6 +162,10 @@ if __name__ == "__main__":
     spi_client.max_speed_hz = 50000
     spi_client.mode = 0
     spi_client.bits_per_word = 8
+    spi_client.cshigh = False
+    spi_client.loop = False
+    spi_client.lsbfirst = False
+    spi_client.threewire = False
     command = [0x01, (0x88 | (2 << 4)), 0x00]  # Example command for Channel 2 with single-ended mode
     response = spi_client.xfer2(command)
     print(response)  # Expected output for Channel 2: [0x00, 0x06, 0xDC]

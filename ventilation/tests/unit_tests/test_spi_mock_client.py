@@ -91,6 +91,44 @@ class TestMockSPIClient(unittest.TestCase):
         self.spi_client.bits_per_word = 8
         self.assertEqual(self.spi_client.bits_per_word, 8, "SPI bits per word should be set correctly.")
 
+    def test_spi_cshigh(self):
+        """
+        Test setting the chip select high property for SPI communication.
+        """
+        self.spi_client.cshigh = True
+        self.assertTrue(self.spi_client.cshigh, "SPI cshigh should be set to True.")
+        self.spi_client.cshigh = False
+        self.assertFalse(self.spi_client.cshigh, "SPI cshigh should be set to False.")
+
+    def test_spi_loop(self):
+        """
+        Test setting the loopback mode for SPI communication.
+        """
+        self.spi_client.loop = True
+        self.assertTrue(self.spi_client.loop, "SPI loop should be set to True.")
+        self.spi_client.loop = False
+        self.assertFalse(self.spi_client.loop, "SPI loop should be set to False.")
+
+    # noinspection SpellCheckingInspection
+    def test_spi_lsbfirst(self):
+        """
+        Test setting the LSB first property for SPI communication.
+        """
+        self.spi_client.lsbfirst = True
+        self.assertTrue(self.spi_client.lsbfirst, "SPI lsbfirst should be set to True.")
+        self.spi_client.lsbfirst = False
+        self.assertFalse(self.spi_client.lsbfirst, "SPI lsbfirst should be set to False.")
+
+    # noinspection SpellCheckingInspection
+    def test_spi_threewire(self):
+        """
+        Test setting the three-wire mode for SPI communication.
+        """
+        self.spi_client.threewire = True
+        self.assertTrue(self.spi_client.threewire, "SPI threewire should be set to True.")
+        self.spi_client.threewire = False
+        self.assertFalse(self.spi_client.threewire, "SPI threewire should be set to False.")
+
     def test_invalid_max_speed_hz(self):
         """
         Test setting an invalid max speed for SPI communication.
@@ -112,8 +150,8 @@ class TestMockSPIClient(unittest.TestCase):
         Test setting an invalid number of bits per word.
         """
         with self.assertRaises(ValueError) as context:
-            self.spi_client.bits_per_word = 16  # Invalid bits per word (should be 8)
-        self.assertEqual(str(context.exception), "Invalid bits_per_word value. Only 8 bits per word is supported.")
+            self.spi_client.bits_per_word = 17  # Invalid bits per word (should be between 8 and 16)
+        self.assertEqual(str(context.exception), "Invalid bits_per_word value. Must be between 8 and 16.")
 
 if __name__ == "__main__":
     unittest.main()
