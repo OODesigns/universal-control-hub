@@ -1,7 +1,7 @@
-from spi_dev.spi_client_interface import SPIDevClientInterface
+from spi_dev.spi_dev_interface import SPIDevInterface
 
 
-class MockSPIClient(SPIDevClientInterface):
+class MockSPI(SPIDevInterface):
     """
     This class simulates the behavior of an SPI client for an MCP3208 ADC.
     Instead of calculating ADC values on the fly, it uses a precomputed table based on current-to-voltage-to-ADC calculations.

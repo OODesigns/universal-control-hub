@@ -1,6 +1,6 @@
 import platform
 
-from spi_dev.spi_mock_client import MockSPIClient
+from spi_dev.spi_mock_client import MockSPI
 
 
 class SPIDevFactory:
@@ -15,4 +15,4 @@ class SPIDevFactory:
             except ImportError:
                 spidev = None
         else:
-            return MockSPIClient()
+            return MockSPI()

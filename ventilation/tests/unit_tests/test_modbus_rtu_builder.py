@@ -3,7 +3,7 @@ from unittest.mock import patch
 from modbus.modbus_builder_client import ModbusBuilderClient
 from modbus.modus_rtu_client_builder import ModbusRTUClientBuilder
 from modbus.rtu_values import BaudRate, StopBits, SerialPort, ParityType
-from modbus.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax
+from modbus.modbus_values import Timeout, Retries, ReconnectDelay, ReconnectDelayMax, CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize
 from modbus.modbus import ModbusData
 from utils.operation_response import OperationResponse
 
@@ -67,10 +67,14 @@ class TestModbusRTUBuilder(unittest.TestCase):
             .set_parity(ParityType.EVEN) \
             .set_stop_bits(StopBits(1)) \
             .set_serial_port(SerialPort("COM1")) \
-            .set_timeout(Timeout(10)) \
-            .set_reconnect_delay(ReconnectDelay(300)) \
-            .set_reconnect_delay_max(ReconnectDelayMax(300)) \
-            .set_retries(Retries(2))
+            .set_coil_size(CoilSize(10)) \
+            .set_discrete_input_size(DiscreteInputSize(20)) \
+            .set_input_register_size(InputRegisterSize(30)) \
+            .set_holding_register_size(HoldingRegisterSize(40)) \
+            .set_timeout(Timeout(5.0)) \
+            .set_reconnect_delay(ReconnectDelay(2.0)) \
+            .set_reconnect_delay_max(ReconnectDelayMax(10.0)) \
+            .set_retries(Retries(5))
 
         with patch.object(MockModbusRTUClient, '__init__', return_value=None) as mock_init:
             modbus_rtu = builder.build()
@@ -100,7 +104,6 @@ class TestModbusRTUBuilder(unittest.TestCase):
         builder.set_baud_rate(BaudRate(9600)).set_parity(ParityType.EVEN).set_stop_bits(StopBits(1))
         with self.assertRaises(AssertionError):  # Serial port not set
             builder.build()
-
 
     def test_invalid_baud_rate(self):
         builder = ModbusRTUClientBuilder()

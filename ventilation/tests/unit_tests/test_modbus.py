@@ -1,8 +1,6 @@
 import unittest
 from typing import List
-from unittest.mock import MagicMock
 from modbus.modbus import ModbusInterface, ModbusData
-from modbus.modbus_values import (CoilSize, DiscreteInputSize, InputRegisterSize, HoldingRegisterSize)
 from utils.operation_response import OperationResponse
 from utils.response import Response
 from utils.status import Status
@@ -18,40 +16,6 @@ class TestModbusInterfaceConcrete(ModbusInterface):
 
     async def read(self) -> ModbusData:
         return await super().read()
-
-
-class TestModbusInterface(unittest.IsolatedAsyncioTestCase):
-
-    async def asyncSetUp(self):
-        # Mocking the ModbusBuilder with specific attributes
-        builder = MagicMock()
-        builder.timeout = 1.0
-        builder.retries = 3
-        builder.reconnect_delay_max = 300.0
-        builder.reconnect_delay = 0.1
-        builder.coil_size = CoilSize(10)
-        builder.discrete_input_size = DiscreteInputSize(20)
-        builder.input_register_size = InputRegisterSize(30)
-        builder.holding_register_size = HoldingRegisterSize(40)
-
-        # Instantiating the concrete subclass for testing
-        self.modbus_interface = TestModbusInterfaceConcrete(builder)
-
-    async def test_coil_size(self):
-        result = self.modbus_interface.coil_size
-        self.assertEqual(result, CoilSize(10))
-
-    async def test_discrete_input_size(self):
-        result = self.modbus_interface.discrete_input_size
-        self.assertEqual(result, DiscreteInputSize(20))
-
-    async def test_input_register_size(self):
-        result = self.modbus_interface.input_register_size
-        self.assertEqual(result, InputRegisterSize(30))
-
-    async def test_holding_register_size(self):
-        result = self.modbus_interface.holding_register_size
-        self.assertEqual(result, HoldingRegisterSize(40))
 
 
 class TestModbusData(unittest.TestCase):

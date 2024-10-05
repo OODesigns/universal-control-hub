@@ -1,7 +1,7 @@
 import unittest
 
 from spi_dev.spi_dev_factory import SPIDevFactory
-from spi_dev.spi_mock_client import MockSPIClient
+from spi_dev.spi_mock_client import MockSPI
 import platform
 
 class TestSPIFactory(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestSPIFactory(unittest.TestCase):
             self.assertTrue(spi_client is not None, "Expected a valid SPI client instance on Linux")
         else:
             # On non-Linux, it should always be the mock
-            self.assertIsInstance(spi_client, MockSPIClient, "Expected MockSPIClient instance on non-Linux platform")
+            self.assertIsInstance(spi_client, MockSPI, "Expected MockSPIClient instance on non-Linux platform")
 
 
     def test_create_spi_client_on_non_linux(self):
@@ -27,7 +27,7 @@ class TestSPIFactory(unittest.TestCase):
         platform.system = lambda: "Windows"
 
         spi_client = SPIDevFactory.create()
-        self.assertIsInstance(spi_client, MockSPIClient, "Expected MockSPIClient instance on non-Linux platform")
+        self.assertIsInstance(spi_client, MockSPI, "Expected MockSPIClient instance on non-Linux platform")
 
         # Restore the original platform method
         platform.system = original_platform

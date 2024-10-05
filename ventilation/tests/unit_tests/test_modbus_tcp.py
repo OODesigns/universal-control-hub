@@ -39,7 +39,7 @@ class TestModbusTCP(unittest.IsolatedAsyncioTestCase):
         )
         self.assertIsInstance(modbus_tcp, ModbusTCPClient)
 
-    @patch('py_modbus.modbus_tcp_client_client.AsyncModbusTcpClient')
+    @patch('py_modbus.modbus_tcp_client.AsyncModbusTcpClient')
     async def test_connect(self, mock_async_client):
         mock_client_instance = AsyncMock()
         mock_async_client.return_value = mock_client_instance

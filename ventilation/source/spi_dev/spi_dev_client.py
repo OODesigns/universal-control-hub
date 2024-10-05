@@ -1,7 +1,7 @@
 from typing import List
 from spi.spi_client import SPIClient
 from spi.spi_command import SPICommand
-from spi_dev.spi_client_interface import SPIDevClientInterface
+from spi_dev.spi_dev_interface import SPIDevInterface
 from spi_dev.spi_dev_factory import SPIDevFactory
 from utils.response import Response
 from utils.status import Status
@@ -13,7 +13,7 @@ class SPIDevClient(SPIClient):
         :param builder: An SPIClientBuilder object that holds the configuration.
         """
         self.builder = builder
-        self.spi:SPIDevClientInterface = SPIDevFactory.create()
+        self.spi:SPIDevInterface = SPIDevFactory.create()
         self.is_open = False
 
     def open(self):

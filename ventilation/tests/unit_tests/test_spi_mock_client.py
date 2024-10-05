@@ -1,6 +1,6 @@
 import unittest
 
-from spi_dev.spi_mock_client import MockSPIClient
+from spi_dev.spi_mock_client import MockSPI
 
 
 class TestMockSPIClient(unittest.TestCase):
@@ -9,7 +9,7 @@ class TestMockSPIClient(unittest.TestCase):
         """
         Set up the mock SPI client for testing.
         """
-        self.spi_client = MockSPIClient()
+        self.spi_client = MockSPI()
         # Open the SPI connection with bus and device parameters
         self.bus = 0
         self.device = 0

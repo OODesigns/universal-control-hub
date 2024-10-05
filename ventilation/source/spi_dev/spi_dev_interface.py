@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class SPIDevClientInterface(ABC):
+class SPIDevInterface(ABC):
     """
     Abstract class for SPI clients that defines the basic interface for SPI communication.
     This is used for type checking and ensures that all SPI clients implement the required methods and properties.
