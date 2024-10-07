@@ -19,12 +19,13 @@ MVHR_RETRIES = 'mvhr-retries'
 MVHR_RECONNECT_DELAY = 'mvhr-reconnect-delay'
 MVHR_RECONNECT_DELAY_MAX = 'mvhr-reconnect-delay-max'
 
+
 class BlaubergMVHR(MVHR):
     def __init__(self, config_loader: ConfigLoader):
         super().__init__(config_loader)
 
-       # Use the factory to create the Modbus interface
-        self._modbus =(
+        # Use the factory to create the Modbus interface
+        self._modbus = (
             ModbusTCPClientBuilder()
             .set_coil_size(CoilSize(CoilRegister.CL_SIZE.value))
             .set_discrete_input_size(DiscreteInputSize(DiscreteInputs.DI_SIZE.value))
@@ -39,7 +40,6 @@ class BlaubergMVHR(MVHR):
             .set_ip_address(IPAddress(config_loader.get_value(MVHR_IP_ADDRESS)))
             .set_port(Port(config_loader.get_value(MVHR_PORT)))
         ).build()
-
 
     @property
     def modbus(self) -> ModbusInterface:

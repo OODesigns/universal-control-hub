@@ -3,6 +3,7 @@ from typing import Optional, List, Dict, Any
 
 from state.system_state import SystemState
 
+
 class StateManager:
     def __init__(self, file_path: str):
         self._current_state: Optional[SystemState] = None  # Allow None initially
@@ -59,7 +60,6 @@ class StateManager:
         # Update to the new state Save the current state to the history
         self._current_state = new_state
         self._save_current_state_to_history()
-
 
     @classmethod
     def _merge_data(cls, current_data: Dict[str, Any], new_data: Optional[Dict[str, Any]]) -> Dict[str, Any]:

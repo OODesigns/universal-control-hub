@@ -6,6 +6,7 @@ from modbus.modbus_values import (CoilSize, DiscreteInputSize, InputRegisterSize
                                   HoldingRegisterSize, Retries, ReconnectDelay,
                                   ReconnectDelayMax, Timeout)
 
+
 class ModbusClientBuilder:
     _client_class: Type[ModbusBuilderClient] = None
 

@@ -6,6 +6,7 @@ from spi_dev.spi_dev_factory import SPIDevFactory
 from utils.response import Response
 from utils.status import Status
 
+
 class SPIDevClient(SPIClient):
     def __init__(self, builder):
         """
@@ -13,7 +14,7 @@ class SPIDevClient(SPIClient):
         :param builder: An SPIClientBuilder object that holds the configuration.
         """
         self.builder = builder
-        self.spi:SPIDevInterface = SPIDevFactory.create()
+        self.spi: SPIDevInterface = SPIDevFactory.create()
         self.is_open = False
 
     def open(self):

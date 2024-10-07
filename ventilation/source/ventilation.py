@@ -1,6 +1,7 @@
 from utils.temperaturecelsius import TemperatureCelsius, TemperatureInterface
 from ventilation_mode import VentilationMode
 
+
 class Ventilation:
     def __init__(self):
         self.mode = None
@@ -22,7 +23,7 @@ class Ventilation:
         return TemperatureCelsius(0)
 
     @property
-    def setpoint_temperature(self) ->TemperatureInterface:
+    def setpoint_temperature(self) -> TemperatureInterface:
         return TemperatureCelsius(0)
 
     @setpoint_temperature.setter

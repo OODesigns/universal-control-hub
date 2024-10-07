@@ -5,11 +5,10 @@ from utils.temperaturecelsius import TemperatureInterface
 
 class TemperatureSensorInterface(Device):
     @abstractmethod
-    def get_temperature(self) -> TemperatureInterface: #prgma nocover
+    def get_temperature(self) -> TemperatureInterface:  # pragma nocover
         """
         Gets the temperature. Must be overridden by child classes.
 
         :return: The temperature value.
         """
         pass
-

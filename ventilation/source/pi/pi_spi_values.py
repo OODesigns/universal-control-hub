@@ -9,12 +9,14 @@ class RaspberryPiSPIBus(SPIBusNumber):
     """
     high_value = 5  # Raspberry Pi 5 has 6 SPI buses, so the range is 0-5.
 
+
 class RaspberryPiSPIDevice(SPIChipSelect):
     """
     RaspberryPiSPIDevice represents the device (chip select) number on the SPI bus for Raspberry Pi.
     Raspberry Pi typically supports two chip select lines, CE0 and CE1.
     """
     high_value = 1  # Typically, Raspberry Pi uses CE0 (0) and CE1 (1).
+
 
 class RaspberryPiSPIMaxSpeedHz(SPIMaxSpeedHz):
     """
@@ -23,6 +25,7 @@ class RaspberryPiSPIMaxSpeedHz(SPIMaxSpeedHz):
     """
     low_value = 500000  # Raspberry Pi typically operates at speeds starting from 500 kHz.
     high_value = 32000000  # 32 MHz is a typical upper limit for Raspberry Pi SPI communication.
+
 
 class RaspberryPiSPIBitsPerWord(SPIBitsPerWord):
     """

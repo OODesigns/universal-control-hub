@@ -42,7 +42,6 @@ class SPIClientBuilder:
         self._full_duplex = SPIFullDuplex(True)
         self._idle_state = SPIIdleState("Low")
 
-
     # Properties with getters
     @property
     def bus(self) -> SPIBusNumber:
@@ -118,6 +117,7 @@ class SPIClientBuilder:
         return self
 
         # Method to "build" and return a configured SPI object
+
     def build(self) -> SPIInterface:
         """
         Builds the SPI configuration and returns it.
@@ -136,12 +136,3 @@ class SPIClientBuilder:
         assert self._client_class is not None, "The spi client class has not been assigned "
         # Create the client class with the set values
         return self._client_class(self)
-
-
-
-
-
-
-
-
-

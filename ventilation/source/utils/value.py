@@ -3,6 +3,7 @@ from typing import Generic, List
 from utils.response import Response, T
 from utils.status import Status
 
+
 class Value(Generic[T]):
     """
     A base class to represent a generic value. Provides comparison methods for equality, less than,
@@ -38,6 +39,7 @@ class ValidationStrategy(ABC):
         """Perform validation and return a Response."""
         pass
 
+
 class TypeValidationStrategy(ValidationStrategy):
     def __init__(self, valid_types):
         # If valid_types is a single type, convert it to a tuple
@@ -53,6 +55,7 @@ class TypeValidationStrategy(ValidationStrategy):
                 value=None
             )
         return Response(status=Status.OK, details="Type validation successful", value=value)
+
 
 class RangeValidationStrategy(ValidationStrategy):
     def __init__(self, low_value, high_value):
@@ -74,6 +77,7 @@ class RangeValidationStrategy(ValidationStrategy):
             )
         return Response(status=Status.OK, details="Range validation successful", value=value)
 
+
 class EnumValidationStrategy(ValidationStrategy):
     def __init__(self, valid_values):
         self.valid_values = valid_values
@@ -87,6 +91,7 @@ class EnumValidationStrategy(ValidationStrategy):
             )
         return Response(status=Status.OK, details="Enum validation successful", value=value)
 
+
 class ValidatedValue(Value[T], ABC):
     """
     A base class that represents a value which must be validated. ValidationStrategy are required to implement
@@ -96,6 +101,7 @@ class ValidatedValue(Value[T], ABC):
         _status: The status of the validation.
         _details: Additional details regarding the validation status.
     """
+
     def __init__(self, value):
         result = self.run_validations(value)
         super().__init__(result.value)
@@ -168,7 +174,7 @@ class EnumValidatedValue(ValidatedValue[T]):
 
 
 class RangeValidatedValue(ValidatedValue[T]):
-    def get__strategies(self) -> [List[ValidationStrategy]] :
+    def get__strategies(self) -> [List[ValidationStrategy]]:
         return self._strategies
 
     def __init__(self, value, valid_types, low_value, high_value):
@@ -184,7 +190,8 @@ class StrictValidatedValue(ValidatedValue[T], ABC):
     """
     A stricter version of ValidatedValue that raises an exception immediately if the validation fails.
     """
-    def __init__(self, value: T =None):
+
+    def __init__(self, value: T = None):
         super().__init__(value)
         if self.status == Status.EXCEPTION:
             raise ValueError(f"Validation failed for value '{value}': {self.details}")

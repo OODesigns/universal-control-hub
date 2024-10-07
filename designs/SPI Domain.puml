@@ -28,7 +28,8 @@ note right
  This is registered into the SPIBuilder
 end note
 
-class ReaderBuilder{}
+class ConfigFactory{}
+class ReaderFactory{}
 class Reader{}
 
 class ResponseTransformer{}
@@ -55,9 +56,11 @@ MCP3208 -- SPIBuilder: requests a client from
 SPIClient -> SPIDevClient
 SPIBuilder -- SPIClient : Creates
 TemperatureSensor -- Reader :requests and reads response from
-TemperatureSensor -- ReaderBuilder
+TemperatureSensor -- ReaderFactory
 Reader --> MCP3208 : requests and reads response from
-ReaderBuilder -- Reader: Creates
+ReaderFactory -- Reader: Creates
+ConfigFactory -- ConfigLoader: load based on reader + sensor name
+ReaderFactory -- ConfigFactory
 TemperatureSensor -- ResponseTransformer: transforms the response from the reader
 TemperatureSensor -- ResponseTransformerFactory
 ResponseTransformer --> TemperatureTransformer

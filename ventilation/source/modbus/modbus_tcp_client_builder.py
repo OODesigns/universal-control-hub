@@ -2,6 +2,7 @@ from modbus.modbus_client_builder import ModbusClientBuilder
 from modbus.tcp_values import IPAddress, Port
 from modbus.modbus import ModbusInterface
 
+
 class ModbusTCPClientBuilder(ModbusClientBuilder):
     def __init__(self):
         super().__init__()
@@ -30,4 +31,3 @@ class ModbusTCPClientBuilder(ModbusClientBuilder):
         assert self._ip_address, "IP address must be set for ModbusTCP"
         assert self._port, "Port must be set for ModbusTCP"
         return super().build()
-

@@ -6,29 +6,30 @@ from utils.status import Status
 
 class ModbusResultAdapter(Generic[T], ABC):
     @abstractmethod
-    async def read(self, client, address: int, count: int):# pragma: no cover
+    async def read(self, client, address: int, count: int):  # pragma: no cover
         """Performs the Modbus read operation asynchronously."""
         pass
 
     @abstractmethod
-    def is_error(self) -> bool:# pragma: no cover
+    def is_error(self) -> bool:  # pragma: no cover
         """Indicates if there was an error in the operation."""
         pass
 
     @abstractmethod
-    def get_data(self) -> List[T]:# pragma: no cover
+    def get_data(self) -> List[T]:  # pragma: no cover
         """Returns the data from the Modbus operation."""
         pass
 
     @abstractmethod
-    def get_error_message(self) -> str:# pragma: no cover
+    def get_error_message(self) -> str:  # pragma: no cover
         """Returns the error message if there was an error."""
         pass
 
     @abstractmethod
-    def to_response(self) -> Response[T]:# pragma: no cover
+    def to_response(self) -> Response[T]:  # pragma: no cover
         """Converts the ModbusResultAdapter to a ValidatedResult."""
         pass
+
 
 class ModbusReader(Generic[T]):
     def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter[T]]], max_count: int):
@@ -73,9 +74,12 @@ class ModbusReader(Generic[T]):
 
 
 class ModbusBitReader(ModbusReader[List[bool]]):
-    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter[List[bool]]]], max_count: int = 2000):
+    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter[List[bool]]]],
+                 max_count: int = 2000):
         super().__init__(read_function, max_count)
 
+
 class ModbusWordReader(ModbusReader[List[int]]):
-    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter[List[int]]]], max_count: int = 125):
+    def __init__(self, read_function: Callable[[int, int], Awaitable[ModbusResultAdapter[List[int]]]],
+                 max_count: int = 125):
         super().__init__(read_function, max_count)

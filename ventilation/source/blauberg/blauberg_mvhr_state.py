@@ -5,6 +5,7 @@ from modbus.modbus import ModbusData
 from mvhr_state import MVHRStateInterface
 from utils.temperaturecelsius import TemperatureInterface
 
+
 @dataclass(frozen=True)
 class BlaubergMVHRState(MVHRStateInterface):
     data: ModbusData  # This is the input data passed to the class
@@ -25,4 +26,3 @@ class BlaubergMVHRState(MVHRStateInterface):
     @property
     def temp_supply_in(self) -> TemperatureInterface:
         return self._temp_supply_in
-

@@ -9,15 +9,18 @@ from typing import Optional
 
 REGISTERED = "registered"
 
+
 class DeviceStatus(Enum):
     VALID = 0
     EXCEPTION = 1
+
 
 @dataclass
 class DeviceResponse:
     status: DeviceStatus
     details: str
     device: Optional[Device]
+
 
 class DeviceFactory:
     _registry = {}
@@ -34,9 +37,9 @@ class DeviceFactory:
             cls._registry[name] = device_class
 
     @classmethod
-    def register_dependency(cls, name, dependency_class:any):
-         if name not in cls._dependency:
-             cls._dependency[name] = dependency_class
+    def register_dependency(cls, name, dependency_class: any):
+        if name not in cls._dependency:
+            cls._dependency[name] = dependency_class
 
     def create_device(self, device_name) -> DeviceResponse:
         """Factory method to create a device instance."""
@@ -86,7 +89,6 @@ class DeviceFactory:
                 importlib.import_module(f"{REGISTERED}.{module_name}")
             except ImportError as e:
                 raise ImportError(f"Failed to import module '{module_name}' from '{REGISTERED}': {e}")
-
 
     @classmethod
     def _registered_devices_loaded(cls):

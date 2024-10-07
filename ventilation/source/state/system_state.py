@@ -4,6 +4,7 @@ from types import MappingProxyType
 from typing import Dict, Any, Optional
 import time
 
+
 @dataclass(frozen=True)
 class SystemState:
     """

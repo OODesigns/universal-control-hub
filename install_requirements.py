@@ -1,6 +1,7 @@
 import platform
 import subprocess
 
+
 def install_requirements():
     system = platform.system().lower()
     if 'windows' in system:
@@ -12,6 +13,6 @@ def install_requirements():
 
     subprocess.run(['pip', 'install', '-r', requirements_file], check=True)
 
+
 if __name__ == "__main__":
     install_requirements()
-

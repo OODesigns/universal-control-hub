@@ -12,15 +12,14 @@ class SPIInterface(ABC):
         pass
 
     @abstractmethod
-    def close(self):# pragma: no cover
+    def close(self):  # pragma: no cover
         """
         Close the SPI connection.
         """
         pass
 
-
     @abstractmethod
-    def execute(self, command: SPICommand = None) -> Response[list[int]]: # pragma: no cover
+    def execute(self, command: SPICommand = None) -> Response[list[int]]:  # pragma: no cover
         """
         Execute an SPICommand, optionally provided. If no command is provided,
         the default behavior for the device will be executed.
@@ -29,9 +28,3 @@ class SPIInterface(ABC):
         :return: A Response object containing the result.
         """
         pass
-
-
-
-
-
-
