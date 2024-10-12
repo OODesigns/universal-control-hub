@@ -12,14 +12,13 @@ class VentilationConfiguration:
         return self._store.get_value("ventilation_mode")
 
     @ventilation_mode.setter
-    def ventilation_mode(self, value: VentilationMode ):
+    def ventilation_mode(self, value: VentilationMode):
         self._store.set_value("ventilation_mode", value)
 
     @property
-    def setpoint_temperature(self) ->TemperatureInterface:
-        return TemperatureCelsius(self._store.get_value('setpoint_temperature'))
+    def set_point_temperature(self) -> TemperatureInterface:
+        return TemperatureCelsius(self._store.get_value('set_point_temperature'))
 
-    @setpoint_temperature.setter
-    def setpoint_temperature(self, value: TemperatureInterface):
-        self._store.set_value('setpoint_temperature' , value)
-
+    @set_point_temperature.setter
+    def set_point_temperature(self, value: TemperatureInterface):
+        self._store.set_value('set_point_temperature', value)

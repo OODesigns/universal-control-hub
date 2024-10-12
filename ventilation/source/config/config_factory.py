@@ -13,6 +13,9 @@ class ConfigFactory:
         """
         self.directory = directory
 
+    def _get_full_path(self, file_name):
+        return os.path.join(self.directory, file_name)
+
     def create_loader(self, file_name) -> ConfigLoader:
         """
         Creates an instance of ConfigLoader for the given file name.
@@ -20,8 +23,7 @@ class ConfigFactory:
         :param file_name: The name of the config file (without directory path).
         :return: An instance of ConfigLoader initialized with the full file path.
         """
-        full_path = os.path.join(self.directory, file_name)
-        return ConfigLoader(full_path)
+        return ConfigLoader(self._get_full_path(file_name))
 
     def create_store(self, file_name) -> ConfigStore:
         """
@@ -30,5 +32,4 @@ class ConfigFactory:
         :param file_name: The name of the config file (without directory path).
         :return: An instance of ConfigStore initialized with the full file path.
         """
-        full_path = os.path.join(self.directory, file_name)
-        return ConfigStore(full_path)
+        return ConfigStore(self._get_full_path(file_name))

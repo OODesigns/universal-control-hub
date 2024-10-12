@@ -1,11 +1,13 @@
 from config.config_loader import ConfigLoader
+from devices.device import Device
 from reader.device_reader import DeviceReader
 from spi.spi_builder import SPIClientBuilder
 from spi.spi_values import SPIChipSelect, SPIBusNumber, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord, SPIDataOrder, \
     SPIFullDuplex, SPIIdleState
+from utils.response import Response
 
 
-class MCP3208(DeviceReader):
+class MCP3208(Device, DeviceReader):
 
     def __init__(self, config_loader: ConfigLoader):
         super().__init__(config_loader)
@@ -25,4 +27,5 @@ class MCP3208(DeviceReader):
         ).build()
 
     def read(self) -> int:
-        pass
+        data: Response[list[int]] = self._spi.execute()
+        return ((data.value[1] & 0x0F) << 8) | data.value[2]

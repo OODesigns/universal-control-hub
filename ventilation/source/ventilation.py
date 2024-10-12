@@ -23,9 +23,9 @@ class Ventilation:
         return TemperatureCelsius(0)
 
     @property
-    def setpoint_temperature(self) -> TemperatureInterface:
+    def set_point_temperature(self) -> TemperatureInterface:
         return TemperatureCelsius(0)
 
-    @setpoint_temperature.setter
-    def setpoint_temperature(self, temp: TemperatureInterface):
+    @set_point_temperature.setter
+    def set_point_temperature(self, temp: TemperatureInterface):
         pass

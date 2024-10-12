@@ -8,7 +8,7 @@ import sys
 from config.config_factory import ConfigFactory
 from config.config_loader import ConfigLoader
 from devices.device import Device
-from devices.device_factory import DeviceFactory, DeviceStatus
+from devices.device_factory import DeviceFactory, DeviceStatus, DeviceResponse
 
 
 class TestDeviceFactory(unittest.TestCase):
@@ -82,9 +82,13 @@ class TestDeviceFactory(unittest.TestCase):
                 super().__init__(config_loader)
                 self.config_loader = config_loader
 
+            @classmethod
+            def get_new_name(cls):
+                return "my new name"
+
         DeviceFactory.register_device("TestDevice", TestDevice)
         factory = DeviceFactory(config_factory_mock)
-        response = factory.create_device("TestDevice")
+        response: DeviceResponse[TestDevice] = factory.create("TestDevice")
 
         self.assertEqual(response.status, DeviceStatus.VALID)
         self.assertIsInstance(response.device, TestDevice)
@@ -94,7 +98,7 @@ class TestDeviceFactory(unittest.TestCase):
         config_factory_mock = MagicMock(spec=ConfigFactory)
         factory = DeviceFactory(config_factory_mock)
 
-        response = factory.create_device("NonExistentDevice")
+        response = factory.create("NonExistentDevice")
 
         self.assertEqual(response.status, DeviceStatus.EXCEPTION)
         self.assertIsNone(response.device)
@@ -117,7 +121,7 @@ class TestDeviceFactory(unittest.TestCase):
 
         DeviceFactory.register_device("TestDevice", TestDevice)
         factory = DeviceFactory(config_factory_mock)
-        response = factory.create_device("TestDevice")
+        response = factory.create("TestDevice")
 
         self.assertEqual(response.status, DeviceStatus.EXCEPTION)
         self.assertIsNone(response.device)
@@ -146,7 +150,7 @@ class TestDeviceFactory(unittest.TestCase):
 
         DeviceFactory.register_device("TestDevice", TestDevice)
         factory = DeviceFactory(config_factory_mock)
-        response = factory.create_device("TestDevice")
+        response = factory.create("TestDevice")
 
         self.assertEqual(response.status, DeviceStatus.VALID)
         self.assertIsInstance(response.device, TestDevice)
@@ -182,13 +186,12 @@ class TestDeviceFactory(unittest.TestCase):
 
         DeviceFactory.register_device("TestDevice", TestDevice)
         factory = DeviceFactory(config_factory_mock)
-        response = factory.create_device("TestDevice")
+        response = factory.create("TestDevice")
 
         self.assertEqual(response.status, DeviceStatus.VALID)
         self.assertIsInstance(response.device, TestDevice)
         self.assertIsInstance(response.device.core_dependency, CoreDependency)
         self.assertIsInstance(response.device.extra_dependency, ExtraDependency)
-
 
     @classmethod
     def _generate_random_package_name(cls, length=8):
@@ -228,6 +231,7 @@ class TestDeviceFactory(unittest.TestCase):
                 sys.modules.pop(f'{random_package_name}.module1', None)
                 sys.modules.pop(f'{random_package_name}.module2', None)
                 sys.modules.pop(random_package_name, None)
+
 
 if __name__ == '__main__':
     unittest.main()

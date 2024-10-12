@@ -1,14 +1,12 @@
-from abc import abstractmethod
+from config.config_loader import ConfigLoader
 from devices.device import Device
 from utils.temperaturecelsius import TemperatureInterface
 
 
-class TemperatureSensorInterface(Device):
-    @abstractmethod
-    def get_temperature(self) -> TemperatureInterface:  # pragma nocover
-        """
-        Gets the temperature. Must be overridden by child classes.
+class TemperatureSensor(Device):
+    def __init__(self, config_loader: ConfigLoader):
+        super().__init__(config_loader)
 
-        :return: The temperature value.
-        """
+    def get_temperature(self) -> TemperatureInterface:
+        # self.mpc_3208: MCP3208 = DeviceFactory.get_device("mpc3208", "mcp3208_"+device_to_reed).device
         pass

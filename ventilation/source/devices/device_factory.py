@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from enum import Enum
 from config.config_factory import ConfigFactory
 from devices.device import Device
-from typing import Optional
+from typing import Optional, TypeVar, Generic
 
 REGISTERED = "registered"
 
@@ -15,16 +15,35 @@ class DeviceStatus(Enum):
     EXCEPTION = 1
 
 
+T = TypeVar('T', bound=Device)
+
+
 @dataclass
-class DeviceResponse:
+class DeviceResponse(Generic[T]):
     status: DeviceStatus
     details: str
-    device: Optional[Device]
+    device: Optional[T]
 
 
 class DeviceFactory:
+    _instance = None
     _registry = {}
     _dependency = {}
+
+    @classmethod
+    def get_device(cls, device_name: str, config_name: str = None) -> DeviceResponse[T]:
+        if DeviceFactory._instance is None:
+            return DeviceResponse(
+                status=DeviceStatus.EXCEPTION,
+                details=f"Device factory is not initialized.",
+                device=None
+            )
+        return DeviceFactory._instance.create(device_name, config_name)
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self, config_factory: ConfigFactory):
         self._config_factory = config_factory
@@ -41,7 +60,7 @@ class DeviceFactory:
         if name not in cls._dependency:
             cls._dependency[name] = dependency_class
 
-    def create_device(self, device_name) -> DeviceResponse:
+    def create(self, device_name: str, config_name: str = None) -> DeviceResponse[T]:
         """Factory method to create a device instance."""
         if device_name not in DeviceFactory._registry:
             return DeviceResponse(
@@ -50,7 +69,7 @@ class DeviceFactory:
                 device=None
             )
         device_class = DeviceFactory._registry[device_name]
-        config_loader = self._config_factory.create_loader(device_name)
+        config_loader = self._config_factory.create_loader(device_name if config_name is None else config_name)
 
         # Load dependencies from both the config and required_dependencies
         dependencies = {}

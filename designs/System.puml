@@ -1,0 +1,12 @@
+@startuml
+'https://plantuml.com/class-diagram
+!theme spacelab
+
+class System
+class Ventilation
+class Configfactory
+
+System -- Ventilation
+System -- Configfactory
+
+@enduml
