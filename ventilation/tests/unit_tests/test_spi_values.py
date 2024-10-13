@@ -1,7 +1,6 @@
 import unittest
 from spi.spi_values import (
-    SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord,
-    SPIDataOrder, SPIFullDuplex, SPIIdleState
+    SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord,SPIMSBDataOrder
 )
 from utils.status import Status
 
@@ -69,40 +68,16 @@ class TestSPIValues(unittest.TestCase):
 
     # Tests for SPIDataOrder
     def test_valid_spi_data_order(self):
-        data_order = SPIDataOrder('MSB')
-        self.assertEqual(data_order.value, 'MSB')
+        data_order = SPIMSBDataOrder(True)
+        self.assertEqual(data_order.value, True)
         self.assertEqual(data_order.status, Status.OK)
 
+    # noinspection PyTypeChecker
     def test_invalid_spi_data_order(self):
-        data_order = SPIDataOrder('XYZ')  # Invalid, must be 'MSB' or 'LSB'
+        data_order = SPIMSBDataOrder('XYZ')  # Invalid, must be 'True' or 'False'
         self.assertEqual(data_order.status, Status.EXCEPTION)
         self.assertIsNone(data_order.value)
-        self.assertIn("Value must be one of ['MSB', 'LSB']", data_order.details)
-
-    # Tests for SPIFullDuplex
-    def test_valid_spi_full_duplex(self):
-        full_duplex = SPIFullDuplex(True)
-        self.assertEqual(full_duplex.value, True)
-        self.assertEqual(full_duplex.status, Status.OK)
-
-    def test_invalid_spi_full_duplex(self):
-        # noinspection PyTypeChecker
-        full_duplex = SPIFullDuplex('NotABool')  # Invalid, must be a boolean
-        self.assertEqual(full_duplex.status, Status.EXCEPTION)
-        self.assertIsNone(full_duplex.value)
-        self.assertIn(full_duplex.details, "Value must be one of [True, False], got NotABool")
-
-    # Tests for SPIIdleState
-    def test_valid_spi_idle_state(self):
-        idle_state = SPIIdleState('High')
-        self.assertEqual(idle_state.value, 'High')
-        self.assertEqual(idle_state.status, Status.OK)
-
-    def test_invalid_spi_idle_state(self):
-        idle_state = SPIIdleState('Middle')  # Invalid, must be 'High' or 'Low'
-        self.assertEqual(idle_state.status, Status.EXCEPTION)
-        self.assertIsNone(idle_state.value)
-        self.assertIn("Value must be one of ['High', 'Low']", idle_state.details)
+        self.assertIn(data_order.details, "Value must be one of [True, False], got XYZ")
 
     # Test for equality (==) and comparison operators (<, <=)
     def test_value_comparisons(self):

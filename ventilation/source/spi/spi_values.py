@@ -57,35 +57,14 @@ class SPIBitsPerWord(RangeValidatedValue[int]):
         super().__init__(value, int, 4, 32)
 
 
-class SPIDataOrder(EnumValidatedValue[str]):
+class SPIMSBDataOrder(EnumValidatedValue[bool]):
     """
     Defines whether data is transmitted MSB-first or LSB-first using a string.
     """
 
-    def __init__(self, value: str):
-        # Valid values are "MSB" or "LSB"
-        super().__init__(value, str, ['MSB', 'LSB'])
-
-
-class SPIFullDuplex(EnumValidatedValue[bool]):
-    """
-    Defines whether the communication is full-duplex or half-duplex using a boolean.
-    True means full-duplex, False means half-duplex.
-    """
-
     def __init__(self, value: bool):
-        # Boolean for full or half duplex
+        # Valid values are true or false
         super().__init__(value, bool, [True, False])
-
-
-class SPIIdleState(EnumValidatedValue[str]):
-    """
-    Defines the idle state of MOSI/MISO lines using a string (High or Low).
-    """
-
-    def __init__(self, value: str):
-        # Valid values are "High" or "Low"
-        super().__init__(value, str, ['High', 'Low'])
 
 
 class SPIChannel(RangeValidatedValue[int]):

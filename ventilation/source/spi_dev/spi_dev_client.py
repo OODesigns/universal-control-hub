@@ -27,7 +27,7 @@ class SPIDevClient(SPIClient):
             self.spi.mode = self.builder.mode.value
             self.spi.bits_per_word = self.builder.bits_per_word.value
             # noinspection SpellCheckingInspection
-            self.spi.lsbfirst = (self.builder.data_order.value == 'LSB')
+            self.spi.lsbfirst = (self.builder.msb_data_order.value == False)
             self.is_open = True
 
     def execute(self, command: SPICommand = None) -> Response[List[int]]:

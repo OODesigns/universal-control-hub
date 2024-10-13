@@ -3,7 +3,7 @@ from typing import Type
 from spi.spi import SPIInterface
 from spi.spi_client import SPIClient
 from spi.spi_values import (SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz,
-                            SPIMode, SPIBitsPerWord, SPIDataOrder, SPIFullDuplex, SPIIdleState)
+                            SPIMode, SPIBitsPerWord, SPIMSBDataOrder)
 
 
 class SPIClientBuilder:
@@ -29,18 +29,8 @@ class SPIClientBuilder:
         SPI Data Order (SPIDataOrder): 
         Refers to whether data is transmitted MSB-first or LSB-first. While important for some devices, 
         most devices default to MSB-first, so this can be optional.
-        
-        SPI Full Duplex (SPIFullDuplex): 
-        Defines whether the communication is full-duplex (simultaneous send/receive) or half-duplex 
-        (alternating send/receive). Many devices default to full-duplex, making this optional unless you 
-        need specific half-duplex support.
-        
-        SPI Idle State (SPIIdleState): Specifies the idle state of the MOSI/MISO lines (High or Low). 
-        Many systems and devices have a default idle state, so this could be optional unless explicitly required.
         """
-        self._data_order = SPIDataOrder("MSB")
-        self._full_duplex = SPIFullDuplex(True)
-        self._idle_state = SPIIdleState("Low")
+        self._data_order = SPIMSBDataOrder(True)
 
     # Properties with getters
     @property
@@ -64,16 +54,8 @@ class SPIClientBuilder:
         return self._bits_per_word
 
     @property
-    def data_order(self) -> SPIDataOrder:
+    def msb_data_order(self) -> SPIMSBDataOrder:
         return self._data_order
-
-    @property
-    def full_duplex(self) -> SPIFullDuplex:
-        return self._full_duplex
-
-    @property
-    def idle_state(self) -> SPIIdleState:
-        return self._idle_state
 
     # Setter methods with validation
     def set_bus(self, bus: SPIBusNumber):
@@ -101,19 +83,9 @@ class SPIClientBuilder:
         self._bits_per_word = bits_per_word
         return self
 
-    def set_data_order(self, data_order: SPIDataOrder):
-        assert isinstance(data_order, SPIDataOrder), "Invalid data order value"
+    def set_data_order(self, data_order: SPIMSBDataOrder):
+        assert isinstance(data_order, SPIMSBDataOrder), "Invalid data order value"
         self._data_order = data_order
-        return self
-
-    def set_full_duplex(self, full_duplex: SPIFullDuplex):
-        assert isinstance(full_duplex, SPIFullDuplex), "Invalid duplex mode"
-        self._full_duplex = full_duplex
-        return self
-
-    def set_idle_state(self, idle_state: SPIIdleState):
-        assert isinstance(idle_state, SPIIdleState), "Invalid idle state"
-        self._idle_state = idle_state
         return self
 
         # Method to "build" and return a configured SPI object
@@ -130,8 +102,6 @@ class SPIClientBuilder:
         assert self._mode is not None, "SPI mode not set"
         assert self._bits_per_word is not None, "SPI bits per word not set"
         assert self._data_order is not None, "SPI data order not set"
-        assert self._full_duplex is not None, "SPI full_duplex not set"
-        assert self._idle_state is not None, "SPI Idle state not set"
 
         assert self._client_class is not None, "The spi client class has not been assigned "
         # Create the client class with the set values
