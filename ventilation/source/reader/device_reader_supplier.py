@@ -1,6 +1,7 @@
 from typing import Type
 
 from reader.device_reader import DeviceReader
+from utils.standard_name import StandardName
 
 
 class DeviceReaderSupplier:
@@ -14,7 +15,7 @@ class DeviceReaderSupplier:
         cls._reader_class = reader_class
 
     @classmethod
-    def get(cls, device_to_read: str):
+    def get(cls, device_to_read: StandardName):
         """
         Instantiates the registered reader class with the provided device_to_read parameter.
         """

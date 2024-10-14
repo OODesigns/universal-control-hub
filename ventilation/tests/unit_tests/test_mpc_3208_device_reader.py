@@ -14,7 +14,7 @@ class TestMPC3208DeviceReader(unittest.TestCase):
         mock_device_factory.get_device.return_value.device = mock_device
 
         # Act: Instantiate MPC3208DeviceReader and call the read method
-        reader = MPC3208DeviceReader("test_channel")
+        reader = MPC3208DeviceReader(sn("test_channel"))
         result = reader.read()
 
         # Assert: Ensure the read method was called and returned the correct value
