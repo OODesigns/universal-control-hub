@@ -1,10 +1,18 @@
 from devices.device_factory import DeviceFactory
 from reader.device_reader import DeviceReader
+from utils.standard_name import sn
 
+ADC = "mpc3208"
 
 class MPC3208DeviceReader(DeviceReader):
-    def __init__(self, device_to_reed: str):
-        self.mpc_3208: DeviceReader = DeviceFactory.get_device("mpc3208", "mcp3208_"+device_to_reed).device
+    ADC = None
+
+    def get_device_name(self) -> str:
+        return ADC
+
+    def __init__(self, device_to_read: str):
+        super().__init__(device_to_read)
+        self.mpc_3208: DeviceReader = DeviceFactory.get_device(sn(ADC), self.get_config_name()).device
 
     def read(self) -> int:
         return self.mpc_3208.read()
