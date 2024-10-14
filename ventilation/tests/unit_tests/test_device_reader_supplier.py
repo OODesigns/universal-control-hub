@@ -12,7 +12,7 @@ class TestDeviceReaderSupplier(unittest.TestCase):
 
         # Act: Register the mock class and retrieve an instance
         # noinspection PyTypeChecker
-        DeviceReaderSupplier.register_client(mock_device_reader_class)
+        DeviceReaderSupplier.register_reader(mock_device_reader_class)
         device_reader_instance = DeviceReaderSupplier.get("test_channel")
 
         # Assert: Check that the registered class is instantiated with the correct argument
@@ -22,7 +22,7 @@ class TestDeviceReaderSupplier(unittest.TestCase):
     def test_get_without_registering(self):
         # Act & Assert: Ensure calling get without registering raises an assertion error
         with self.assertRaises(AssertionError) as context:
-            DeviceReaderSupplier._client_class = None  # Ensure no class is registered
+            DeviceReaderSupplier._reader_class = None  # Ensure no class is registered
             DeviceReaderSupplier.get("test_channel")
 
         self.assertEqual(str(context.exception), "The device reader class has not been assigned")
