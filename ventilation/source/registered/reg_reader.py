@@ -1,0 +1,4 @@
+from adc.mpc3208_device_reader import MPC3208DeviceReader
+from reader.device_reader import DeviceReader
+
+DeviceReader.register(MPC3208DeviceReader)
