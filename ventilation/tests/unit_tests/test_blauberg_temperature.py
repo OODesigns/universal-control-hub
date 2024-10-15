@@ -1,6 +1,6 @@
 import unittest
-from blauberg.blauberg_temperature import (BlaubergTemperature, NO_SENSOR_DETECTED,
-                                           SENSOR_SHORT_CIRCUIT)
+
+from blauberg.blauberg_temperature import BlaubergTemperature
 from utils.status import Status
 from utils.value import Response
 
@@ -16,16 +16,16 @@ class TestBlaubergTemperature(unittest.TestCase):
         # Directly access the results
         self.assertEqual(temp.value, 25.0)
         self.assertEqual(temp.status, Status.OK)
-        self.assertEqual(temp.details, "Validation successful")
+        self.assertEqual(temp.details, "Valid temperature in Celsius")
 
         temp = BlaubergTemperature(valid_response, 1)  # 300 = 30.0°C
         self.assertEqual(temp.value, 30.0)
         self.assertEqual(temp.status, Status.OK)
-        self.assertEqual(temp.details, "Validation successful")
+        self.assertEqual(temp.details, "Valid temperature in Celsius")
 
     def test_no_sensor_detected(self):
         # Test the case where the sensor is not detected (-32768)
-        sensor_error_response = Response(status=Status.OK, details="Modbus read successful", value=[NO_SENSOR_DETECTED, 300])
+        sensor_error_response = Response(status=Status.OK, details="Modbus read successful", value=[-32768, 300])
         temp = BlaubergTemperature(sensor_error_response, 0)
 
         self.assertEqual(temp.status, Status.EXCEPTION)
@@ -34,11 +34,11 @@ class TestBlaubergTemperature(unittest.TestCase):
 
     def test_sensor_short_circuit(self):
         # Test the case where there is a short circuit (+32767)
-        short_circuit_response = Response(status=Status.OK, details="Modbus read successful", value=[SENSOR_SHORT_CIRCUIT, 300])
+        short_circuit_response = Response(status=Status.OK, details="Modbus read successful", value=[32767, 300])
         temp = BlaubergTemperature(short_circuit_response, 0)
 
         self.assertEqual(temp.status, Status.EXCEPTION)
-        self.assertEqual(temp.details, "Sensor short circuit")
+        self.assertEqual(temp.details, "Sensor short circuit detected")
         self.assertIsNone(temp.value)
 
     def test_edge_case_low_temperature(self):
@@ -48,7 +48,7 @@ class TestBlaubergTemperature(unittest.TestCase):
 
         self.assertEqual(temp.value, -20.0)
         self.assertEqual(temp.status, Status.OK)
-        self.assertEqual(temp.details, "Validation successful")
+        self.assertEqual(temp.details, "Valid temperature in Celsius")
 
     def test_edge_case_high_temperature(self):
         # Test the highest valid temperature value
@@ -57,7 +57,7 @@ class TestBlaubergTemperature(unittest.TestCase):
 
         self.assertEqual(temp.value, 50.0)
         self.assertEqual(temp.status, Status.OK)
-        self.assertEqual(temp.details, "Validation successful")
+        self.assertEqual(temp.details, "Valid temperature in Celsius")
 
     def test_out_of_range_temperature(self):
         # Test a value that is within the valid Modbus range but outside the allowed temperature range
@@ -93,12 +93,12 @@ class TestBlaubergTemperature(unittest.TestCase):
 
         self.assertEqual(temp.value, 10.0)
         self.assertEqual(temp.status, Status.OK)
-        self.assertEqual(temp.details, "Validation successful")
+        self.assertEqual(temp.details, "Valid temperature in Celsius")
 
         temp = BlaubergTemperature(valid_response, 1)  # 400 = 40.0°C
         self.assertEqual(temp.value, 40.0)
         self.assertEqual(temp.status, Status.OK)
-        self.assertEqual(temp.details, "Validation successful")
+        self.assertEqual(temp.details, "Valid temperature in Celsius")
 
     def test_input_register_error_cascade(self):
         # Test where the input register returns an error, and the cascade stops further validation
@@ -116,7 +116,7 @@ class TestBlaubergTemperature(unittest.TestCase):
 
         self.assertEqual(temp.status, Status.OK)
         self.assertEqual(temp.value, 10.0)  # Conversion should happen successfully
-        self.assertEqual(temp.details, "Validation successful")
+        self.assertEqual(temp.details, "Valid temperature in Celsius")
 
 if __name__ == '__main__':
     unittest.main()

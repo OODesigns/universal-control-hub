@@ -81,13 +81,13 @@ class TestValidatedValueStrategies(unittest.TestCase):
 
         # EnumValidatedValue should use EnumValidationStrategy and TypeValidationStrategy
         enum_val = EnumValidatedValue(Status.OK, Status, valid_values)
-        enum_result = enum_val.run_validations(Status.OK)
+        enum_result = enum_val._run_validations(Status.OK, "Validation successful")
         self.assertEqual(enum_result.status, Status.OK, "EnumValidatedValue should pass validation with correct enum")
         self.assertEqual(enum_result.details, "Validation successful", "EnumValidatedValue should pass all validations")
 
         # RangeValidatedValue should use RangeValidationStrategy and TypeValidationStrategy
         range_val = RangeValidatedValue(15, int, 10, 20)
-        range_result = range_val.run_validations(15)
+        range_result = range_val._run_validations(15, "Validation successful")
         self.assertEqual(range_result.status, Status.OK, "RangeValidatedValue should pass validation with correct range")
         self.assertEqual(range_result.details, "Validation successful", "RangeValidatedValue should pass all validations")
 

@@ -2,7 +2,6 @@ import unittest
 from utils.temperaturecelsius import TemperatureCelsius, StrictTemperatureCelsius
 from utils.status import Status
 
-
 class TestTemperature(unittest.TestCase):
 
     # Non-strict validation tests for TemperatureCelsius
@@ -11,7 +10,7 @@ class TestTemperature(unittest.TestCase):
         t = TemperatureCelsius(25.5)
         self.assertEqual(t.value, 25.5)
         self.assertEqual(t.status, Status.OK)
-        self.assertEqual(t.details, "Validation successful")
+        self.assertEqual(t.details, "Valid temperature in Celsius")  # Updated expected message
 
     def test_temperature_below_range(self):
         """Test that temperature below -20 returns a validation result with EXCEPTION status"""
@@ -32,14 +31,14 @@ class TestTemperature(unittest.TestCase):
         t = TemperatureCelsius(-20)
         self.assertEqual(t.value, -20)
         self.assertEqual(t.status, Status.OK)
-        self.assertEqual(t.details, "Validation successful")
+        self.assertEqual(t.details, "Valid temperature in Celsius")  # Updated expected message
 
     def test_temperature_at_upper_boundary(self):
         """Test that temperature at the upper boundary (50°C) is valid"""
         t = TemperatureCelsius(50)
         self.assertEqual(t.value, 50)
         self.assertEqual(t.status, Status.OK)
-        self.assertEqual(t.details, "Validation successful")
+        self.assertEqual(t.details, "Valid temperature in Celsius")  # Updated expected message
 
 
 class TestStrictTemperature(unittest.TestCase):
@@ -50,7 +49,7 @@ class TestStrictTemperature(unittest.TestCase):
         strict_t = StrictTemperatureCelsius(25.5)
         self.assertEqual(strict_t.value, 25.5)
         self.assertEqual(strict_t.status, Status.OK)
-        self.assertEqual(strict_t.details, "Validation successful")
+        self.assertEqual(strict_t.details, "Valid temperature in Celsius")  # Updated expected message
 
     def test_strict_temperature_below_range(self):
         """Test that temperature below -20 raises a ValueError immediately"""
@@ -75,14 +74,14 @@ class TestStrictTemperature(unittest.TestCase):
         strict_t = StrictTemperatureCelsius(-20)
         self.assertEqual(strict_t.value, -20)
         self.assertEqual(strict_t.status, Status.OK)
-        self.assertEqual(strict_t.details, "Validation successful")
+        self.assertEqual(strict_t.details, "Valid temperature in Celsius")  # Updated expected message
 
     def test_strict_temperature_at_upper_boundary(self):
         """Test that temperature at the upper boundary (50°C) is valid"""
         strict_t = StrictTemperatureCelsius(50)
         self.assertEqual(strict_t.value, 50)
         self.assertEqual(strict_t.status, Status.OK)
-        self.assertEqual(strict_t.details, "Validation successful")
+        self.assertEqual(strict_t.details, "Valid temperature in Celsius")  # Updated expected message
 
 
 if __name__ == '__main__':

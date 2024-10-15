@@ -102,15 +102,17 @@ class ValidatedValue(Value[T], ABC):
         _details: Additional details regarding the validation status.
     """
 
-    def __init__(self, value):
-        result = self.run_validations(value)
+    def __init__(self, value:T, success_details:str = "Validation successful"):
+        result = self._run_validations(value, success_details)
         super().__init__(result.value)
         self._status = result.status
         self._details = result.details
 
-    def run_validations(self, value):
-        """Run the list of validation strategies on the value, chaining responses."""
-
+    def _run_validations(self, value, success_details:str):
+        """Run the list of validation strategies on the value, chaining responses.
+        :value:
+        :success_details: description the success details of the validation
+        """
         current_value = value  # Start with the initial value
 
         for strategy in self.get__strategies():
@@ -120,7 +122,7 @@ class ValidatedValue(Value[T], ABC):
             # Update current_value with the value returned from the successful strategy
             current_value = response.value
 
-        return Response(status=Status.OK, details="Validation successful", value=current_value)
+        return Response(status=Status.OK, details=success_details, value=current_value)
 
     @abstractmethod
     def get__strategies(self) -> [List[ValidationStrategy]]:
@@ -164,34 +166,33 @@ class EnumValidatedValue(ValidatedValue[T]):
     def get__strategies(self) -> [List[ValidationStrategy]]:
         return self._strategies
 
-    def __init__(self, value, valid_types, valid_values):
+    def __init__(self, value, valid_types, valid_values, success_details:str = "Validation successful"):
         # Initialize the strategies for this subclass
         self._strategies = [
             EnumValidationStrategy(valid_values),
             TypeValidationStrategy(valid_types)
         ]
-        super().__init__(value)
+        super().__init__(value, success_details)
 
 
 class RangeValidatedValue(ValidatedValue[T]):
     def get__strategies(self) -> [List[ValidationStrategy]]:
         return self._strategies
 
-    def __init__(self, value, valid_types, low_value, high_value):
+    def __init__(self, value, valid_types, low_value, high_value, success_details:str = "Validation successful"):
         # Initialize the strategies for this subclass
         self._strategies = [
             RangeValidationStrategy(low_value, high_value),
             TypeValidationStrategy(valid_types)
         ]
-        super().__init__(value)
+        super().__init__(value, success_details)
 
 
 class StrictValidatedValue(ValidatedValue[T], ABC):
     """
     A stricter version of ValidatedValue that raises an exception immediately if the validation fails.
     """
-
-    def __init__(self, value: T = None):
-        super().__init__(value)
+    def __init__(self, value: T = None, success_details:str = "Validation successful"):
+        super().__init__(value, success_details)
         if self.status == Status.EXCEPTION:
             raise ValueError(f"Validation failed for value '{value}': {self.details}")

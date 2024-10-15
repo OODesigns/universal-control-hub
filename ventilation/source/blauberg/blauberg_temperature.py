@@ -2,18 +2,15 @@ from dataclasses import dataclass
 from typing import List
 
 from blauberg.blauberg_registers import InputRegisters
+from sensor.temperture_strategy import NO_SENSOR_DETECTED, SENSOR_SHORT_CIRCUIT_DETECTED
 from utils.strategies import ExceptionCascade
 from utils.temperaturecelsius import TemperatureCelsius
 from utils.value import Response, ValidationStrategy
 from utils.status import Status
 
-SHORT_CIRCUIT = "Sensor short circuit"
-NO_SENSOR = "No sensor detected"
-
 CONVERSION_FACTOR = 10.0
-NO_SENSOR_DETECTED = -32768
-SENSOR_SHORT_CIRCUIT = 32767
-
+NO_SENSOR = -32768
+SENSOR_SHORT = 32767
 
 class SensorDetection(ValidationStrategy):
     """
@@ -28,10 +25,10 @@ class SensorDetection(ValidationStrategy):
             return Response(status=Status.EXCEPTION, details="Invalid value type", value=None)
 
         # Check for specific sensor conditions
-        if value == NO_SENSOR_DETECTED:
-            return Response(status=Status.EXCEPTION, details=NO_SENSOR, value=None)
-        if value == SENSOR_SHORT_CIRCUIT:
-            return Response(status=Status.EXCEPTION, details=SHORT_CIRCUIT, value=None)
+        if value == NO_SENSOR:
+            return Response(status=Status.EXCEPTION, details=NO_SENSOR_DETECTED, value=None)
+        if value == SENSOR_SHORT:
+            return Response(status=Status.EXCEPTION, details=SENSOR_SHORT_CIRCUIT_DETECTED, value=None)
 
         # If no issues, return OK response
         return Response(status=Status.OK, details="Sensor check passed", value=value)
