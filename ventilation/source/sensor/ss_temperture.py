@@ -1,11 +1,17 @@
 from sensor.temperture_strategy import ADCToCurrentConversionStrategy, SensorDetection, \
     CurrentToTemperatureConversionStrategy, RestrictedRangeValidationStrategy
+from utils.response import Response
+from utils.strategies import ExceptionCascade
 from utils.temperaturecelsius import TemperatureCelsius
 
 MAX_TEMP = 50
 MIN_TEMP = 0
 
 class SSTemperature(TemperatureCelsius):
+    def __init__(self, adc_response: Response[int]):
+        self._adc_exception_cascade = ExceptionCascade(adc_response)
+        super().__init__(adc_response.value)
+
     """
     SSTemperature class orchestrates the ADC-to-temperature conversion using the defined strategies.
 
@@ -22,8 +28,11 @@ class SSTemperature(TemperatureCelsius):
     """
     def get__strategies(self) -> [TemperatureCelsius]:
         return [
-            ADCToCurrentConversionStrategy(),  # First, convert ADC to current
+            self._adc_exception_cascade,
             SensorDetection(),                 # Then check for sensor issues using the current
+            ADCToCurrentConversionStrategy(),  # First, convert ADC to current
             CurrentToTemperatureConversionStrategy(MIN_TEMP, MAX_TEMP),  # Convert current to temperature
             RestrictedRangeValidationStrategy(MIN_TEMP, MAX_TEMP)  # Finally, validate the temperature range
         ] + super().get__strategies()
+
+

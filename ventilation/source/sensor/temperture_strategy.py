@@ -9,6 +9,9 @@ VOLTAGE_REF = 5.0
 ADC_RESOLUTION = 4096  # 12-bit ADC (MCP3208)
 SAFETY_MARGIN_ADC = 3932  # ADC value at 4.8V with 240-ohm resistor for short-circuit detection
 OPEN_CIRCUIT_THRESHOLD = 819  # ADC value at 0.96V for a 240-ohm resistor (4mA)
+ADC_OFF_SET = 1
+CONVERT_TO_MA = 1000.0
+RESISTOR = 240.0
 
 # Error messages
 NO_SENSOR_DETECTED = "No sensor detected"
@@ -41,10 +44,10 @@ class ADCToCurrentConversionStrategy(ValidationStrategy):
     def validate(self, adc_value: int) -> Response:
         try:
             # Convert ADC value to voltage (assuming a 5V reference)
-            voltage = (adc_value / (ADC_RESOLUTION - 1)) * VOLTAGE_REF
+            voltage = (adc_value / (ADC_RESOLUTION - ADC_OFF_SET)) * VOLTAGE_REF
 
             # Convert voltage to current (based on 240-ohm resistor)
-            current_ma = (voltage / 240.0) * 1000.0  # Convert from A to mA
+            current_ma = (voltage / RESISTOR) * CONVERT_TO_MA  # Convert from A to mA
 
             return Response(status=Status.OK, details="ADC to current conversion successful", value=current_ma)
 
