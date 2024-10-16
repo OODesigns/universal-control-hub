@@ -6,7 +6,7 @@ from utils.value import ValidationStrategy
 
 
 @dataclass(frozen=True)
-class ExceptionCascade(ValidationStrategy):
+class ExceptionCascadeStrategy(ValidationStrategy):
     response: Response
     """
     A strategy that checks if a Response object contains an error and cascades it.

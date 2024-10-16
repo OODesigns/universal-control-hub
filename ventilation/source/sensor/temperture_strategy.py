@@ -7,8 +7,8 @@ MIN_CURRENT_MA = 4.0
 MAX_CURRENT_MA = 20.0
 VOLTAGE_REF = 5.0
 ADC_RESOLUTION = 4096  # 12-bit ADC (MCP3208)
-SAFETY_MARGIN_ADC = 3932  # ADC value at 4.8V with 240-ohm resistor for short-circuit detection
-OPEN_CIRCUIT_THRESHOLD = 819  # ADC value at 0.96V for a 240-ohm resistor (4mA)
+HIGH_VALUE = 3932  # ADC value at 4.8V with 240-ohm resistor
+LOW_VALUE =  786  # ADC value at 0.96V for a 240-ohm resistor (4mA)
 ADC_OFF_SET = 1
 CONVERT_TO_MA = 1000.0
 RESISTOR = 240.0
@@ -18,7 +18,7 @@ NO_SENSOR_DETECTED = "No sensor detected"
 SENSOR_SHORT_CIRCUIT_DETECTED = "Sensor short circuit detected"
 
 # Strategy for detecting sensor issues (open and short circuits)
-class SensorDetection(ValidationStrategy):
+class SensorDetectionStrategy(ValidationStrategy):
     """
     This strategy checks if the ADC value is outside the valid range, which indicates an issue with the sensor:
     - If the ADC value is less than the open circuit threshold (819), it indicates that no sensor is detected (open circuit).
@@ -28,9 +28,9 @@ class SensorDetection(ValidationStrategy):
     - The method ensures that the sensor is functioning properly by checking if the ADC value is within the valid range.
     """
     def validate(self, adc_value: int) -> Response:
-        if adc_value < OPEN_CIRCUIT_THRESHOLD:
+        if adc_value < LOW_VALUE:
             return Response(status=Status.EXCEPTION, details=NO_SENSOR_DETECTED, value=None)
-        if adc_value >= SAFETY_MARGIN_ADC:
+        if adc_value > HIGH_VALUE:
             return Response(status=Status.EXCEPTION, details=SENSOR_SHORT_CIRCUIT_DETECTED, value=None)
         return Response(status=Status.OK, details="Sensor detection successful", value=adc_value)
 
@@ -81,16 +81,3 @@ class CurrentToTemperatureConversionStrategy(ValidationStrategy):
             return Response(status=Status.EXCEPTION, details=f"Current to Temperature Conversion error: {e}", value=None)
 
 
-# Strategy for validating the temperature range
-class RestrictedRangeValidationStrategy(ValidationStrategy):
-    """
-    Ensures that the calculated temperature is within the valid range for the sensor.
-    """
-    def __init__(self, min_temp: int, max_temp: int):
-        self.max_temp = max_temp
-        self.min_temp = min_temp
-
-    def validate(self, temperature_c: float) -> Response:
-        if self.min_temp <= temperature_c <= self.max_temp:
-            return Response(status=Status.OK, details="Temperature validation successful", value=temperature_c)
-        return Response(status=Status.EXCEPTION, details=f"Temperature {temperature_c} out of range", value=None)

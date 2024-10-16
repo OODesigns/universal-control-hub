@@ -4,6 +4,7 @@ from config.config_loader import ConfigLoader
 from devices.device import Device
 from spi.spi_builder import SPIClientBuilder
 from spi.spi_values import SPIChipSelect, SPIBusNumber, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord
+from utils.response import Response
 
 """
   SPIChipSelect represents the device (chip select) number on the SPI bus.
@@ -35,16 +36,34 @@ WORD = 8
 """
 MODE = 0
 """
-  Since the MCP3208 can handle a clock as slow as 10 kHz,
-  and since we only need to sample every 0.5 seconds,
-  using a clock frequency of around 100 kHz or more will give us enough time
-  for the ADC to process the data with plenty of margin.
+    Humans typically notice changes in sensor readings in the range of 100 ms to 500 ms. For instance:
+
+    A 100-200 ms response time is generally perceived as instantaneous by most users.
+    
+    A 500 ms (0.5 seconds) update rate is noticeable but still acceptable for non-critical applications.
+    
+    Lets update the screen 500ms but back end updates 200ms, so it always to to date
+
+    To read from the MCP3208, a 16-clock cycle SPI transaction is typically required:
+
+    8 bits for command and channel selection.
+    8 bits to read the 12-bit result, with 4 bits being dummy data.
+    
+    This means that the MCP3208 must complete one analog-to-digital conversion in less than 200 ms.
+    f = 16 / 0.2 = 80
+    
+    This is way to low
+    
+    For reliability and to allow for additional processing or latency, use a higher SPI clock speed, 
+    such as 500 kHz to 1 MHz. 
+    
+    This would provide enough headroom for additional 
+    reads and any latency in your microcontroller’s handling of the data.    
+    
 """
-MAX_SPEED = 100000
+MAX_SPEED = 500000
 
-
-class MCP3208(Device, Reader):
-
+class MCP3208(Device, Reader[int]):
 
     def __init__(self, config_loader: ConfigLoader):
         super().__init__(config_loader)
@@ -58,7 +77,7 @@ class MCP3208(Device, Reader):
 
         ).build()
 
-    def read(self) -> int:
+    def read(self) -> Response[int]:
         return SPI12BitResponseBuilder(self._spi.execute()).get_12_bit_result()
 
 

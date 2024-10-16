@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
-from reader.reader import Reader
+from reader.reader import Reader, T
+from utils.response import Response
 from utils.standard_name import StandardName
 
-class DeviceReader(ABC, Reader):
+class DeviceReader(Reader[T], ABC):
     """
     Abstract interface to represent a device reader.
     """
@@ -17,7 +18,14 @@ class DeviceReader(ABC, Reader):
         Abstract method for getting the device name. This will be implemented by child classes.
         :return:
         """
-        pass
 
     def get_config_name(self) -> StandardName:
         return self.config_name
+
+    @abstractmethod
+    def read(self) -> Response[T]:
+        """
+        Abstract method for reading device. This will be implemented by child classes.
+        :return:
+        """
+
