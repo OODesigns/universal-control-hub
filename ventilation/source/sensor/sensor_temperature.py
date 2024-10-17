@@ -1,9 +1,8 @@
-from sensor.sensor_temperature_range import LowTemperatureRange, HighTemperatureRange
 from sensor.temperture_strategy import ADCToCurrentConversionStrategy, SensorDetectionStrategy, \
                                        CurrentToTemperatureConversionStrategy
 from utils.response import Response
 from utils.strategies import ExceptionCascadeStrategy
-from utils.temperaturecelsius import TemperatureCelsius
+from utils.temperaturecelsius import TemperatureCelsius, LowTemperatureRange, HighTemperatureRange
 
 LOW = 0
 HIGH = 1

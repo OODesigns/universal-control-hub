@@ -1,7 +1,7 @@
 import unittest
-
-from sensor.sensor_temperature_range import LowTemperatureRange, HighTemperatureRange
 from utils.status import Status
+from utils.temperaturecelsius import LowTemperatureRange, HighTemperatureRange
+
 
 class TestTemperatureRange(unittest.TestCase):
 

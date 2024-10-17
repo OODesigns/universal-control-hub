@@ -1,8 +1,5 @@
 import json
 import os
-from _typeshed import SupportsWrite
-from typing import cast
-
 
 class ConfigLoader:
     def __init__(self, file_name):
@@ -19,8 +16,8 @@ class ConfigLoader:
         """Ensures that the JSON file exists. If not, creates an empty file."""
         if not os.path.exists(self._file_name):
             with open(self._file_name, 'w', encoding='utf-8') as f:
-                writable_f = cast(SupportsWrite[str], f)
-                json.dump({}, writable_f)
+                # noinspection PyTypeChecker
+                json.dump({}, f)
 
 
     def _read_store(self):

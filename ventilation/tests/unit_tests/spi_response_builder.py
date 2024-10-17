@@ -20,7 +20,7 @@ class TestSPIResponseBuilder(unittest.TestCase):
         # Low 8 bits from third byte (0xAA) = 0x00AA (170)
         # Result = 3840 + 170 = 4010
         expected_result = 4010
-        self.assertEqual(result, expected_result, f"Expected {expected_result}, but got {result}")
+        self.assertEqual(result.value, expected_result, f"Expected {expected_result}, but got {result.value}")
 
     def test_empty_response(self):
         """

@@ -2,9 +2,9 @@ import unittest
 from unittest.mock import patch, MagicMock
 from sensor.sensor_temperature import SensorTemperature
 from utils.response import Response
-from sensor.sensor_temperature_range import LowTemperatureRange, HighTemperatureRange
 from utils.status import Status
 from utils.strategies import ExceptionCascadeStrategy
+from utils.temperaturecelsius import LowTemperatureRange, HighTemperatureRange
 
 
 class TestSensorTemperature(unittest.TestCase):
