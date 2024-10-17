@@ -10,21 +10,21 @@ class TestTemperatureStrategies(unittest.TestCase):
     def test_sensor_detection_no_sensor(self):
         """Test that SensorDetection detects no sensor when ADC value is below the open circuit threshold."""
         strategy = SensorDetectionStrategy()
-        response = strategy.validate(780)  # Below the open circuit threshold (786)
+        response = strategy.validate(765)  # Below the open circuit threshold (770)
         self.assertEqual(response.status, Status.EXCEPTION)
         self.assertEqual(response.details, "No sensor detected")
 
     def test_sensor_detection_short_circuit(self):
         """Test that SensorDetection detects a sensor short circuit when ADC value is above the short circuit threshold."""
         strategy = SensorDetectionStrategy()
-        response = strategy.validate(3940)  # Above the short circuit threshold (3932)
+        response = strategy.validate(4012)  # Above the short circuit threshold (4011)
         self.assertEqual(response.status, Status.EXCEPTION)
         self.assertEqual(response.details, "Sensor short circuit detected")
 
     def test_sensor_detection_valid(self):
         """Test that SensorDetection passes when ADC value is within the valid range."""
         strategy = SensorDetectionStrategy()
-        response = strategy.validate(1500)  # Within the valid range (819 - 3932)
+        response = strategy.validate(1500)  # Within the valid range (786 - 3932)
         self.assertEqual(response.status, Status.OK)
         self.assertEqual(response.details, "Sensor detection successful")
 

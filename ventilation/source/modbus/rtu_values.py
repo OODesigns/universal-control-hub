@@ -100,13 +100,13 @@ class StopBits(ValidatedValue[int]):
 
 
 # Strict versions that automatically raise exceptions if validation fails
-class StrictSerialPort(StrictValidatedValue, SerialPort):
+class StrictSerialPort(SerialPort, StrictValidatedValue):
     pass
 
 
-class StrictBaudRate(StrictValidatedValue, BaudRate):
+class StrictBaudRate(BaudRate, StrictValidatedValue):
     pass
 
 
-class StrictStopBits(StrictValidatedValue, StopBits):
+class StrictStopBits(StopBits, StrictValidatedValue):
     pass

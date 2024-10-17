@@ -63,7 +63,7 @@ class TestBlaubergMVHRState(unittest.TestCase):
 
         # Check that the response has a status of EXCEPTION and proper details for a short circuit
         self.assertEqual(mvhr_state.temp_supply_out.status, Status.EXCEPTION)
-        self.assertEqual(mvhr_state.temp_supply_out.details, "Sensor short circuit")
+        self.assertEqual(mvhr_state.temp_supply_out.details, "Sensor short circuit detected")
         self.assertIsNone(mvhr_state.temp_supply_out.value)
 
     def test_invalid_input_register(self):

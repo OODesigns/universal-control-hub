@@ -60,14 +60,14 @@ class Port(RangeValidatedValue[int]):
 
 
 # Strict versions that automatically raise exceptions if validation fails
-class StrictIPAddress(StrictValidatedValue, IPAddress):
+class StrictIPAddress(IPAddress, StrictValidatedValue):
     """
     A strict version of IPAddress that raises an exception if validation fails.
     """
     pass
 
 
-class StrictPort(StrictValidatedValue, Port):
+class StrictPort(Port, StrictValidatedValue):
     """
     A strict version of Port that raises an exception if validation fails.
     """

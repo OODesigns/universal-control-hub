@@ -10,7 +10,7 @@ class Retries(RangeValidatedValue[int]):
         super().__init__(value, int, 0, 10)
 
 
-class StrictRetries(StrictValidatedValue, Retries):
+class StrictRetries(Retries, StrictValidatedValue):
     pass
 
 
@@ -23,7 +23,7 @@ class ReconnectDelay(RangeValidatedValue[float]):
         super().__init__(value, (float, int), 0.1, 300)
 
 
-class StrictReconnectDelay(StrictValidatedValue, ReconnectDelay):
+class StrictReconnectDelay(ReconnectDelay, StrictValidatedValue):
     pass
 
 
@@ -36,7 +36,7 @@ class ReconnectDelayMax(RangeValidatedValue[float]):
         super().__init__(value, (float, int), 0.1, 300)
 
 
-class StrictReconnectDelayMax(StrictValidatedValue, ReconnectDelayMax):
+class StrictReconnectDelayMax(ReconnectDelayMax, StrictValidatedValue):
     pass
 
 
@@ -49,7 +49,7 @@ class Timeout(RangeValidatedValue[float]):
         super().__init__(value, (float, int), 0.1, 60)
 
 
-class StrictTimeout(StrictValidatedValue, Timeout):
+class StrictTimeout(Timeout, StrictValidatedValue):
     pass
 
 
@@ -62,7 +62,7 @@ class ModbusSize(RangeValidatedValue[int]):
         super().__init__(value, int, 0, 65535)
 
 
-class StrictModbusSize(StrictValidatedValue, ModbusSize):
+class StrictModbusSize(ModbusSize, StrictValidatedValue):
     pass
 
 
@@ -70,7 +70,7 @@ class CoilSize(ModbusSize):
     pass
 
 
-class StrictCoilSize(StrictModbusSize, CoilSize):
+class StrictCoilSize(CoilSize, StrictModbusSize):
     pass
 
 
@@ -78,7 +78,7 @@ class DiscreteInputSize(ModbusSize):
     pass
 
 
-class StrictDiscreteInputSize(StrictModbusSize, DiscreteInputSize):
+class StrictDiscreteInputSize(DiscreteInputSize, StrictModbusSize):
     pass
 
 
@@ -86,7 +86,7 @@ class InputRegisterSize(ModbusSize):
     pass
 
 
-class StrictInputRegisterSize(StrictModbusSize, InputRegisterSize):
+class StrictInputRegisterSize(InputRegisterSize, StrictModbusSize):
     pass
 
 
@@ -94,5 +94,5 @@ class HoldingRegisterSize(ModbusSize):
     pass
 
 
-class StrictHoldingRegisterSize(StrictModbusSize, HoldingRegisterSize):
+class StrictHoldingRegisterSize(HoldingRegisterSize, StrictModbusSize):
     pass

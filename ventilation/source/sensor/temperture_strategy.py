@@ -9,6 +9,9 @@ VOLTAGE_REF = 5.0
 ADC_RESOLUTION = 4096  # 12-bit ADC (MCP3208)
 HIGH_VALUE = 3932  # ADC value at 4.8V with 240-ohm resistor
 LOW_VALUE =  786  # ADC value at 0.96V for a 240-ohm resistor (4mA)
+# Allow 2% tolerance
+LOW_THRESHOLD = 770 # Rounding Down
+HIGH_THRESHOLD = 4011 #Rounding up
 ADC_OFF_SET = 1
 CONVERT_TO_MA = 1000.0
 RESISTOR = 240.0
@@ -21,16 +24,16 @@ SENSOR_SHORT_CIRCUIT_DETECTED = "Sensor short circuit detected"
 class SensorDetectionStrategy(ValidationStrategy):
     """
     This strategy checks if the ADC value is outside the valid range, which indicates an issue with the sensor:
-    - If the ADC value is less than the open circuit threshold (819), it indicates that no sensor is detected (open circuit).
-    - If the ADC value is greater than the safety threshold (3932), it indicates a potential short circuit.
+    - If the ADC value is less than the open circuit threshold (770), it indicates that no sensor is detected (open circuit).
+    - If the ADC value is greater than the safety threshold (4011), it indicates a potential short circuit.
 
     Validation:
     - The method ensures that the sensor is functioning properly by checking if the ADC value is within the valid range.
     """
     def validate(self, adc_value: int) -> Response:
-        if adc_value < LOW_VALUE:
+        if adc_value < LOW_THRESHOLD:
             return Response(status=Status.EXCEPTION, details=NO_SENSOR_DETECTED, value=None)
-        if adc_value > HIGH_VALUE:
+        if adc_value > HIGH_THRESHOLD:
             return Response(status=Status.EXCEPTION, details=SENSOR_SHORT_CIRCUIT_DETECTED, value=None)
         return Response(status=Status.OK, details="Sensor detection successful", value=adc_value)
 

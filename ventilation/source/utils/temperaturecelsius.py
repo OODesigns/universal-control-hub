@@ -15,5 +15,5 @@ class TemperatureCelsius(TemperatureInterface):
         super().__init__(value, (int, float), -20.0, 50.0, TEMPERATURE_IN_CELSIUS)
 
 
-class StrictTemperatureCelsius(StrictValidatedValue, TemperatureCelsius):
+class StrictTemperatureCelsius(TemperatureCelsius, StrictValidatedValue):
     pass

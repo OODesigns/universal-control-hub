@@ -8,9 +8,8 @@ from utils.response import Response
 from utils.status import Status
 from spi.spi_values import SPIBusNumber, SPIChipSelect, SPIMaxSpeedHz, SPIMode, SPIBitsPerWord
 
-class MockConfigLoader():
+class MockConfigLoader:
     def __init__(self, config):
-
         self.config = config
 
     def get_value(self, key):
@@ -50,7 +49,7 @@ class TestMCP3208(unittest.TestCase):
         # Assert that SPIClientBuilder was initialized with the right parameters
         mock_spi_client_builder.return_value.set_bus.assert_called_with(SPIBusNumber(0))
         mock_spi_client_builder.return_value.set_chip_select.assert_called_with(SPIChipSelect(1))
-        mock_spi_client_builder.return_value.set_max_speed_hz.assert_called_with(SPIMaxSpeedHz(100000))
+        mock_spi_client_builder.return_value.set_max_speed_hz.assert_called_with(SPIMaxSpeedHz(500000))
         mock_spi_client_builder.return_value.set_mode.assert_called_with(SPIMode(0))
         mock_spi_client_builder.return_value.set_bits_per_word.assert_called_with(SPIBitsPerWord(8))
 
@@ -67,7 +66,7 @@ class TestMCP3208(unittest.TestCase):
 
         # Expected result calculation:
         expected_result = ((0x0F & 0x0F) << 8) | 0xAA
-        self.assertEqual(result, expected_result, f"Expected {expected_result}, but got {result}")
+        self.assertEqual(result.value, expected_result, f"Expected {expected_result}, but got {result.value}")
 
     def test_spi_response_builder_invalid_response_length(self):
         """
@@ -106,7 +105,7 @@ class TestMCP3208(unittest.TestCase):
         # Call the read method and verify the result
         result = device.read()
         expected_result = ((0x0F & 0x0F) << 8) | 0xAA
-        self.assertEqual(result, expected_result, f"Expected {expected_result}, but got {result}")
+        self.assertEqual(result.value, expected_result, f"Expected {expected_result}, but got {result.value}")
 
     @patch('adc.mcp3208.SPIClientBuilder')
     def test_mcp3208_read_exception(self, mock_spi_client_builder):
@@ -130,8 +129,9 @@ class TestMCP3208(unittest.TestCase):
         device = MCP3208(config_loader)
 
         # Expecting an exception to be raised due to invalid response status
-        with self.assertRaises(IndexError):
-            device.read()
+        result = device.read()
+        self.assertEqual(result.status, Status.EXCEPTION)
+        self.assertEqual(result.details, "SPI communication failed")
 
 if __name__ == '__main__':
     unittest.main()
