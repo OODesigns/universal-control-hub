@@ -1,5 +1,7 @@
 import json
 import os
+from typing import Any
+
 
 class ConfigLoader:
     def __init__(self, file_name):
@@ -12,12 +14,15 @@ class ConfigLoader:
         self._ensure_file_exists()
         self._read_store()
 
+    @classmethod
+    def write_json(cls, data: dict, file: Any) -> None:
+        json.dump(data, file)
+
     def _ensure_file_exists(self):
-        """Ensures that the JSON file exists. If not, creates an empty file."""
+        """Ensures that the JSON fil`e exists. If not, creates an empty file."""
         if not os.path.exists(self._file_name):
             with open(self._file_name, 'w', encoding='utf-8') as f:
-                # noinspection PyTypeChecker
-                json.dump({}, f)
+                ConfigLoader.write_json({}, f) # avoids typing warning
 
 
     def _read_store(self):
