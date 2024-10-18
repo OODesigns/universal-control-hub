@@ -9,7 +9,7 @@ class Reader(Generic[T], ABC):
     @abstractmethod
     def read(self) ->Response[T] :
         """
-        Perform a read operation on the device and return the result as an integer.
+        Perform a read operation on the device and return the result as an T.
         :return:
         """
         pass

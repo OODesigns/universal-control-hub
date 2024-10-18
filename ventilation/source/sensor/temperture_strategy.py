@@ -43,16 +43,27 @@ class ADCToCurrentConversionStrategy(ValidationStrategy):
     """
     Converts the raw ADC value into the corresponding current in mA, considering the 240-ohm resistor.
 
+    Includes tolerance check:
+    - If the ADC value is between LOW_VALUE and LOW_THRESHOLD, it is considered 4mA.
+    - If the ADC value is between HIGH_VALUE and HIGH_THRESHOLD, it is considered 20mA.
+
+    :return is rounded to avoid floating point issues
     """
     def validate(self, adc_value: int) -> Response:
         try:
-            # Convert ADC value to voltage (assuming a 5V reference)
-            voltage = (adc_value / (ADC_RESOLUTION - ADC_OFF_SET)) * VOLTAGE_REF
+            # Allow for tolerance in ADC values to determine 4mA or 20mA
+            if LOW_THRESHOLD <= adc_value <= LOW_VALUE:
+                current_ma = MIN_CURRENT_MA
+            elif HIGH_VALUE <= adc_value <= HIGH_THRESHOLD:
+                current_ma = MAX_CURRENT_MA
+            else:
+                # Convert ADC value to voltage (assuming a 5V reference)
+                voltage = (adc_value / (ADC_RESOLUTION - ADC_OFF_SET)) * VOLTAGE_REF
 
-            # Convert voltage to current (based on 240-ohm resistor)
-            current_ma = (voltage / RESISTOR) * CONVERT_TO_MA  # Convert from A to mA
+                # Convert voltage to current (based on 240-ohm resistor)
+                current_ma = (voltage / RESISTOR) * CONVERT_TO_MA  # Convert from A to mA
 
-            return Response(status=Status.OK, details="ADC to current conversion successful", value=current_ma)
+            return Response(status=Status.OK, details="ADC to current conversion successful", value=round(current_ma, 2))
 
         except Exception as e:
             return Response(status=Status.EXCEPTION, details=f"ADC to Current Conversion error: {e}", value=None)
