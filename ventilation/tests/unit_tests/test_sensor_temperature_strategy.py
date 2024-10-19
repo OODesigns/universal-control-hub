@@ -10,28 +10,28 @@ class TestTemperatureStrategies(unittest.TestCase):
     def test_sensor_detection_no_sensor(self):
         """Test that SensorDetection detects no sensor when ADC value is below the open circuit threshold."""
         strategy = SensorDetectionStrategy()
-        response = strategy.validate(765)  # Below the open circuit threshold (770)
+        response = strategy.validate(790)  # Below the open circuit threshold (792)
         self.assertEqual(response.status, Status.EXCEPTION)
         self.assertEqual(response.details, "No sensor detected")
 
     def test_sensor_detection_short_circuit(self):
         """Test that SensorDetection detects a sensor short circuit when ADC value is above the short circuit threshold."""
         strategy = SensorDetectionStrategy()
-        response = strategy.validate(4012)  # Above the short circuit threshold (4011)
+        response = strategy.validate(4040)  # Above the short circuit threshold (4039)
         self.assertEqual(response.status, Status.EXCEPTION)
         self.assertEqual(response.details, "Sensor short circuit detected")
 
     def test_sensor_detection_valid(self):
         """Test that SensorDetection passes when ADC value is within the valid range."""
         strategy = SensorDetectionStrategy()
-        response = strategy.validate(1500)  # Within the valid range (786 - 3932)
+        response = strategy.validate(1500)  # Within the valid range (800 - 3999)
         self.assertEqual(response.status, Status.OK)
         self.assertEqual(response.details, "Sensor detection successful")
 
     def test_adc_to_current_conversion_min_value_including_tolerance(self):
         """Test that ADCToCurrentConversionStrategy converts the minimum ADC value to the correct current (mA)."""
         strategy = ADCToCurrentConversionStrategy()
-        adc_value = 770  # Minimum ADC value corresponding to 4mA
+        adc_value = 792  # Minimum ADC value corresponding to 4mA with tolerance
 
         response = strategy.validate(adc_value)
         self.assertEqual(response.status, Status.OK)
@@ -40,17 +40,16 @@ class TestTemperatureStrategies(unittest.TestCase):
     def test_adc_to_current_conversion_min_value(self):
         """Test that ADCToCurrentConversionStrategy converts the minimum ADC value to the correct current (mA)."""
         strategy = ADCToCurrentConversionStrategy()
-        adc_value = 786  # Minimum ADC value corresponding to 4mA
+        adc_value = 800  # Minimum ADC value corresponding to 4mA
 
         response = strategy.validate(adc_value)
         self.assertEqual(response.status, Status.OK)
         self.assertEqual(response.value, 4)
 
-
     def test_adc_to_current_conversion_max_value(self):
         """Test that ADCToCurrentConversionStrategy converts the maximum ADC value to the correct current (mA)."""
         strategy = ADCToCurrentConversionStrategy()
-        adc_value = 3932  # Maximum ADC value corresponding to 20mA
+        adc_value = 3999  # Maximum ADC value corresponding to 20mA
 
         response = strategy.validate(adc_value)
         self.assertEqual(response.status, Status.OK)
@@ -59,7 +58,7 @@ class TestTemperatureStrategies(unittest.TestCase):
     def test_adc_to_current_conversion_max_value_including_tolerance(self):
         """Test that ADCToCurrentConversionStrategy converts the maximum ADC value to the correct current (mA)."""
         strategy = ADCToCurrentConversionStrategy()
-        adc_value = 4011  # Maximum ADC value corresponding to 20mA
+        adc_value = 4039  # Maximum ADC value corresponding to 20mA with tolerance
 
         response = strategy.validate(adc_value)
         self.assertEqual(response.status, Status.OK)
