@@ -1,8 +1,9 @@
 import unittest
-from sensor.temperture_strategy import (ADCToCurrentConversionStrategy,
-                                        CurrentToTemperatureConversionStrategy,
-                                        SensorDetectionStrategy)
+from sensor.current_temperature_strategy import (ADCToCurrentConversionStrategy,
+                                                 CurrentToTemperatureConversionStrategy,
+                                                 SensorDetectionStrategy)
 from utils.response import Status
+from utils.temperaturecelsius import LowTemperatureRange, HighTemperatureRange
 
 
 class TestTemperatureStrategies(unittest.TestCase):
@@ -66,7 +67,8 @@ class TestTemperatureStrategies(unittest.TestCase):
 
     def test_current_to_temperature_conversion(self):
         """Test that CurrentToTemperatureConversionStrategy converts current to temperature."""
-        strategy = CurrentToTemperatureConversionStrategy(min_temp=0, max_temp=50)
+        strategy = CurrentToTemperatureConversionStrategy(min_temp=LowTemperatureRange(0),
+                                                          max_temp=HighTemperatureRange(50))
         response = strategy.validate(12.0)  # Mid-range current
         expected_temperature = ((12.0 - 4) / (20 - 4)) * 50
         self.assertEqual(response.status, Status.OK)
@@ -74,7 +76,8 @@ class TestTemperatureStrategies(unittest.TestCase):
 
     def test_current_to_temperature_out_of_range(self):
         """Test that CurrentToTemperatureConversionStrategy fails if the current is out of range."""
-        strategy = CurrentToTemperatureConversionStrategy(min_temp=0, max_temp=50)
+        strategy = CurrentToTemperatureConversionStrategy(min_temp=LowTemperatureRange(0),
+                                                          max_temp=HighTemperatureRange(50))
         response = strategy.validate(22.0)  # Out of range current (above 20 mA)
         self.assertEqual(response.status, Status.EXCEPTION)
         self.assertEqual(response.details, "Current 22.0 is out of range")

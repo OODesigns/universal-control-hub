@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from sensor.sensor_temperature import SensorTemperature
+from sensor.current_sensor_temperature import CurrentSensorTemperature
 from utils.response import Response
 from utils.status import Status
 from utils.strategies import ExceptionCascadeStrategy
@@ -42,7 +42,7 @@ class TestSensorTemperature(unittest.TestCase):
         mock_current_to_temperature.return_value = mock_current_to_temperature_instance
 
         # Execute validation
-        SensorTemperature(self.adc_response, self.temp_low_range, self.temp_high_range)
+        CurrentSensorTemperature(self.adc_response, self.temp_low_range, self.temp_high_range)
 
         # Ensure each strategy's validate method was called
         mock_adc_exception_cascade_instance.validate.assert_called_once_with(1500)

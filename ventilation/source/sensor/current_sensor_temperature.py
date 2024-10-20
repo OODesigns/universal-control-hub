@@ -1,4 +1,4 @@
-from sensor.temperture_strategy import ADCToCurrentConversionStrategy, SensorDetectionStrategy, \
+from sensor.current_temperature_strategy import ADCToCurrentConversionStrategy, SensorDetectionStrategy, \
                                        CurrentToTemperatureConversionStrategy
 from utils.response import Response
 from utils.strategies import ExceptionCascadeStrategy
@@ -7,7 +7,7 @@ from utils.temperaturecelsius import TemperatureCelsius, LowTemperatureRange, Hi
 LOW = 0
 HIGH = 1
 
-class SensorTemperature(TemperatureCelsius):
+class CurrentSensorTemperature(TemperatureCelsius):
     def __init__(self, adc_response: Response[int],
                  temp_low_range: LowTemperatureRange,
                  temp_high_range: HighTemperatureRange):
@@ -35,7 +35,7 @@ class SensorTemperature(TemperatureCelsius):
             SensorDetectionStrategy(),         # Then check for sensor issues using the current
             ADCToCurrentConversionStrategy(),  # First, convert ADC to current
                                                # Convert current to temperature
-            CurrentToTemperatureConversionStrategy(self._temp_low_range.value, self._temp_high_range.value)
+            CurrentToTemperatureConversionStrategy(self._temp_low_range, self._temp_high_range)
         ] + super().get__strategies()
 
 

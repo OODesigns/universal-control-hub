@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from blauberg.blauberg_registers import InputRegisters
-from sensor.temperture_strategy import NO_SENSOR_DETECTED, SENSOR_SHORT_CIRCUIT_DETECTED
+from sensor.current_temperature_strategy import NO_SENSOR_DETECTED, SENSOR_SHORT_CIRCUIT_DETECTED
 from utils.strategies import ExceptionCascadeStrategy
 from utils.temperaturecelsius import TemperatureCelsius
 from utils.value import Response, ValidationStrategy

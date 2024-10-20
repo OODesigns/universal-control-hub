@@ -1,5 +1,6 @@
 from utils.response import Response
 from utils.status import Status
+from utils.temperaturecelsius import LowTemperatureRange, HighTemperatureRange
 from utils.value import ValidationStrategy
 
 """
@@ -92,9 +93,9 @@ class CurrentToTemperatureConversionStrategy(ValidationStrategy):
     The sensor operates within a 4-20 mA range, and this strategy maps that range to a temperature range
     of 0°C to 50°C (or any other custom range provided).
     """
-    def __init__(self, min_temp: int, max_temp: int):
-        self.max_temp = max_temp
-        self.min_temp = min_temp
+    def __init__(self, min_temp: LowTemperatureRange, max_temp: HighTemperatureRange):
+        self.max_temp = max_temp.value
+        self.min_temp = min_temp.value
 
     def validate(self, current_ma: float) -> Response:
         try:
