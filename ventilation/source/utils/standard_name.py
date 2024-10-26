@@ -1,7 +1,7 @@
 import re
 from utils.response import Response
 from utils.status import Status
-from utils.value import ValidatedValue, ValidationStrategy
+from utils.value import ValidatedValue, ValidationStrategy, StrictValidatedValue
 
 
 class StandardName(ValidatedValue[str]):
@@ -29,3 +29,9 @@ class StandardNameStrategy(ValidationStrategy):
 
 def sn(value: str) -> StandardName:
     return StandardName(value)
+
+class StrictStandardName(StandardName, StrictValidatedValue[str]):
+    pass
+
+def ssn(value: str) -> StandardName:
+    return StrictStandardName(value)

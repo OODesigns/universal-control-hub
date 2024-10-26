@@ -1,0 +1,58 @@
+@startuml
+'https://plantuml.com/class-diagram
+!theme spacelab
+
+class TemperatureSensor{}
+
+class TemperatureCelsius{}
+note right
+ This is what the ResponseTransformer
+ should return
+end note
+
+class ReaderSupplier{}
+class Reader{}
+class ModbusRTUAnalogInput8CH{}
+class ModbusTCPAnalogInput8CH{}
+class Device{}
+class RTUAnalogReader{}
+class TCPAnalogReader{}
+class DeviceFactory{}
+class ReaderWithFactory{}
+
+class ResponseTransformer{}
+note bottom
+ the transformer will be based on the
+ type of sensor will are using
+
+ Some temperature sensor will be different
+ and hence transforming differently
+
+ These are registered into the factory
+end note
+
+class ResponseTransformerFactory{}
+
+class TemperatureTransformer{}
+note right
+  This should be using TemperatureCelsius
+  Strategy pattern
+end note
+
+TemperatureSensor -- Reader :requests and reads response from
+TemperatureSensor -- ReaderSupplier
+ReaderSupplier -- Reader: Gets a reader
+Device --> ModbusRTUAnalogInput8CH
+Device --> ModbusTCPAnalogInput8CH
+ReaderWithFactory --> RTUAnalogReader
+ReaderWithFactory --> TCPAnalogReader
+Reader --> ReaderWithFactory
+ReaderWithFactory -- DeviceFactory
+Reader -- ConfigLoader: loads configuration specific to sensor
+TemperatureSensor -- ResponseTransformer: transforms the response from the reader
+TemperatureSensor -- ResponseTransformerFactory
+ResponseTransformer --> TemperatureTransformer
+TemperatureTransformer -- TemperatureCelsius
+
+
+@enduml

@@ -29,7 +29,9 @@ note right
 end note
 
 class ReaderSupplier{}
-class Reader{}
+class MCP3208Reader{}
+class DeviceFactory{}
+class ConfigLoader{}
 
 class ResponseTransformer{}
 note bottom
@@ -54,11 +56,13 @@ MCP3208 -- SPIClient : executes command on
 MCP3208 -- SPIBuilder: requests a client from
 SPIClient -> SPIDevClient
 SPIBuilder -- SPIClient : Creates
-TemperatureSensor -- Reader :requests and reads response from
+TemperatureSensor -- MCP3208Reader :requests and reads response from reader
 TemperatureSensor -- ReaderSupplier
-Reader --> MCP3208 : requests and reads response from
-ReaderSupplier -- Reader: Gets a reader
-Reader -- ConfigLoader: loads configuration specific to sensor
+DeviceFactory -- MCP3208 : creates
+DeviceFactory -- ConfigLoader
+ReaderSupplier -- MCP3208Reader: Gets a reader
+MCP3208Reader -- DeviceFactory: Gets a device from
+MCP3208 -- ConfigLoader: load specific settings for sensor
 TemperatureSensor -- ResponseTransformer: transforms the response from the reader
 TemperatureSensor -- ResponseTransformerFactory
 ResponseTransformer --> TemperatureTransformer

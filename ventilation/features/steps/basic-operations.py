@@ -1,63 +1,40 @@
-from behave import *
+from pathlib import Path
 
-from devices.temperature_sensor import TemperatureSensor
-from ventilation.source.ventilation import Ventilation
-from ventilation_mode import VentilationMode
-from utils.temperaturecelsius import TemperatureCelsius
+from behave import given, when, then
 
+from utils.response import Response
+from utils.status import Status
+from ventilation.system import System
 
-class MockTemperatureSensorInterface(TemperatureSensor):
-    def get_temperature(self):
-        if self.current_temp is None:
-            raise ValueError("Current temperature is not set.")
-        return self.current_temp
+LAST_ELEMENT = -1
 
-    def __init__(self):
-        super().__init__()
-        self.current_temp = None
+CONFIG_FILE = "missing ventilation config file"
 
-
-@given("the MVHR system is operational")
+@given("the system is started without a ventilation config file")
 def step_impl(context):
-    context.outside_temp_sensor = MockTemperatureSensorInterface()
-    context.ventilation = Ventilation(context.outside_temp_sensor)
+   context.system = System()
 
-
-@given("the system is in {mode} mode")
-def step_impl(context, mode: str):
-    try:
-        ventilation_mode = VentilationMode[mode.upper()]
-    except KeyError:
-        raise ValueError(f"Invalid ventilation mode: {mode}")
-    context.ventilation.set_mode(ventilation_mode)
-
-
-@given("the ventilation set-point is {setpoint:d}")
-def step_impl(context, setpoint: int):
-    context.ventilation.set_setpoint_temperature(TemperatureCelsius(setpoint))
-
-
-@given("the outside temp is {temp:d}")
-def step_impl(context, temp: int):
-    context.outside_temp_sensor.current_temp = TemperatureCelsius(temp)
-
-
-@when("I retrieve the temperature before and after the MVHR system")
+@when("the system attempts to read the ventilation configuration")
 def step_impl(context):
-    context.temp_before = context.ventilation.mvhr_temp_supply_in()
-    context.temp_after = context.ventilation.mvhr_temp_supply_out()
+    sys:System = context.system
+    context.system_response =  sys.start()
+
+@then("the system should set its state to indicate that the configuration file is missing")
+def step_impl(context):
+    response : Response[str] = context.system_response
+    assert response.status == Status.EXCEPTION, "expecting Exception"
+    assert ("%s" % CONFIG_FILE) in response.details, "Expected '%s' in response details" % CONFIG_FILE
+
+    # Extract the log file name from response details
+    log_file_path =  Path(response.details.split("Log file:")[LAST_ELEMENT].strip())  # Assuming the log file path is mentioned in response details
+
+    # Load the log file and verify its contents
+    with open(log_file_path, 'r') as log_file:
+        log_contents = log_file.read()
+
+    assert CONFIG_FILE in log_contents, "Expected '%s' in log file contents" % CONFIG_FILE
 
 
-@then("the temperature before the MVHR system should be {temp:d}")
-def step_impl(context, temp: int):
-    expected_temp = TemperatureCelsius(temp)
-    assert context.temp_before == expected_temp, \
-        f"Expected temperature before MVHR to be {expected_temp.value}, but got {context.temp_before.value}"
 
 
-@then("the temperature after the MVHR should be between {low_temp:d} to {high_temp:d}")
-def step_impl(context, low_temp: int, high_temp: int):
-    low = TemperatureCelsius(low_temp)
-    high = TemperatureCelsius(high_temp)
-    assert low <= context.temp_after <= high, \
-        f"Expected temperature after MVHR to be between {low.value} and {high.value}, but got {context.temp_after.value}"
+

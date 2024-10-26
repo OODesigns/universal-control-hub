@@ -1,1 +1,1 @@
-from . import reg_blauberg_mvhr, reg_mcp3208, reg_modbus, reg_reader
+from . import reg_blauberg_mvhr, reg_modbus
