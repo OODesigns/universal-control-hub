@@ -22,7 +22,7 @@ class TestRTUValues(unittest.TestCase):
                 serial_port = SerialPort(port)
                 self.assertEqual(serial_port.status, Status.OK)
                 self.assertEqual(serial_port.value, port)
-                self.assertEqual(serial_port.details, "Validation successful")
+                self.assertEqual(serial_port.details, "validation successful")
 
     def test_serial_port_invalid(self):
         system = platform.system()
@@ -56,7 +56,7 @@ class TestRTUValues(unittest.TestCase):
                 baud_rate = BaudRate(rate)
                 self.assertEqual(baud_rate.status, Status.OK)
                 self.assertEqual(baud_rate.value, rate)
-                self.assertEqual(baud_rate.details, "Validation successful")
+                self.assertEqual(baud_rate.details, "validation successful")
 
     def test_baud_rate_invalid(self):
         invalid_baud_rates = [12345, 15000, "9600", -9600]
@@ -82,7 +82,7 @@ class TestRTUValues(unittest.TestCase):
                 stop_bits = StopBits(bits)
                 self.assertEqual(stop_bits.status, Status.OK)
                 self.assertEqual(stop_bits.value, bits)
-                self.assertEqual(stop_bits.details, "Validation successful")
+                self.assertEqual(stop_bits.details, "validation successful")
 
     def test_stop_bits_invalid(self):
         invalid_stop_bits = [0, 1.5, 3, "2"]

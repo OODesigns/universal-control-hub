@@ -10,7 +10,7 @@ class TestStandardName(unittest.TestCase):
         validated_value = StandardName(value)
         self.assertEqual(validated_value.status, Status.OK)
         self.assertEqual(validated_value.value, value)
-        self.assertEqual(validated_value.details, "Validation successful")
+        self.assertEqual(validated_value.details, "validation successful")
 
     def test_invalid_value_with_uppercase(self):
         value = "Abc_def"

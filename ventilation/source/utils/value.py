@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, List
+
+from utils.constants import DEFAULT_SUCCESS_MESSAGE
 from utils.response import Response, T
 from utils.status import Status
 
@@ -54,7 +56,7 @@ class TypeValidationStrategy(ValidationStrategy):
                 details=f"Value must be one of {self.valid_types}, got {type(value).__name__}",
                 value=None
             )
-        return Response(status=Status.OK, details="Type validation successful", value=value)
+        return Response(status=Status.OK, details=DEFAULT_SUCCESS_MESSAGE, value=value)
 
 
 class RangeValidationStrategy(ValidationStrategy):
@@ -75,7 +77,7 @@ class RangeValidationStrategy(ValidationStrategy):
                 details=f"Value must be less than or equal to {self.high_value}, got {value}",
                 value=None
             )
-        return Response(status=Status.OK, details="Range validation successful", value=value)
+        return Response(status=Status.OK, details=DEFAULT_SUCCESS_MESSAGE, value=value)
 
 
 class EnumValidationStrategy(ValidationStrategy):
@@ -89,7 +91,7 @@ class EnumValidationStrategy(ValidationStrategy):
                 details=f"Value must be one of {self.valid_values}, got {value}",
                 value=None
             )
-        return Response(status=Status.OK, details="Enum validation successful", value=value)
+        return Response(status=Status.OK, details=DEFAULT_SUCCESS_MESSAGE, value=value)
 
 
 class ValidatedValue(Value[T], ABC):
@@ -102,7 +104,7 @@ class ValidatedValue(Value[T], ABC):
         _details: Additional details regarding the validation status.
     """
 
-    def __init__(self, value:T, success_details:str = "Validation successful"):
+    def __init__(self, value:T, success_details:str = DEFAULT_SUCCESS_MESSAGE):
         result = self._run_validations(value, success_details)
         super().__init__(result.value)
         self._status = result.status
@@ -121,11 +123,10 @@ class ValidatedValue(Value[T], ABC):
                 return response  # Stop if any strategy fails
             # Update current_value with the value returned from the successful strategy
             current_value = response.value
-
         return Response(status=Status.OK, details=success_details, value=current_value)
 
     @abstractmethod
-    def get__strategies(self) -> [List[ValidationStrategy]]:
+    def get__strategies(self) -> List[ValidationStrategy]:
         return []
 
     @property
@@ -140,7 +141,6 @@ class ValidatedValue(Value[T], ABC):
 
     @property
     def value(self) -> T:
-        """Returns the value if validation was successful, otherwise return None."""
         if self._status == Status.EXCEPTION:
             return None
         return self._value
@@ -163,10 +163,10 @@ class ValidatedValue(Value[T], ABC):
 
 
 class EnumValidatedValue(ValidatedValue[T]):
-    def get__strategies(self) -> [List[ValidationStrategy]]:
+    def get__strategies(self) -> List[ValidationStrategy]:
         return self._strategies
 
-    def __init__(self, value, valid_types, valid_values, success_details:str = "Validation successful"):
+    def __init__(self, value, valid_types, valid_values, success_details:str = DEFAULT_SUCCESS_MESSAGE):
         # Initialize the strategies for this subclass
         self._strategies = [
             EnumValidationStrategy(valid_values),
@@ -176,10 +176,10 @@ class EnumValidatedValue(ValidatedValue[T]):
 
 
 class RangeValidatedValue(ValidatedValue[T]):
-    def get__strategies(self) -> [List[ValidationStrategy]]:
+    def get__strategies(self) -> List[ValidationStrategy]:
         return self._strategies
 
-    def __init__(self, value, valid_types, low_value, high_value, success_details:str = "Validation successful"):
+    def __init__(self, value, valid_types, low_value, high_value, success_details:str = DEFAULT_SUCCESS_MESSAGE):
         # Initialize the strategies for this subclass
         self._strategies = [
             RangeValidationStrategy(low_value, high_value),
@@ -215,7 +215,7 @@ class StrictValidatedValue(ValidatedValue[T], ABC):
     """
     A stricter version of ValidatedValue that raises an exception immediately if the validation fails.
     """
-    def __init__(self, value: T = None, success_details:str = "Validation successful"):
+    def __init__(self, value: T = None, success_details:str = DEFAULT_SUCCESS_MESSAGE):
         super().__init__(value, success_details)
         if self.status == Status.EXCEPTION:
             raise ValueError(f"Validation failed for value '{value}': {self.details}")

@@ -19,7 +19,7 @@ class TestTCPValues(unittest.TestCase):
                 ip_address = IPAddress(ip)
                 self.assertEqual(ip_address.value, ip)
                 self.assertEqual(ip_address.status, Status.OK)
-                self.assertEqual(ip_address.details, "Validation successful")
+                self.assertEqual(ip_address.details, "validation successful")
 
     def test_ip_address_invalid(self):
         invalid_ips = [
@@ -39,7 +39,7 @@ class TestTCPValues(unittest.TestCase):
             with self.subTest(ip=ip):
                 ip_address = IPAddress(ip)
                 self.assertEqual(ip_address.status, Status.EXCEPTION)
-                self.assertTrue("Invalid IP address" in ip_address.details)
+                self.assertIn("Invalid IP address", ip_address.details)
                 self.assertIsNone(ip_address.value)
 
     # Test for StrictIPAddress class (strict)
@@ -73,7 +73,7 @@ class TestPort(unittest.TestCase):
                 port = Port(port_num)
                 self.assertEqual(port.value, port_num)
                 self.assertEqual(port.status, Status.OK)
-                self.assertEqual(port.details, "Validation successful")
+                self.assertEqual(port.details, "validation successful")
 
     def test_port_invalid(self):
         invalid_ports = [-1, 70000, "8080", 65536]
