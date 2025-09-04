@@ -8,7 +8,7 @@ class DeviceReader(Reader[T], ABC):
     """
     Abstract interface to represent a device reader.
     """
-    def __init__(self, device_to_read: [StandardName]):
+    def __init__(self, device_to_read: StandardName):
         # Device name will be set by the child class
         self.config_name: StandardName = StandardName(f"{self.get_device_name()}_{device_to_read.value}")
 

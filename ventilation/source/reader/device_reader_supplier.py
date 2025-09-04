@@ -17,7 +17,7 @@ class DeviceReaderSupplier(Generic[T]):
         cls._reader_class = reader_class
 
     @classmethod
-    def get(cls, device_to_read: [StandardName]) -> DeviceReader[T]:
+    def get(cls, device_to_read: StandardName) -> DeviceReader[T]:
         """
         Instantiates the registered reader class with the provided device_to_read parameter.
         """
