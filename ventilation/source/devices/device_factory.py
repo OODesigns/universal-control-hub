@@ -34,7 +34,7 @@ class DeviceFactory:
         if DeviceFactory._instance is None:
             return DeviceResponse(
                 status=DeviceStatus.EXCEPTION,
-                details=f"Device factory is not initialized.",
+                details="Device factory is not initialized.",
                 device=None
             )
         return DeviceFactory._instance.create(device_name, config_name)
