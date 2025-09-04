@@ -81,15 +81,15 @@ class TestValidatedValueStrategies(unittest.TestCase):
 
         # EnumValidatedValue should use EnumValidationStrategy and TypeValidationStrategy
         enum_val = EnumValidatedValue(Status.OK, Status, valid_values)
-        enum_result = enum_val._run_validations(Status.OK, "Validation successful")
+        enum_result = enum_val._run_validations(Status.OK, "validation successful")
         self.assertEqual(enum_result.status, Status.OK, "EnumValidatedValue should pass validation with correct enum")
-        self.assertEqual(enum_result.details, "Validation successful", "EnumValidatedValue should pass all validations")
+        self.assertEqual(enum_result.details, "validation successful", "EnumValidatedValue should pass all validations")
 
         # RangeValidatedValue should use RangeValidationStrategy and TypeValidationStrategy
         range_val = RangeValidatedValue(15, int, 10, 20)
-        range_result = range_val._run_validations(15, "Validation successful")
+        range_result = range_val._run_validations(15, "validation successful")
         self.assertEqual(range_result.status, Status.OK, "RangeValidatedValue should pass validation with correct range")
-        self.assertEqual(range_result.details, "Validation successful", "RangeValidatedValue should pass all validations")
+        self.assertEqual(range_result.details, "validation successful", "RangeValidatedValue should pass all validations")
 
         # Confirm that run_validations uses the correct strategies for EnumValidatedValue and RangeValidatedValue
         self.assertNotEqual(enum_val._strategies, range_val._strategies, "EnumValidatedValue and RangeValidatedValue should not share strategies")
@@ -111,7 +111,7 @@ class TestValidatedValueStrategies(unittest.TestCase):
 
         # Creating a custom validated value with chained strategies
         class ChainedValue(ValidatedValue):
-            def get__strategies(self) -> [List[ValidationStrategy]]:
+            def get__strategies(self) -> List[ValidationStrategy]:
                 return [
                     IncrementStrategy(),
                     DoubleStrategy(),
@@ -137,7 +137,7 @@ class TestTypeValidationStrategy(unittest.TestCase):
         # Test valid int value
         response = strategy.validate(42)
         self.assertEqual(response.status, Status.OK)
-        self.assertEqual(response.details, "Type validation successful")
+        self.assertEqual(response.details, "validation successful")
         self.assertEqual(response.value, 42)
 
         # Test invalid string value
@@ -153,13 +153,13 @@ class TestTypeValidationStrategy(unittest.TestCase):
         # Test valid int value
         response = strategy.validate(42)
         self.assertEqual(response.status, Status.OK)
-        self.assertEqual(response.details, "Type validation successful")
+        self.assertEqual(response.details, "validation successful")
         self.assertEqual(response.value, 42)
 
         # Test valid float value
         response = strategy.validate(42.0)
         self.assertEqual(response.status, Status.OK)
-        self.assertEqual(response.details, "Type validation successful")
+        self.assertEqual(response.details, "validation successful")
         self.assertEqual(response.value, 42.0)
 
         # Test invalid string value
@@ -175,7 +175,7 @@ class TestTypeValidationStrategy(unittest.TestCase):
         # Test valid int value
         response = strategy.validate(42)
         self.assertEqual(response.status, Status.OK)
-        self.assertEqual(response.details, "Type validation successful")
+        self.assertEqual(response.details, "validation successful")
         self.assertEqual(response.value, 42)
 
         # Test invalid string value

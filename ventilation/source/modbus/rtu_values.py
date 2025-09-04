@@ -1,6 +1,8 @@
 import platform
 import re
 from enum import Enum
+
+from utils.constants import DEFAULT_SUCCESS_MESSAGE
 from utils.value import ValidatedValue, StrictValidatedValue, TypeValidationStrategy, EnumValidationStrategy
 from utils.response import Response
 from utils.status import Status
@@ -59,7 +61,7 @@ class SerialPortValidationStrategy:
                 value=None
             )
 
-        return Response(status=Status.OK, details="Validation successful", value=value)
+        return Response(status=Status.OK, details=DEFAULT_SUCCESS_MESSAGE, value=value)
 
 
 class BaudRate(ValidatedValue[int]):
